@@ -19,10 +19,7 @@ This bit of boilerplate/framework must be used inside your code to use this libr
 ```rust
 let event_loop = EventLoop::new();
 let mut input = WinitInputHelper::new();
-let (mut window, pixels) = setup(240, 160, "Example", true, &event_loop)?;
-
-let mut graphics = PixelWrapper::new(pixels, 240);
-graphics.init();
+let (mut window, mut graphics) = setup(240, 160, "Example", true, &event_loop)?;
 
 event_loop.run(move |event, _, control_flow| {
     if let Event::RedrawRequested(_) = event {
