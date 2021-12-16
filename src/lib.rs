@@ -121,7 +121,7 @@ pub fn setup(
     let surface = SurfaceTexture::new(width, height, &win);
     let pixels = Pixels::new(width, height, surface).map_err(GraphicsError::PixelsInit)?;
 
-    Ok((win, PixelWrapper::new(pixels, width as usize)))
+    Ok((win, PixelWrapper::new(pixels, width as usize, height as usize)))
 }
 
 fn create_window(

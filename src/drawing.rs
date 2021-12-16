@@ -8,16 +8,18 @@ pub struct PixelWrapper {
     pub pixels: Pixels,
     px_count: usize,
     width: usize,
+    height: usize,
     translate: Vec2,
 }
 
 impl PixelWrapper {
-    pub fn new(mut pixels: Pixels, width: usize) -> Self {
+    pub fn new(mut pixels: Pixels, width: usize, height: usize) -> Self {
         let px_count = pixels.get_frame().len();
         PixelWrapper {
             pixels,
             px_count,
             width,
+            height,
             translate: Vec2::default(),
         }
     }
@@ -245,6 +247,61 @@ impl PixelWrapper {
         self.draw_line(x1, y1, x2, y1, color);
         self.draw_line(x1, y2, x2, y2, color);
         self.draw_line(x2, y1, x2, y2, color);
+    }
+
+    pub fn draw_circle(&mut self, x: usize, y: usize, radius: usize, color: Color) {
+        let cx = x as isize;
+        let cy = y as isize;
+        let mut d = (5_isize - (radius as isize) * 4) / 4;
+        let mut x = 0;
+        let mut y = radius as isize;
+        let w = self.width as isize;
+        let h = self.height as isize;
+
+        let clamp_w = |num: isize| num.clamp(0, w) as usize;
+        let clamp_h = |num: isize| num.clamp(0, h) as usize;
+
+        while x <= y {
+            self.set_pixel(clamp_w(cx + x), clamp_h(cy + y), color);
+            self.set_pixel(clamp_w(cx + x), clamp_h(cy - y), color);
+            self.set_pixel(clamp_w(cx - x), clamp_h(cy + y), color);
+            self.set_pixel(clamp_w(cx - x), clamp_h(cy - y), color);
+            self.set_pixel(clamp_w(cx + y), clamp_h(cy + x), color);
+            self.set_pixel(clamp_w(cx + y), clamp_h(cy - x), color);
+            self.set_pixel(clamp_w(cx - y), clamp_h(cy + x), color);
+            self.set_pixel(clamp_w(cx - y), clamp_h(cy - x), color);
+            if d < 0 {
+                d += 2 * x + 1
+            } else {
+                d += 2 * (x - y) + 1;
+                y -= 1;
+            }
+            x += 1;
+        }
+    }
+
+    pub fn draw_circle_filled(&mut self, x: usize, y: usize, radius: usize, color: Color) {
+        let cx = x as isize;
+        let cy = y as isize;
+        let w = self.width as isize;
+        let h = self.height as isize;
+        let double_radius = (radius * radius) as isize;
+        let clamp_w = |num: isize| num.clamp(0, w) as usize;
+        let clamp_h = |num: isize| num.clamp(0, h) as usize;
+        for y in 0..radius {
+            let y = y as isize;
+            let up = cy - y;
+            let down = cy + y;
+            let half_width = (((double_radius - y * y) as f64).sqrt().round() as isize).max(0);
+            for x in 0..half_width {
+                let left = cx - x;
+                let right = cx + x;
+                self.set_pixel(clamp_w(left), clamp_h(up), color);
+                self.set_pixel(clamp_w(right), clamp_h(up), color);
+                self.set_pixel(clamp_w(left), clamp_h(down), color);
+                self.set_pixel(clamp_w(right), clamp_h(down), color);
+            }
+        }
     }
 
     /// Draw line from `x1,y1` to `x2,y2` in `color`
