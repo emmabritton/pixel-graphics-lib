@@ -1,0 +1,21 @@
+[package]
+name = "graphics-lib"
+version = "0.1.0"
+edition = "2021"
+publish = false
+authors = ["Ray Britton <raybritton@pm.me>"]
+description = "Simple wrapper library around Pixels"
+license-file = "LICENSE"
+repository = "https://github.com/raybritton/rust-graphics-lib"
+readme = "README.md"
+homepage = "https://github.com/raybritton/rust-graphics-lib"
+keywords = ["graphics", "gamedev", "pixels", "simple"]
+categories = ["graphics", "game-development"]
+
+[dependencies]
+pixels = "0.6.0"
+winit = "0.25"
+winit_input_helper = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0.30"
+image = "0.23.14"
