@@ -75,7 +75,12 @@ impl Color {
     /// Convert color to f32 array in the format [R,G,B,A] where 0.0 = 0, and 1.0 = 255
     #[inline]
     pub fn as_f32_array(&self) -> [f32; 4] {
-        [self.r as f32 / 255.0, self.g as f32 / 255.0, self.b as f32 / 255.0, self.a as f32 / 255.0]
+        [
+            self.r as f32 / 255.0,
+            self.g as f32 / 255.0,
+            self.b as f32 / 255.0,
+            self.a as f32 / 255.0,
+        ]
     }
 
     #[inline]
@@ -324,20 +329,20 @@ mod test {
     #[test]
     fn blend() {
         assert_eq!(
-            Color::rgb(255,255,255).blend(Color::rgba(0,0,0,0)),
-            Color::rgb(255,255,255)
+            Color::rgb(255, 255, 255).blend(Color::rgba(0, 0, 0, 0)),
+            Color::rgb(255, 255, 255)
         );
         assert_eq!(
-            Color::rgb(255,255,255).blend(Color::rgb(255,0,0)),
-            Color::rgb(255,0,0)
+            Color::rgb(255, 255, 255).blend(Color::rgb(255, 0, 0)),
+            Color::rgb(255, 0, 0)
         );
         assert_eq!(
-            Color::rgb(255,255,255).blend(Color::rgba(255,0,0,128)),
-            Color::rgb(255,127,127)
+            Color::rgb(255, 255, 255).blend(Color::rgba(255, 0, 0, 128)),
+            Color::rgb(255, 127, 127)
         );
         assert_eq!(
-            Color::rgba(0,0,255, 128).blend(Color::rgba(255,0,0,128)),
-            Color::rgba(170,0,85, 192)
+            Color::rgba(0, 0, 255, 128).blend(Color::rgba(255, 0, 0, 128)),
+            Color::rgba(170, 0, 85, 192)
         );
     }
 }

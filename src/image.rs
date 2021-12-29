@@ -1,7 +1,7 @@
-use std::fmt::{Debug, Formatter};
 use crate::color::{Color, WHITE};
 use crate::scaling::*;
 use crate::{GraphicsError, Tint};
+use std::fmt::{Debug, Formatter};
 
 /// Images are rectangles of pixels that can be manipulated and drawn on screen
 #[derive(Clone)]
@@ -92,7 +92,12 @@ impl Image {
     /// Blend two images making a new one
     pub fn blend(&self, other: &Image) -> Result<Image, GraphicsError> {
         if self.width != other.width || self.height != other.height {
-            return Err(GraphicsError::ImageBlendSize(self.width, self.height, other.width, other.height));
+            return Err(GraphicsError::ImageBlendSize(
+                self.width,
+                self.height,
+                other.width,
+                other.height,
+            ));
         }
         let size = self.width * self.height;
         let mut pixels: Vec<Color> = Vec::with_capacity(size);
@@ -151,7 +156,8 @@ mod test {
             ],
             3,
             3,
-        ).unwrap()
+        )
+        .unwrap()
     }
 
     #[test]

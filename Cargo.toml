@@ -15,6 +15,5 @@ categories = ["graphics", "game-development"]
 pixels = "0.6.0"
 winit = "0.25"
 winit_input_helper = "0.10"
-serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0.30"
-image = "0.23.14"
+serde = { version = "1.0", features = ["derive"] }
