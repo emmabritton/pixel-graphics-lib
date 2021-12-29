@@ -1,8 +1,7 @@
 [package]
 name = "graphics-lib"
-version = "0.1.1"
+version = "0.1.0"
 edition = "2021"
-publish = false
 authors = ["Ray Britton <raybritton@pm.me>"]
 description = "Simple wrapper library around Pixels"
 license-file = "LICENSE"
