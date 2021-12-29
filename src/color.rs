@@ -1,7 +1,7 @@
 use crate::Tint;
 
 ///This represents an RGBA color and is used to store a pixel by [`Image`](crate::image::Image) and [`PixelsWrapper`](crate::drawing::PixelsWrapper)
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Color {
     //red channel
     pub r: u8,
@@ -11,6 +11,12 @@ pub struct Color {
     pub b: u8,
     //alpha channel
     pub a: u8,
+}
+
+impl Default for Color {
+    fn default() -> Self {
+        Color::rgba(0, 0, 0, 255)
+    }
 }
 
 impl Color {
@@ -121,7 +127,7 @@ mod test {
                 r: 0,
                 g: 0,
                 b: 0,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -130,7 +136,7 @@ mod test {
                 r: 255,
                 g: 128,
                 b: 0,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -139,7 +145,7 @@ mod test {
                 r: 255,
                 g: 255,
                 b: 255,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -148,7 +154,7 @@ mod test {
                 r: 0,
                 g: 0,
                 b: 0,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -157,7 +163,7 @@ mod test {
                 r: 0,
                 g: 15,
                 b: 0,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -166,7 +172,7 @@ mod test {
                 r: 0,
                 g: 0,
                 b: 255,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -175,7 +181,7 @@ mod test {
                 r: 0,
                 g: 0,
                 b: 0,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -184,7 +190,7 @@ mod test {
                 r: 10,
                 g: 22,
                 b: 35,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -193,7 +199,7 @@ mod test {
                 r: 255,
                 g: 255,
                 b: 255,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -202,7 +208,7 @@ mod test {
                 r: 255,
                 g: 255,
                 b: 255,
-                a: 255
+                a: 255,
             }
         );
         assert_eq!(
@@ -211,7 +217,7 @@ mod test {
                 r: 55,
                 g: 55,
                 b: 55,
-                a: 255
+                a: 255,
             }
         );
     }

@@ -1,3 +1,4 @@
+use std::fmt::{Debug, Formatter};
 use crate::color::{Color, WHITE};
 use crate::scaling::*;
 use crate::Tint;
@@ -10,6 +11,12 @@ pub struct Image {
     pub(crate) pixels: Vec<Color>,
     width: usize,
     height: usize,
+}
+
+impl Debug for Image {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Image: {}x{}", self.width, self.height)
+    }
 }
 
 impl Image {
