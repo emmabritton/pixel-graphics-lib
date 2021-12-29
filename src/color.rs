@@ -51,17 +51,44 @@ impl Color {
         let bytes = value.to_be_bytes();
         Color::rgba(bytes[0], bytes[1], bytes[2], bytes[3])
     }
+
+    /// Convert f32 array in the format [R,G,B,A] to color where 0.0 = 0, and 1.0 = 255
+    #[inline]
+    pub fn from_f32_array(array: [f32; 4]) -> Self {
+        Color::new(array[0], array[1], array[2], array[3])
+    }
 }
 
 impl Color {
     /// Split color into array in the format [R,G,B,A]
+    #[inline]
     pub fn as_array(&self) -> [u8; 4] {
         [self.r, self.g, self.b, self.a]
     }
 
     /// Convert color to i32 in the format [R,G,B,A]
+    #[inline]
     pub fn as_i32(&self) -> i32 {
         i32::from_be_bytes(self.as_array())
+    }
+
+    /// Convert color to f32 array in the format [R,G,B,A] where 0.0 = 0, and 1.0 = 255
+    #[inline]
+    pub fn as_f32_array(&self) -> [f32; 4] {
+        [self.r as f32 / 255.0, self.g as f32 / 255.0, self.b as f32 / 255.0, self.a as f32 / 255.0]
+    }
+
+    #[inline]
+    pub fn blend(&self, other: Color) -> Color {
+        let base = self.as_f32_array();
+        let added = other.as_f32_array();
+        let mut mix = [0.0, 0.0, 0.0, 0.0];
+        mix[3] = 1.0 - (1.0 - added[3]) * (1.0 - base[3]);
+        mix[0] = (added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1.0 - added[3]) / mix[3]);
+        mix[1] = (added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1.0 - added[3]) / mix[3]);
+        mix[2] = (added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1.0 - added[3]) / mix[3]);
+
+        Color::from_f32_array(mix)
     }
 }
 
@@ -291,6 +318,26 @@ mod test {
         assert_eq!(
             clone_and_mul(initial, 0.5, 0.5, 0.5, 0.5),
             Color::rgba(50, 75, 100, 128)
+        );
+    }
+
+    #[test]
+    fn blend() {
+        assert_eq!(
+            Color::rgb(255,255,255).blend(Color::rgba(0,0,0,0)),
+            Color::rgb(255,255,255)
+        );
+        assert_eq!(
+            Color::rgb(255,255,255).blend(Color::rgb(255,0,0)),
+            Color::rgb(255,0,0)
+        );
+        assert_eq!(
+            Color::rgb(255,255,255).blend(Color::rgba(255,0,0,128)),
+            Color::rgb(255,127,127)
+        );
+        assert_eq!(
+            Color::rgba(0,0,255, 128).blend(Color::rgba(255,0,0,128)),
+            Color::rgba(170,0,85, 192)
         );
     }
 }
