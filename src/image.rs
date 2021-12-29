@@ -1,11 +1,9 @@
 use std::fmt::{Debug, Formatter};
 use crate::color::{Color, WHITE};
 use crate::scaling::*;
-use crate::Tint;
+use crate::{GraphicsError, Tint};
 
-/// Images are rectangles of pixels that be manipulated and drawn on screen
-///
-/// Transparency is accounted for when drawing images
+/// Images are rectangles of pixels that can be manipulated and drawn on screen
 #[derive(Clone)]
 pub struct Image {
     pub(crate) pixels: Vec<Color>,
@@ -21,25 +19,22 @@ impl Debug for Image {
 
 impl Image {
     /// Create a image of width x height size using provided pixels
-    pub fn new(pixels: Vec<Color>, width: usize, height: usize) -> Self {
-        assert_eq!(
-            pixels.len(),
-            width * height,
-            "Invalid pixel array length, expected: {}, found: {}",
-            width * height,
-            pixels.len()
-        );
-        Image {
-            pixels,
-            width,
-            height,
+    pub fn new(pixels: Vec<Color>, width: usize, height: usize) -> Result<Self, GraphicsError> {
+        if width * height != pixels.len() {
+            Err(GraphicsError::ImageInitSize(width * height, pixels.len()))
+        } else {
+            Ok(Image {
+                pixels,
+                width,
+                height,
+            })
         }
     }
 
     /// Create a white image of width x height size
     pub fn new_blank(width: usize, height: usize) -> Self {
         let pixels = vec![WHITE; width * height];
-        Image::new(pixels, width, height)
+        Image::new(pixels, width, height).expect("This is can't fail")
     }
 }
 
@@ -94,6 +89,21 @@ impl Image {
         }
     }
 
+    /// Blend two images making a new one
+    pub fn blend(&self, other: &Image) -> Result<Image, GraphicsError> {
+        if self.width != other.width || self.height != other.height {
+            return Err(GraphicsError::ImageBlendSize(self.width, self.height, other.width, other.height));
+        }
+        let size = self.width * self.height;
+        let mut pixels: Vec<Color> = Vec::with_capacity(size);
+
+        for i in 0..size {
+            pixels.push(self.pixels[i].blend(other.pixels[i]));
+        }
+
+        Image::new(pixels, self.width, self.height)
+    }
+
     /// Return a new image after scaling
     pub fn scale(&self, algo: Scaling) -> Image {
         match algo {
@@ -141,7 +151,7 @@ mod test {
             ],
             3,
             3,
-        )
+        ).unwrap()
     }
 
     #[test]
