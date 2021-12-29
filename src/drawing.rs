@@ -38,7 +38,6 @@ impl PixelWrapper {
     ///
     /// Although the method takes `&mut self` it doesn't mutate anything
     pub fn copy_to_image(&mut self) -> Image {
-        let height = self.px_count / self.width;
         let pixels = self
             .pixels
             .get_frame()
@@ -50,7 +49,7 @@ impl PixelWrapper {
                 a: px[3],
             })
             .collect::<Vec<Color>>();
-        Image::new(pixels, self.width, height)
+        Image::new(pixels, self.width, self.height).expect("This can't fail")
     }
 
     /// Get top left pixel coord for letter coord
@@ -87,7 +86,7 @@ impl PixelWrapper {
         for (y, row) in image.pixels.chunks_exact(image.width()).enumerate() {
             for px in row {
                 if px.a > 0 {
-                    self.set_pixel(start_x + x, start_y + y, *px);
+                    self.update_pixel(start_x + x, start_y + y, *px);
                 }
                 x += 1;
             }
@@ -129,7 +128,7 @@ impl PixelWrapper {
             for y in 0..height {
                 let i = x + y * width;
                 if px[i] {
-                    self.set_pixel(x + start_x, y + start_y, color);
+                    self.update_pixel(x + start_x, y + start_y, color);
                 }
             }
         }
@@ -215,8 +214,36 @@ impl PixelWrapper {
         None
     }
 
+    /// Update a pixel color, using [PixelWrapper::set_pixel] or [PixelWrapper::blend_pixel] depending
+    /// on whether `color`s alpha is 255 or not
+    #[inline]
+    pub fn update_pixel(&mut self, x: usize, y: usize, color: Color) {
+        if color.a == 255 {
+            self.set_pixel(x, y, color);
+        } else {
+            self.blend_pixel(x, y, color);
+        }
+    }
+
+    /// Set the RGB values for a pixel by blending it with the provided color
+    /// This method uses alpha blending, note that the canvas pixels always have 255 alpha
+    #[inline]
+    pub fn blend_pixel(&mut self, x: usize, y: usize, color: Color) {
+        let x = x as isize + self.translate.x;
+        let y = y as isize + self.translate.y;
+        if x >= 0 && y >= 0 && x < self.width as isize {
+            if let Some(base) = self.get_pixel(x as usize, y as usize, false) {
+                let new_color = base.blend(color);
+                let idx = self.index(x as usize, y as usize);
+                self.pixels.get_frame()[idx] = new_color.r;
+                self.pixels.get_frame()[idx + 1] = new_color.g;
+                self.pixels.get_frame()[idx + 2] = new_color.b;
+            }
+        }
+    }
+
     /// Set the RGB values for a pixel
-    /// This ignores alpha, so 0,0,0,0 will draw a black pixel
+    /// This ignores alpha, so 255,0,0,0 will draw a red pixel
     #[inline]
     pub fn set_pixel(&mut self, x: usize, y: usize, color: Color) {
         let x = x as isize + self.translate.x;
@@ -236,7 +263,7 @@ impl PixelWrapper {
     pub fn draw_rect(&mut self, x1: usize, y1: usize, x2: usize, y2: usize, color: Color) {
         for x in x1..=x2 {
             for y in y1..=y2 {
-                self.set_pixel(x, y, color);
+                self.update_pixel(x, y, color);
             }
         }
     }
@@ -262,14 +289,14 @@ impl PixelWrapper {
         let clamp_h = |num: isize| num.clamp(0, h) as usize;
 
         while x <= y {
-            self.set_pixel(clamp_w(cx + x), clamp_h(cy + y), color);
-            self.set_pixel(clamp_w(cx + x), clamp_h(cy - y), color);
-            self.set_pixel(clamp_w(cx - x), clamp_h(cy + y), color);
-            self.set_pixel(clamp_w(cx - x), clamp_h(cy - y), color);
-            self.set_pixel(clamp_w(cx + y), clamp_h(cy + x), color);
-            self.set_pixel(clamp_w(cx + y), clamp_h(cy - x), color);
-            self.set_pixel(clamp_w(cx - y), clamp_h(cy + x), color);
-            self.set_pixel(clamp_w(cx - y), clamp_h(cy - x), color);
+            self.update_pixel(clamp_w(cx + x), clamp_h(cy + y), color);
+            self.update_pixel(clamp_w(cx + x), clamp_h(cy - y), color);
+            self.update_pixel(clamp_w(cx - x), clamp_h(cy + y), color);
+            self.update_pixel(clamp_w(cx - x), clamp_h(cy - y), color);
+            self.update_pixel(clamp_w(cx + y), clamp_h(cy + x), color);
+            self.update_pixel(clamp_w(cx + y), clamp_h(cy - x), color);
+            self.update_pixel(clamp_w(cx - y), clamp_h(cy + x), color);
+            self.update_pixel(clamp_w(cx - y), clamp_h(cy - x), color);
             if d < 0 {
                 d += 2 * x + 1
             } else {
@@ -296,10 +323,10 @@ impl PixelWrapper {
             for x in 0..half_width {
                 let left = cx - x;
                 let right = cx + x;
-                self.set_pixel(clamp_w(left), clamp_h(up), color);
-                self.set_pixel(clamp_w(right), clamp_h(up), color);
-                self.set_pixel(clamp_w(left), clamp_h(down), color);
-                self.set_pixel(clamp_w(right), clamp_h(down), color);
+                self.update_pixel(clamp_w(left), clamp_h(up), color);
+                self.update_pixel(clamp_w(right), clamp_h(up), color);
+                self.update_pixel(clamp_w(left), clamp_h(down), color);
+                self.update_pixel(clamp_w(right), clamp_h(down), color);
             }
         }
     }
@@ -321,7 +348,7 @@ impl PixelWrapper {
         let mut y = y1;
         if dx >= dy {
             loop {
-                self.set_pixel(x as usize, y as usize, color);
+                self.update_pixel(x as usize, y as usize, color);
                 if x == x2 {
                     break;
                 }
@@ -334,7 +361,7 @@ impl PixelWrapper {
             }
         } else {
             loop {
-                self.set_pixel(x as usize, y as usize, color);
+                self.update_pixel(x as usize, y as usize, color);
                 if y == y2 {
                     break;
                 }
