@@ -31,9 +31,11 @@ event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Exit;
             return;
         }
+
+        //put your rendering code here
     }
-    
-    //put your rendering code here 
+
+    //put your update code here
     
     if input.update( & event) {
         if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
@@ -45,7 +47,7 @@ event_loop.run(move |event, _, control_flow| {
             graphics.pixels.resize_surface(size.width, size.height);
         }
 
-        //put your update/input handling code here
+        //put your input handling code here
 
         window.request_redraw();
     }
@@ -58,3 +60,43 @@ graphics.draw_text("Some text", 4, 1, 1, TextSize::Normal, BLACK);
 graphics.draw_image(20, 20, &image);
 graphics.draw_rect(1, 1, 100, 100, GREY);
 ```
+
+## Features
+
+Both features are enabled by default
+
+### `image_loading`
+
+Load files as `Image`s
+
+#### Code
+```rust
+let image = load_image("resources/example.png")?;
+graphics.draw_image(40,20,&image);
+```
+
+### `window_prefs`
+
+Save and restore window position and size
+
+#### Code
+First an instance of `WindowPreferences` has be created:
+```rust
+let mut prefs = WindowPreferences::new(
+    "<qualifier>",
+    "<org name>",
+    "<program name>",
+)?;
+``` 
+
+Then the file has to be created/loaded with 
+`prefs.load()?;`
+
+To set the window size and position call
+`prefs.restore(&mut window);`
+
+To store the window size and position call
+`prefs.store(&window);`
+
+This only saves the data to memory, to save to disk call
+`prefs.save()?;` (after `store()`)

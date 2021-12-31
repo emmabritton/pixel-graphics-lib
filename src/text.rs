@@ -21,13 +21,26 @@ impl TextSize {
             TextSize::Normal => 2,
         }
     }
+
+    /// Returns the max of (columns, rows) for this text size for the specified screen size
+    pub fn get_max_characters(&self, screen_width: usize, screen_height: usize) -> (usize, usize) {
+        let size = self.get_size();
+        if screen_width < size.0 || screen_height < size.1 {
+            return (0,0);
+        }
+        let sw = screen_width as f32;
+        let cw = (size.0 + self.get_margin()) as f32;
+        let sh = screen_height as f32;
+        let ch = (size.1 + self.get_margin()) as f32;
+        let columns = (sw / cw).floor() as usize;
+        let rows = (sh / ch).floor() as usize;
+        (columns - 1, rows - 1)
+    }
 }
 
 pub mod small_letters {
     pub const CHAR_WIDTH: usize = 4;
     pub const CHAR_HEIGHT: usize = 5;
-    pub const MAX_X: usize = 47;
-    pub const MAX_Y: usize = 25;
 
     pub fn get_px(chr: char) -> [bool; 20] {
         match chr.to_ascii_uppercase() {
@@ -336,8 +349,6 @@ pub mod small_letters {
 pub mod normal_letters {
     pub const CHAR_WIDTH: usize = 8;
     pub const CHAR_HEIGHT: usize = 10;
-    pub const MAX_X: usize = 23;
-    pub const MAX_Y: usize = 12;
 
     pub fn get_px(chr: char) -> [bool; 80] {
         match chr.to_ascii_uppercase() {

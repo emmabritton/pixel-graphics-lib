@@ -31,6 +31,14 @@ impl PixelWrapper {
     pub fn index(&self, x: usize, y: usize) -> usize {
         (x + y * self.width) * 4
     }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
 }
 
 impl PixelWrapper {
@@ -52,7 +60,7 @@ impl PixelWrapper {
         Image::new(pixels, self.width, self.height).expect("This can't fail")
     }
 
-    /// Get top left pixel coord for letter coord
+    /// Get top left pixel coord for letter px coord
     pub fn get_px_for_char(&self, x: usize, y: usize, size: TextSize) -> (usize, usize) {
         let (width, height) = size.get_size();
         let margin = size.get_margin();
@@ -60,6 +68,15 @@ impl PixelWrapper {
     }
 
     /// Get width and height for string
+    ///
+    /// # Arguments
+    /// * `text` - The string to be measured
+    /// * `width` - The line width in characters
+    /// * `size` - The text size to use when measuring
+    ///
+    /// # Returns
+    ///
+    /// The width and height of the string in pixels
     pub fn get_text_size(&self, text: &str, width: usize, size: TextSize) -> (usize, usize) {
         let len = text.chars().count();
         let x = if len < width { len } else { width };
@@ -81,12 +98,12 @@ impl PixelWrapper {
     }
 
     /// Draw an image at `x`, `y`
-    pub fn draw_image(&mut self, start_x: usize, start_y: usize, image: &Image) {
+    pub fn draw_image(&mut self, start_x: isize, start_y: isize, image: &Image) {
         let mut x = 0;
         for (y, row) in image.pixels.chunks_exact(image.width()).enumerate() {
             for px in row {
                 if px.a > 0 {
-                    self.update_pixel(start_x + x, start_y + y, *px);
+                    self.update_pixel(start_x + x, start_y + y as isize, *px);
                 }
                 x += 1;
             }
@@ -95,17 +112,16 @@ impl PixelWrapper {
     }
 
     /// Draw a letter at a letter coord
-    /// XY valid from 0,0 to 47,25 for small
-    ///               0,0 to 23,12 for normal
-    pub fn draw_letter(&mut self, x: usize, y: usize, chr: char, size: TextSize, color: Color) {
+    /// See [TextSize::get_max_characters] for maximum x and y
+    pub fn draw_letter(&mut self, x: isize, y: isize, chr: char, size: TextSize, color: Color) {
         if chr == ' ' {
             return;
         }
         let (width, height) = size.get_size();
-        let margin = size.get_margin();
+        let margin = size.get_margin() as isize;
         self.draw_letter_px(
-            x * (width + margin),
-            y * (height + margin),
+            x * (width as isize + margin),
+            y * (height as isize + margin),
             chr,
             size,
             color,
@@ -113,7 +129,7 @@ impl PixelWrapper {
     }
 
     /// Draw a letter at pixel coord
-    pub fn draw_letter_px(&mut self, x: usize, y: usize, chr: char, size: TextSize, color: Color) {
+    pub fn draw_letter_px(&mut self, x: isize, y: isize, chr: char, size: TextSize, color: Color) {
         if chr == ' ' {
             return;
         }
@@ -128,7 +144,7 @@ impl PixelWrapper {
             for y in 0..height {
                 let i = x + y * width;
                 if px[i] {
-                    self.update_pixel(x + start_x, y + start_y, color);
+                    self.update_pixel(x as isize + start_x, y as isize + start_y, color);
                 }
             }
         }
@@ -136,25 +152,23 @@ impl PixelWrapper {
 
     /// Draws text in lines at most `width` chars long at pixel coord
     ///
-    /// Width must be max chars - x
-    /// max chars is 47 for small
-    ///              23 for normal
-    /// So if x was 5 and size was small then max width is 42
+    /// Width should be max chars - x
+    /// See [TextSize::get_max_characters] for maximum chars
     pub fn draw_text_px(
         &mut self,
         text: &str,
         line_width: usize,
-        mut x: usize,
-        mut y: usize,
+        mut x: isize,
+        mut y: isize,
         size: TextSize,
         color: Color,
     ) {
         let start_x = x;
         for char in text.chars() {
             self.draw_letter_px(x, y, char, size, color);
-            x += size.get_size().0 + size.get_margin();
-            if x >= line_width * (size.get_size().0 + size.get_margin()) + start_x {
-                y += size.get_size().1 + size.get_margin();
+            x += (size.get_size().0 + size.get_margin()) as isize;
+            if x >= (line_width * (size.get_size().0 + size.get_margin())) as isize + start_x {
+                y += (size.get_size().1 + size.get_margin()) as isize;
                 x = start_x;
             }
         }
@@ -163,18 +177,17 @@ impl PixelWrapper {
     /// Draws text in lines at most `width` chars long at letter coord
     ///
     /// Width must be max chars - x
-    /// max chars is 47 for small
-    ///              23 for normal
-    /// So if x was 5 and size was small then max width is 42
+    /// See [TextSize::get_max_characters] for maximum x and y
     pub fn draw_text(
         &mut self,
         text: &str,
         line_width: usize,
-        mut x: usize,
-        mut y: usize,
+        mut x: isize,
+        mut y: isize,
         size: TextSize,
         color: Color,
     ) {
+        let line_width = line_width as isize;
         let start_x = x;
         for char in text.chars() {
             self.draw_letter(x, y, char, size, color);
@@ -193,7 +206,7 @@ impl PixelWrapper {
     ///
     /// Although the method takes `&mut self` it doesn't mutate anything
     #[inline]
-    pub fn get_pixel(&mut self, x: usize, y: usize, use_translate: bool) -> Option<Color> {
+    pub fn get_pixel(&mut self, x: isize, y: isize, use_translate: bool) -> Option<Color> {
         let (x, y) = if use_translate {
             (x as isize + self.translate.x, y as isize + self.translate.y)
         } else {
@@ -217,7 +230,7 @@ impl PixelWrapper {
     /// Update a pixel color, using [PixelWrapper::set_pixel] or [PixelWrapper::blend_pixel] depending
     /// on whether `color`s alpha is 255 or not
     #[inline]
-    pub fn update_pixel(&mut self, x: usize, y: usize, color: Color) {
+    pub fn update_pixel(&mut self, x: isize, y: isize, color: Color) {
         if color.a == 255 {
             self.set_pixel(x, y, color);
         } else {
@@ -228,11 +241,11 @@ impl PixelWrapper {
     /// Set the RGB values for a pixel by blending it with the provided color
     /// This method uses alpha blending, note that the canvas pixels always have 255 alpha
     #[inline]
-    pub fn blend_pixel(&mut self, x: usize, y: usize, color: Color) {
+    pub fn blend_pixel(&mut self, x: isize, y: isize, color: Color) {
         let x = x as isize + self.translate.x;
         let y = y as isize + self.translate.y;
         if x >= 0 && y >= 0 && x < self.width as isize {
-            if let Some(base) = self.get_pixel(x as usize, y as usize, false) {
+            if let Some(base) = self.get_pixel(x, y, false) {
                 let new_color = base.blend(color);
                 let idx = self.index(x as usize, y as usize);
                 self.pixels.get_frame()[idx] = new_color.r;
@@ -245,9 +258,9 @@ impl PixelWrapper {
     /// Set the RGB values for a pixel
     /// This ignores alpha, so 255,0,0,0 will draw a red pixel
     #[inline]
-    pub fn set_pixel(&mut self, x: usize, y: usize, color: Color) {
-        let x = x as isize + self.translate.x;
-        let y = y as isize + self.translate.y;
+    pub fn set_pixel(&mut self, x: isize, y: isize, color: Color) {
+        let x = x + self.translate.x;
+        let y = y + self.translate.y;
         if x >= 0 && y >= 0 && x < self.width as isize {
             let idx = self.index(x as usize, y as usize);
 
@@ -260,7 +273,7 @@ impl PixelWrapper {
     }
 
     /// Draw a filled rectangle from `x1,y1` to `x2,y2` in `color`
-    pub fn draw_rect(&mut self, x1: usize, y1: usize, x2: usize, y2: usize, color: Color) {
+    pub fn draw_rect(&mut self, x1: isize, y1: isize, x2: isize, y2: isize, color: Color) {
         for x in x1..=x2 {
             for y in y1..=y2 {
                 self.update_pixel(x, y, color);
@@ -269,14 +282,14 @@ impl PixelWrapper {
     }
 
     /// Draw a hollow rectangle from `x1,y1` to `x2,y2` in `color`
-    pub fn draw_frame(&mut self, x1: usize, y1: usize, x2: usize, y2: usize, color: Color) {
+    pub fn draw_frame(&mut self, x1: isize, y1: isize, x2: isize, y2: isize, color: Color) {
         self.draw_line(x1, y1, x1, y2, color);
         self.draw_line(x1, y1, x2, y1, color);
         self.draw_line(x1, y2, x2, y2, color);
         self.draw_line(x2, y1, x2, y2, color);
     }
 
-    pub fn draw_circle(&mut self, x: usize, y: usize, radius: usize, color: Color) {
+    pub fn draw_circle(&mut self, x: isize, y: isize, radius: isize, color: Color) {
         let cx = x as isize;
         let cy = y as isize;
         let mut d = (5_isize - (radius as isize) * 4) / 4;
@@ -285,8 +298,8 @@ impl PixelWrapper {
         let w = self.width as isize;
         let h = self.height as isize;
 
-        let clamp_w = |num: isize| num.clamp(0, w) as usize;
-        let clamp_h = |num: isize| num.clamp(0, h) as usize;
+        let clamp_w = |num: isize| num.clamp(0, w);
+        let clamp_h = |num: isize| num.clamp(0, h);
 
         while x <= y {
             self.update_pixel(clamp_w(cx + x), clamp_h(cy + y), color);
@@ -307,14 +320,14 @@ impl PixelWrapper {
         }
     }
 
-    pub fn draw_circle_filled(&mut self, x: usize, y: usize, radius: usize, color: Color) {
+    pub fn draw_circle_filled(&mut self, x: isize, y: isize, radius: isize, color: Color) {
         let cx = x as isize;
         let cy = y as isize;
         let w = self.width as isize;
         let h = self.height as isize;
         let double_radius = (radius * radius) as isize;
-        let clamp_w = |num: isize| num.clamp(0, w) as usize;
-        let clamp_h = |num: isize| num.clamp(0, h) as usize;
+        let clamp_w = |num: isize| num.clamp(0, w);
+        let clamp_h = |num: isize| num.clamp(0, h);
         for y in 0..radius {
             let y = y as isize;
             let up = cy - y;
@@ -332,7 +345,7 @@ impl PixelWrapper {
     }
 
     /// Draw line from `x1,y1` to `x2,y2` in `color`
-    pub fn draw_line(&mut self, x1: usize, y1: usize, x2: usize, y2: usize, color: Color) {
+    pub fn draw_line(&mut self, x1: isize, y1: isize, x2: isize, y2: isize, color: Color) {
         let mut delta = 0;
         let x1 = x1 as isize;
         let y1 = y1 as isize;
@@ -348,7 +361,7 @@ impl PixelWrapper {
         let mut y = y1;
         if dx >= dy {
             loop {
-                self.update_pixel(x as usize, y as usize, color);
+                self.update_pixel(x, y, color);
                 if x == x2 {
                     break;
                 }
@@ -361,7 +374,7 @@ impl PixelWrapper {
             }
         } else {
             loop {
-                self.update_pixel(x as usize, y as usize, color);
+                self.update_pixel(x, y, color);
                 if y == y2 {
                     break;
                 }

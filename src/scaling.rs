@@ -57,8 +57,8 @@ pub(crate) fn scale_epx(image: &Image) -> Image {
     let new_width = image.width() * 2;
     let new_height = image.height() * 2;
     let mut new_image = Image::new_blank(new_width, new_height);
-    for y in 0..image.width() {
-        for x in 0..image.height() {
+    for x in 0..image.width() {
+        for y in 0..image.height() {
             let mut p1 = image.get_pixel(x, y);
             let mut p2 = p1;
             let mut p3 = p1;

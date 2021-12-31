@@ -139,6 +139,7 @@ impl Tint for Image {
 mod test {
     use crate::color::Color;
     use crate::image::Image;
+    use crate::scaling::Scaling;
     use crate::Tint;
 
     fn make_image() -> Image {
@@ -275,60 +276,15 @@ mod test {
         assert_eq!(
             image.pixels,
             vec![
-                Color {
-                    r: 11,
-                    g: 21,
-                    b: 31,
-                    a: 205
-                },
-                Color {
-                    r: 12,
-                    g: 22,
-                    b: 32,
-                    a: 205
-                },
-                Color {
-                    r: 13,
-                    g: 23,
-                    b: 33,
-                    a: 205
-                },
-                Color {
-                    r: 14,
-                    g: 24,
-                    b: 34,
-                    a: 205
-                },
-                Color {
-                    r: 15,
-                    g: 25,
-                    b: 35,
-                    a: 205
-                },
-                Color {
-                    r: 16,
-                    g: 26,
-                    b: 36,
-                    a: 205
-                },
-                Color {
-                    r: 17,
-                    g: 27,
-                    b: 37,
-                    a: 205
-                },
-                Color {
-                    r: 18,
-                    g: 28,
-                    b: 38,
-                    a: 205
-                },
-                Color {
-                    r: 19,
-                    g: 29,
-                    b: 39,
-                    a: 205
-                },
+                Color::rgba(11, 21, 31, 205),
+                Color::rgba(12, 22, 32, 205),
+                Color::rgba(13, 23, 33, 205),
+                Color::rgba(14, 24, 34, 205),
+                Color::rgba(15, 25, 35, 205),
+                Color::rgba(16, 26, 36, 205),
+                Color::rgba(17, 27, 37, 205),
+                Color::rgba(18, 28, 38, 205),
+                Color::rgba(19, 29, 39, 205),
             ]
         );
     }
@@ -340,61 +296,77 @@ mod test {
         assert_eq!(
             image.pixels,
             vec![
-                Color {
-                    r: 1,
-                    g: 1,
-                    b: 2,
-                    a: 255
-                },
-                Color {
-                    r: 1,
-                    g: 2,
-                    b: 4,
-                    a: 255
-                },
-                Color {
-                    r: 2,
-                    g: 3,
-                    b: 6,
-                    a: 255
-                },
-                Color {
-                    r: 2,
-                    g: 4,
-                    b: 8,
-                    a: 255
-                },
-                Color {
-                    r: 3,
-                    g: 5,
-                    b: 10,
-                    a: 255
-                },
-                Color {
-                    r: 3,
-                    g: 6,
-                    b: 12,
-                    a: 255
-                },
-                Color {
-                    r: 4,
-                    g: 7,
-                    b: 14,
-                    a: 255
-                },
-                Color {
-                    r: 4,
-                    g: 8,
-                    b: 16,
-                    a: 255
-                },
-                Color {
-                    r: 5,
-                    g: 9,
-                    b: 18,
-                    a: 255
-                },
+                Color::rgba(1, 1, 2, 255),
+                Color::rgba(1, 2, 4, 255),
+                Color::rgba(2, 3, 6, 255),
+                Color::rgba(2, 4, 8, 255),
+                Color::rgba(3, 5, 10, 255),
+                Color::rgba(3, 6, 12, 255),
+                Color::rgba(4, 7, 14, 255),
+                Color::rgba(4, 8, 16, 255),
+                Color::rgba(5, 9, 18, 255),
             ]
         );
+    }
+
+    #[test]
+    fn rect_scaling() {
+        let image = Image::new(
+            vec![
+                Color::gray(1),
+                Color::gray(2),
+                Color::gray(3),
+                Color::gray(4),
+                Color::gray(5),
+                Color::gray(6),
+            ],
+            3,
+            2,
+        )
+            .unwrap();
+
+        let epx2 = image.scale(Scaling::Epx2x);
+        let epx4 = image.scale(Scaling::Epx4x);
+        let nn2 = image.scale(Scaling::nearest_neighbour(2,2));
+        let nn3 = image.scale(Scaling::nearest_neighbour(3,3));
+
+        assert_eq!(image.width, 3);
+        assert_eq!(image.height, 2);
+        assert_eq!(epx2.width, 6);
+        assert_eq!(epx2.height, 4);
+        assert_eq!(epx4.width, 12);
+        assert_eq!(epx4.height, 8);
+    }
+
+    #[test]
+    fn square_scaling() {
+        let image = make_image();
+        let epx2 = image.scale(Scaling::Epx2x);
+        let epx4 = image.scale(Scaling::Epx4x);
+        let nn_double = image.scale(Scaling::nn_double());
+        let nn2 = image.scale(Scaling::nearest_neighbour(2,2));
+        let nn3 = image.scale(Scaling::nearest_neighbour(3,3));
+        let nn1_1 = image.scale(Scaling::nearest_neighbour(1,1));
+        let nn1_2 = image.scale(Scaling::nearest_neighbour(1,2));
+        let nn2_1 = image.scale(Scaling::nearest_neighbour(2,1));
+
+        assert_eq!(image.width, 3);
+        assert_eq!(image.height, 3);
+        assert_eq!(epx2.width, 6);
+        assert_eq!(epx2.height, 6);
+        assert_eq!(nn_double.width, 6);
+        assert_eq!(nn_double.height, 6);
+        assert_eq!(nn2.width, 6);
+        assert_eq!(nn2.height, 6);
+        assert_eq!(nn3.width, 9);
+        assert_eq!(nn3.height, 9);
+        assert_eq!(epx4.width, 12);
+        assert_eq!(epx4.height, 12);
+        assert_eq!(nn1_1.width, 3);
+        assert_eq!(nn1_1.height, 3);
+        assert_eq!(nn1_2.width, 3);
+        assert_eq!(nn1_2.height, 6);
+        assert_eq!(nn2_1.width, 6);
+        assert_eq!(nn2_1.height, 3);
     }
 }

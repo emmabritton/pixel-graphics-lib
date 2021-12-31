@@ -5,11 +5,18 @@
 //! This boilerplate code is needed to use it:
 //!
 //! ```
-//! # use graphics_lib::setup;
+//! # use std::error::Error;
+//! # use winit::event::{Event, VirtualKeyCode};
+//! # use pixels_graphics_lib::setup;
+//! # use winit_input_helper::WinitInputHelper;
+//! # use winit::event_loop::{ControlFlow, EventLoop};
 //!
+//! # fn main() -> Result<(), Box<dyn Error>> {
 //! let event_loop = EventLoop::new();
 //! let mut input = WinitInputHelper::new();
-//! let (mut window, mut graphics) = setup(240, 160, "Example", true, &event_loop)?;
+//! let (mut window, mut graphics) = setup(240, 160, "Doc Example", true, &event_loop)?;
+//!
+//! # let mut loop_count = 0;
 //!
 //! event_loop.run(move |event, _, control_flow| {
 //!     if let Event::RedrawRequested(_) = event {
@@ -39,19 +46,30 @@
 //!
 //!         window.request_redraw();
 //!     }
+//! # loop_count += 1;
+//! # if loop_count > 3 {
+//! #   *control_flow = ControlFlow::Exit;
+//! # }
 //! });
+//!
+//!    # Ok(())
+//! # }
 //!```
 //!
 //! Using the library is as simple as:
 //!```
-//! # use graphics_lib::color::BLACK;
-//! # use graphics_lib::text::TextSize;
-//! # use graphics_lib::drawing::PixelWrapper;
-//! # use graphics_lib::setup;
+//! # use std::error::Error;
+//! # use pixels_graphics_lib::drawing::PixelWrapper;
+//! # use pixels_graphics_lib::setup;
+//! # use pixels_graphics_lib::color::{BLUE, BLACK};
+//! # use winit::event_loop::EventLoop;
+//! # use pixels_graphics_lib::text::TextSize;
+//! # fn main() -> Result<(), Box<dyn Error>> {
 //! # let event_loop = EventLoop::new();
-//! # let (mut window, graphics) = setup(240, 160, "Example", true, &event_loop)?;
-//! # let mut graphics = PixelWrapper::new(pixels, 240);
+//! # let (window, mut graphics) = setup(240, 160, "Example", true, &event_loop)?;
 //! graphics.draw_text("Some text", 9, 1, 1, TextSize::Normal, BLACK);
+//! graphics.draw_line(30, 30, 100, 120, BLUE);
+//! # Ok(()) }
 //! ```
 
 #![deny(clippy::all)]
@@ -62,6 +80,10 @@ pub mod image;
 pub mod math;
 pub mod scaling;
 pub mod text;
+#[cfg(feature = "image_loading")]
+pub mod image_loading;
+#[cfg(feature = "window_prefs")]
+pub mod prefs;
 
 use crate::drawing::PixelWrapper;
 use pixels::{Pixels, SurfaceTexture};
