@@ -1,15 +1,20 @@
-use crate::math::{Point, Rect, URect, Vec2};
+use crate::math::{Point, Rect, UPoint, URect};
 
-impl Vec2 {
-    pub const fn new(x: isize, y: isize) -> Self {
-        Vec2 { x, y }
-    }
-}
 
 impl Point {
-    pub const fn new(x: usize, y: usize) -> Self {
+    pub const fn new(x: isize, y: isize) -> Self {
         Point { x, y }
     }
+
+    pub const fn zero() -> Self { Point::new(0, 0) }
+}
+
+impl UPoint {
+    pub const fn new(x: usize, y: usize) -> Self {
+        UPoint { x, y }
+    }
+
+    pub const fn zero() -> Self { UPoint::new(0, 0) }
 }
 
 impl URect {
@@ -17,7 +22,7 @@ impl URect {
         URect { x1, y1, x2, y2 }
     }
 
-    pub const fn from_point(point: Point, w: usize, h: usize) -> Self {
+    pub const fn from_point(point: UPoint, w: usize, h: usize) -> Self {
         URect {
             x1: point.x,
             y1: point.y,
@@ -34,58 +39,17 @@ impl Rect {
 
     pub const fn from_point(point: Point, w: isize, h: isize) -> Self {
         Rect {
-            x1: point.x as isize,
-            y1: point.y as isize,
-            x2: point.x as isize + w,
-            y2: point.y as isize + h,
+            x1: point.x,
+            y1: point.y,
+            x2: point.x + w,
+            y2: point.y + h,
         }
-    }
-}
-
-impl From<URect> for Rect {
-    fn from(rect: URect) -> Self {
-        Rect::new(
-            rect.x1 as isize,
-            rect.y1 as isize,
-            rect.x2 as isize,
-            rect.y2 as isize,
-        )
-    }
-}
-
-impl From<Point> for (usize, usize) {
-    fn from(point: Point) -> Self {
-        (point.x, point.y)
-    }
-}
-
-impl From<Point> for Vec2 {
-    fn from(point: Point) -> Self {
-        Vec2::new(point.x as isize, point.y as isize)
-    }
-}
-
-impl Vec2 {
-    pub const fn is_positive(&self) -> bool {
-        self.x >= 0 && self.y >= 0
-    }
-
-    pub const fn update_with_delta(&self, delta: (isize, isize)) -> Vec2 {
-        let new_x = self.x as isize + delta.0;
-        let new_y = self.y as isize + delta.1;
-        Vec2::new(new_x, new_y)
     }
 }
 
 impl Point {
-    pub const fn update_with_delta(&self, delta: (isize, isize)) -> Option<Point> {
-        let new_x = self.x as isize + delta.0;
-        let new_y = self.y as isize + delta.1;
-        if new_x > 0 && new_y > 0 {
-            Some(Point::new(new_x as usize, new_y as usize))
-        } else {
-            None
-        }
+    pub const fn is_positive(&self) -> bool {
+        self.x >= 0 && self.y >= 0
     }
 }
 
@@ -117,12 +81,12 @@ impl Rect {
         Rect::new(self.x1 + x, self.y1 + y, self.x2 + x, self.y2 + y)
     }
 
-    pub fn topleft(&self) -> Vec2 {
-        Vec2::new(self.x1, self.y1)
+    pub fn topleft(&self) -> Point {
+        Point::new(self.x1, self.y1)
     }
 
-    pub fn bottomright(&self) -> Vec2 {
-        Vec2::new(self.x2, self.y2)
+    pub fn bottomright(&self) -> Point {
+        Point::new(self.x2, self.y2)
     }
 
     /// Union this rect and another, the result will contain both rectangles
@@ -200,12 +164,12 @@ impl URect {
         ))
     }
 
-    pub fn topleft(&self) -> Point {
-        Point::new(self.x1, self.y1)
+    pub fn topleft(&self) -> UPoint {
+        UPoint::new(self.x1, self.y1)
     }
 
-    pub fn bottomright(&self) -> Point {
-        Point::new(self.x2, self.y2)
+    pub fn bottomright(&self) -> UPoint {
+        UPoint::new(self.x2, self.y2)
     }
 
     /// Union this rect and another, the result will contain both rectangles

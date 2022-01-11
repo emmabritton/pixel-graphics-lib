@@ -1,15 +1,15 @@
 use crate::color::Color;
 use crate::image::Image;
-use crate::math::Vec2;
 use crate::text::{normal_letters, small_letters, TextSize};
 use pixels::Pixels;
+use crate::math::Point;
 
 pub struct PixelWrapper {
     pub pixels: Pixels,
     px_count: usize,
     width: usize,
     height: usize,
-    translate: Vec2,
+    translate: Point,
 }
 
 impl PixelWrapper {
@@ -20,7 +20,7 @@ impl PixelWrapper {
             px_count,
             width,
             height,
-            translate: Vec2::default(),
+            translate: Point::default(),
         }
     }
 }

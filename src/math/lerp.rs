@@ -1,4 +1,4 @@
-use crate::math::Vec2;
+use crate::math::Point;
 
 pub trait Lerp {
     fn lerp(self, end: Self, percent: f32) -> Self;
@@ -30,17 +30,16 @@ impl Lerp for usize {
     }
 }
 
-impl Lerp for Vec2 {
+impl Lerp for Point {
     #[inline]
-    fn lerp(self, end: Vec2, percent: f32) -> Vec2 {
-        Vec2::new(self.x.lerp(end.x, percent), self.y.lerp(end.y, percent))
+    fn lerp(self, end: Point, percent: f32) -> Point {
+        Point::new(self.x.lerp(end.x, percent), self.y.lerp(end.y, percent))
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::math::lerp::Lerp;
-    use crate::math::Vec2;
+    use super::*;
 
     #[test]
     fn isize_simple() {
@@ -74,41 +73,41 @@ mod test {
     }
 
     #[test]
-    fn vec2_simple() {
-        let start1 = Vec2::new(0, 0);
-        let end1 = Vec2::new(10, 10);
+    fn point_simple() {
+        let start1 = Point::new(0, 0);
+        let end1 = Point::new(10, 10);
 
-        let start2 = Vec2::new(-1, -1);
-        let end2 = Vec2::new(1, 1);
+        let start2 = Point::new(-1, -1);
+        let end2 = Point::new(1, 1);
 
-        let start3 = Vec2::new(1, -1);
-        let end3 = Vec2::new(-1, 1);
+        let start3 = Point::new(1, -1);
+        let end3 = Point::new(-1, 1);
 
-        assert_eq!(start1.lerp(end1, 0.), Vec2::new(0, 0));
-        assert_eq!(start1.lerp(end1, 0.5), Vec2::new(5, 5));
-        assert_eq!(start1.lerp(end1, 1.), Vec2::new(10, 10));
+        assert_eq!(start1.lerp(end1, 0.), Point::new(0, 0));
+        assert_eq!(start1.lerp(end1, 0.5), Point::new(5, 5));
+        assert_eq!(start1.lerp(end1, 1.), Point::new(10, 10));
 
-        assert_eq!(end1.lerp(start1, 0.), Vec2::new(10, 10));
-        assert_eq!(end1.lerp(start1, 0.5), Vec2::new(5, 5));
-        assert_eq!(end1.lerp(start1, 1.), Vec2::new(0, 0));
+        assert_eq!(end1.lerp(start1, 0.), Point::new(10, 10));
+        assert_eq!(end1.lerp(start1, 0.5), Point::new(5, 5));
+        assert_eq!(end1.lerp(start1, 1.), Point::new(0, 0));
 
-        assert_eq!(start2.lerp(end2, 0.), Vec2::new(-1, -1));
-        assert_eq!(start2.lerp(end2, 0.5), Vec2::new(0, 0));
-        assert_eq!(start2.lerp(end2, 1.), Vec2::new(1, 1));
+        assert_eq!(start2.lerp(end2, 0.), Point::new(-1, -1));
+        assert_eq!(start2.lerp(end2, 0.5), Point::new(0, 0));
+        assert_eq!(start2.lerp(end2, 1.), Point::new(1, 1));
 
-        assert_eq!(end2.lerp(start2, 0.), Vec2::new(1, 1));
-        assert_eq!(end2.lerp(start2, 0.5), Vec2::new(0, 0));
-        assert_eq!(end2.lerp(start2, 1.), Vec2::new(-1, -1));
+        assert_eq!(end2.lerp(start2, 0.), Point::new(1, 1));
+        assert_eq!(end2.lerp(start2, 0.5), Point::new(0, 0));
+        assert_eq!(end2.lerp(start2, 1.), Point::new(-1, -1));
 
-        assert_eq!(start3.lerp(end3, 0.), Vec2::new(1, -1));
-        assert_eq!(start3.lerp(end3, 0.5), Vec2::new(0, 0));
-        assert_eq!(start3.lerp(end3, 1.), Vec2::new(-1, 1));
+        assert_eq!(start3.lerp(end3, 0.), Point::new(1, -1));
+        assert_eq!(start3.lerp(end3, 0.5), Point::new(0, 0));
+        assert_eq!(start3.lerp(end3, 1.), Point::new(-1, 1));
 
-        assert_eq!(end3.lerp(start3, 0.), Vec2::new(-1, 1));
-        assert_eq!(end3.lerp(start3, 0.5), Vec2::new(0, 0));
-        assert_eq!(end3.lerp(start3, 1.), Vec2::new(1, -1));
+        assert_eq!(end3.lerp(start3, 0.), Point::new(-1, 1));
+        assert_eq!(end3.lerp(start3, 0.5), Point::new(0, 0));
+        assert_eq!(end3.lerp(start3, 1.), Point::new(1, -1));
 
-        assert_eq!(start1.lerp(end1, 2.), Vec2::new(20, 20));
-        assert_eq!(start1.lerp(end1, -1.), Vec2::new(-10, -10));
+        assert_eq!(start1.lerp(end1, 2.), Point::new(20, 20));
+        assert_eq!(start1.lerp(end1, -1.), Point::new(-10, -10));
     }
 }
