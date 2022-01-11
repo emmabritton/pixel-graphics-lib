@@ -8,7 +8,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), pr
 
 In your `Cargo.toml` file add
 ```toml
-graphics-lib = { git = "https://github.com/raybritton/rust-graphics-lib"}
+pixels-graphics-lib = "0.2.0"
 winit = "0.25"
 winit_input_helper = "0.10"
 ```
