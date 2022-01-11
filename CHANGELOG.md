@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 0.3.0
+
+- BREAKING CHANGES:
+  - Point renamed to UPoint
+  - Vec2 renamed to Point
+  - setup() now takes an amount to scale by rather than a bool
+- Windows will now start with provided size and in the middle of the screen
+
 ### Version 0.2.0
 
 - Add two features:
