@@ -3,7 +3,7 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use winit_input_helper::WinitInputHelper;
 use pixels_graphics_lib::color::{BLUE, LIGHT_GRAY};
 use pixels_graphics_lib::drawing::PixelWrapper;
-use pixels_graphics_lib::setup;
+use pixels_graphics_lib::{setup, WindowScaling};
 use anyhow::Result;
 use pixels_graphics_lib::image::Image;
 use pixels_graphics_lib::image_loading::tilesets::BasicTileset;
@@ -13,7 +13,7 @@ use pixels_graphics_lib::image_loading::tilesets::BasicTileset;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup(300, 300, "Tileset Example", true, &event_loop)?;
+    let (window, mut graphics) = setup((300, 300), WindowScaling::None, "Tileset Example", &event_loop)?;
 
     let mut scene = TilesetScene::new("examples/resources/num_set.json")?;
 

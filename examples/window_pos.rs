@@ -5,7 +5,7 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use winit_input_helper::WinitInputHelper;
 use pixels_graphics_lib::color::{BLACK, BLUE, Color, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW};
 use pixels_graphics_lib::drawing::PixelWrapper;
-use pixels_graphics_lib::setup;
+use pixels_graphics_lib::{setup, WindowScaling};
 use anyhow::Result;
 use pixels_graphics_lib::prefs::WindowPreferences;
 use pixels_graphics_lib::text::TextSize;
@@ -18,8 +18,8 @@ use pixels_graphics_lib::text::TextSize;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (mut window, mut graphics) = setup(240, 160, "Window Position Example", true, &event_loop)?;
-    let mut prefs = WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos")?;
+    let (mut window, mut graphics) = setup((240, 160), WindowScaling::AutoFixed(2), "Window Position Example", &event_loop)?;
+    let mut prefs = WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2")?;
     prefs.load()?;
     prefs.restore(&mut window);
 

@@ -55,12 +55,19 @@ impl WindowPreferences {
     }
 
     pub fn restore(&self, window: &mut Window) {
-        let default = WindowPref::default();
-        let prefs = self.preferences.get(PREF_WINDOW).unwrap_or(&default);
+        if let Some(prefs) = self.preferences.get(PREF_WINDOW) {
+            window.set_outer_position(PhysicalPosition::new(prefs.x, prefs.y));
 
-        window.set_outer_position(PhysicalPosition::new(prefs.x, prefs.y));
-
-        window.set_inner_size(PhysicalSize::new(prefs.w, prefs.h));
+            window.set_inner_size(PhysicalSize::new(prefs.w, prefs.h));
+        } else if let Some(monitor) = window.current_monitor() {
+            let mid_x = monitor.size().width / 2;
+            let mid_y = monitor.size().height / 2;
+            let mid_w = window.inner_size().width / 2;
+            let mid_h = window.inner_size().height / 2;
+            window.set_outer_position(PhysicalPosition::new(mid_x - mid_w, mid_y - mid_h));
+        } else {
+            window.set_outer_position(PhysicalPosition::new(100, 100));
+        }
     }
 }
 
@@ -75,11 +82,5 @@ pub struct WindowPref {
 impl WindowPref {
     pub fn new(x: i32, y: i32, w: u32, h: u32) -> Self {
         WindowPref { x, y, w, h }
-    }
-}
-
-impl Default for WindowPref {
-    fn default() -> Self {
-        WindowPref::new(100, 100, 480, 320)
     }
 }

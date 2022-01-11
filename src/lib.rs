@@ -7,14 +7,14 @@
 //! ```
 //! # use std::error::Error;
 //! # use winit::event::{Event, VirtualKeyCode};
-//! # use pixels_graphics_lib::setup;
+//! # use pixels_graphics_lib::{WindowScaling, setup};
 //! # use winit_input_helper::WinitInputHelper;
 //! # use winit::event_loop::{ControlFlow, EventLoop};
 //!
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let event_loop = EventLoop::new();
 //! let mut input = WinitInputHelper::new();
-//! let (mut window, mut graphics) = setup(240, 160, "Doc Example", true, &event_loop)?;
+//! let (mut window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Doc Example", &event_loop)?;
 //!
 //! # let mut loop_count = 0;
 //!
@@ -60,13 +60,13 @@
 //!```
 //! # use std::error::Error;
 //! # use pixels_graphics_lib::drawing::PixelWrapper;
-//! # use pixels_graphics_lib::setup;
+//! # use pixels_graphics_lib::{WindowScaling, setup};
 //! # use pixels_graphics_lib::color::{BLUE, BLACK};
 //! # use winit::event_loop::EventLoop;
 //! # use pixels_graphics_lib::text::TextSize;
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! # let event_loop = EventLoop::new();
-//! # let (window, mut graphics) = setup(240, 160, "Example", true, &event_loop)?;
+//! # let (window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Example", &event_loop)?;
 //! graphics.draw_text("Some text", 9, 1, 1, TextSize::Normal, BLACK);
 //! graphics.draw_line(30, 30, 100, 120, BLUE);
 //! # Ok(()) }
@@ -137,27 +137,37 @@ pub enum GraphicsError {
 ///
 /// * `WindowInit` - If the window can not be created
 pub fn setup(
-    width: u32,
-    height: u32,
+    canvas_size: (usize, usize),
+    window_scaling: WindowScaling,
     title: &str,
-    scale: bool,
     event_loop: &EventLoop<()>,
 ) -> Result<(Window, PixelWrapper), GraphicsError> {
-    let win = create_window(width, height, title, scale, event_loop)?;
-    let surface = SurfaceTexture::new(width, height, &win);
-    let pixels = Pixels::new(width, height, surface).map_err(GraphicsError::PixelsInit)?;
+    let win = create_window(canvas_size, title, window_scaling, event_loop)?;
+    let surface = SurfaceTexture::new(win.inner_size().width, win.inner_size().height, &win);
+    let pixels = Pixels::new(canvas_size.0 as u32, canvas_size.1 as u32, surface).map_err(GraphicsError::PixelsInit)?;
 
     Ok((
         win,
-        PixelWrapper::new(pixels, width as usize, height as usize),
+        PixelWrapper::new(pixels, canvas_size.0, canvas_size.1),
     ))
 }
 
+pub enum WindowScaling {
+    ///Make the canvas and window be the same of numbers, this ignores DPI
+    None,
+    ///Scale the window to account for DPI
+    Auto,
+    ///Scale the window by a fixed amount, ignoring DPI
+    Fixed(usize),
+    ///Scale the window by a fixed amount and by DPI
+    ///So, if the monitor DPI is 2x and 2x is passed then the result will be 3x
+    AutoFixed(usize),
+}
+
 fn create_window(
-    width: u32,
-    height: u32,
+    size: (usize, usize),
     title: &str,
-    scale: bool,
+    scale: WindowScaling,
     event_loop: &EventLoop<()>,
 ) -> Result<Window, GraphicsError> {
     let window = WindowBuilder::new()
@@ -165,13 +175,27 @@ fn create_window(
         .with_title(title)
         .build(event_loop)
         .map_err(|err| GraphicsError::WindowInit(format!("{:?}", err)))?;
-    let width = width as f64;
-    let height = height as f64;
-    let hidpi_factor = if scale { window.scale_factor() } else { 1.0 };
-    let size = LogicalSize::new(width * hidpi_factor, height * hidpi_factor);
+    let factor = match scale {
+        WindowScaling::None => 1.,
+        WindowScaling::Auto => window.scale_factor().ceil(),
+        WindowScaling::Fixed(amount) => {
+            if amount == 0 {
+                return Err(GraphicsError::WindowInit(String::from("Fixed window scaling must be at least 1")));
+            }
+            amount as f64
+        },
+        WindowScaling::AutoFixed(amount) => {
+            if amount == 0 {
+                return Err(GraphicsError::WindowInit(String::from("AutoFixed window scaling must be at least 1")));
+            }
+            amount as f64 + window.scale_factor().ceil()
+        }
+    };
 
-    window.set_inner_size(size);
-    window.set_min_inner_size(Some(size));
+    let px_size = LogicalSize::new(size.0 as f64 * factor, size.1 as f64 * factor);
+
+    window.set_inner_size(px_size);
+    window.set_min_inner_size(Some(px_size));
     window.set_visible(true);
 
     Ok(window)

@@ -336,6 +336,10 @@ mod test {
         assert_eq!(epx2.height, 4);
         assert_eq!(epx4.width, 12);
         assert_eq!(epx4.height, 8);
+        assert_eq!(nn2.width, 6);
+        assert_eq!(nn2.height, 4);
+        assert_eq!(nn3.width, 9);
+        assert_eq!(nn3.height, 6);
     }
 
     #[test]

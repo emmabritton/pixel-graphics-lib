@@ -5,7 +5,7 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use winit_input_helper::WinitInputHelper;
 use pixels_graphics_lib::color::Color;
 use pixels_graphics_lib::drawing::PixelWrapper;
-use pixels_graphics_lib::setup;
+use pixels_graphics_lib::{WindowScaling, setup};
 use anyhow::Result;
 
 /// This example shows the minimum code needed to use the library
@@ -13,7 +13,7 @@ use anyhow::Result;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup(240, 160, "Basic Example", true, &event_loop)?;
+    let (window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Basic Example", &event_loop)?;
 
     let mut basic = Basic::new();
 

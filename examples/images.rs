@@ -5,7 +5,7 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use winit_input_helper::WinitInputHelper;
 use pixels_graphics_lib::color::BLACK;
 use pixels_graphics_lib::drawing::PixelWrapper;
-use pixels_graphics_lib::{setup, Tint};
+use pixels_graphics_lib::{setup, Tint, WindowScaling};
 use anyhow::Result;
 use pixels_graphics_lib::image::Image;
 use pixels_graphics_lib::image_loading::load_image;
@@ -17,7 +17,7 @@ use pixels_graphics_lib::scaling::Scaling;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup(300, 300, "Image Example", true, &event_loop)?;
+    let (window, mut graphics) = setup((300, 300), WindowScaling::Fixed(2), "Image Example", &event_loop)?;
     let mut time = Instant::now();
 
     let mut scene = ImageScene::new("examples/resources/marker.png", 300, 300)?;
