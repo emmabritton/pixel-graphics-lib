@@ -50,8 +50,16 @@ pub trait ClampXy<T> {
 }
 
 pub trait Swap {
-    ///Swap x and y
+    /// Swap x and y
     fn swap(&self) -> Self;
+}
+
+pub trait SimpleMath {
+    /// Divides by 2 and rounds down
+    fn half(&self) -> Self;
+
+    /// Multiplies by 2
+    fn double(&self) -> Self;
 }
 
 #[cfg(test)]
@@ -79,14 +87,26 @@ mod test {
 
     #[allow(unused_must_use)]
     mod check_all_methods {
+        use std::ops::Neg;
         use crate::math::{Point, UPoint};
-        use crate::math::traits::{Add, ClampXy, MaxXy, MinXy, Mul, Sub};
+        use crate::math::traits::{Add, ClampXy, MaxXy, MinXy, Mul, Sub, Swap};
         use crate::math::traits::test::{point, upoint};
 
         #[test]
         fn casts() {
-            Point::from(upoint());
-            UPoint::try_from(point()).unwrap();
+            assert_eq!(Point::from(upoint()), Point::new(1,2));
+            assert_eq!(UPoint::try_from(point()).unwrap(), UPoint::new(1,2));
+        }
+
+        #[test]
+        fn negative() {
+            assert_eq!(point().neg(), Point::new(-1,-2));
+        }
+
+        #[test]
+        fn swaps() {
+            assert_eq!(point().swap(), Point::new(2,1));
+            assert_eq!(upoint().swap(), UPoint::new(2,1));
         }
 
         #[test]

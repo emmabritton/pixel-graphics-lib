@@ -1,5 +1,6 @@
+use std::ops::Neg;
 use crate::math::{Point, UPoint};
-use crate::math::traits::Swap;
+use crate::math::traits::{SimpleMath, Swap};
 
 impl Swap for Point {
     fn swap(&self) -> Self {
@@ -28,5 +29,33 @@ impl TryFrom<Point> for UPoint {
         } else {
             Err(String::from("Point x and y must be >= 0"))
         }
+    }
+}
+
+impl SimpleMath for Point {
+    fn half(&self) -> Self {
+        Point::new(self.x / 2, self.y / 2)
+    }
+
+    fn double(&self) -> Self {
+        Point::new(self.x * 2, self.y * 2)
+    }
+}
+
+impl SimpleMath for UPoint {
+    fn half(&self) -> Self {
+        UPoint::new(self.x / 2, self.y / 2)
+    }
+
+    fn double(&self) -> Self {
+        UPoint::new(self.x * 2, self.y * 2)
+    }
+}
+
+impl Neg for Point {
+    type Output = Point;
+
+    fn neg(self) -> Self::Output {
+        Point::new(self.x.neg(), self.y.neg())
     }
 }

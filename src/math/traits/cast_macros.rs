@@ -21,7 +21,7 @@ macro_rules! impl_cast_rev_tuple {
 }
 
 macro_rules! impl_tuples {
-    ($source:ty, $field:ty, $($t:ty)*) => ($(
+    ($source:ty, $field:ty, $($t:ty)+) => ($(
         impl_cast_tuple!($source, $t, $field);
         impl_cast_rev_tuple!($source, $t);
     )*)

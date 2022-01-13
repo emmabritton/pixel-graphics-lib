@@ -217,7 +217,7 @@ macro_rules! impl_clamp_primitive {
 
 
 macro_rules! impl_primitives {
-    ($type: ty, $field: ty, $($t:ty)*) => ($(
+    ($type: ty, $field: ty, $($t:ty)+) => ($(
         impl_ops_primitive!($type, $t, $field, Add, add);
         impl_ops_primitive!($type, $t, $field, Sub, sub);
         impl_ops_primitive!($type, $t, $field, Mul, mul);
@@ -239,7 +239,7 @@ macro_rules! impl_primitives {
 }
 
 macro_rules! impl_structs {
-    ($type: ty, $field: ty, $($t:ty)*) => ($(
+    ($type: ty, $field: ty, $($t:ty)+) => ($(
         impl_ops_struct!($type, $t, $field, Add, add);
         impl_ops_struct!($type, $t, $field, Sub, sub);
         impl_ops_struct!($type, $t, $field, Mul, mul);

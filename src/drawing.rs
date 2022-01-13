@@ -3,6 +3,7 @@ use crate::image::Image;
 use crate::text::{normal_letters, small_letters, TextSize};
 use pixels::Pixels;
 use crate::math::Point;
+use crate::math::traits::Add;
 
 pub struct PixelWrapper {
     pub pixels: Pixels,
@@ -38,6 +39,25 @@ impl PixelWrapper {
 
     pub fn height(&self) -> usize {
         self.height
+    }
+}
+
+impl PixelWrapper {
+    /// Get the canvas offset in pixels
+    pub fn get_translate(&self) -> Point {
+        self.translate
+    }
+
+    /// Set the canvas offset in pixels
+    ///
+    /// All drawing commands will be offset by this value
+    pub fn set_translate<P: Into<Point>>(&mut self, new_value: P) {
+        self.translate = new_value.into();
+    }
+
+    /// Adds `delta` to the current canvas offset
+    pub fn update_translate<P: Into<Point>>(&mut self, delta: P) {
+        self.translate = self.translate.add(delta.into());
     }
 }
 

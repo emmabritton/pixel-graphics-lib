@@ -113,14 +113,13 @@ pub enum GraphicsError {
 /// The inner size mentioned in the arguments refers to the size of the area available to draw in, it doesn't include the window frame, etc
 ///
 /// This uses logical pixels, where on a low DPI screen each library pixel is one display pixel but on higher DPI screens (and if
-/// `scale` = `true`) then a library pixel will be represented by multiple display pixels
+/// `scale` != `None`) then a library pixel will be represented by multiple display pixels
 ///
 /// # Arguments
 ///
-/// * `width` - Inner width of window in logical pixels
-/// * `height` - Inner width of window in logical pixels
+/// * `canvas_size` - Inner width and height of window in logical pixels
+/// * `scale` - Type of scaling the window should use, see [WindowScaling]
 /// * `title` - Title for window
-/// * `scale` - True if window should account for high DPI
 /// * `event_loop` - Provided by `EventLoop::new()`, this allows the window to receive events from the OS
 ///
 /// # Example
@@ -153,14 +152,14 @@ pub fn setup(
 }
 
 pub enum WindowScaling {
-    ///Make the canvas and window be the same of numbers, this ignores DPI
+    /// Make the canvas and window be the same of numbers, this ignores DPI
     None,
-    ///Scale the window to account for DPI
+    /// Scale the window to account for DPI
     Auto,
-    ///Scale the window by a fixed amount, ignoring DPI
+    /// Scale the window by a fixed amount, ignoring DPI
     Fixed(usize),
-    ///Scale the window by a fixed amount and by DPI
-    ///So, if the monitor DPI is 2x and 2x is passed then the result will be 3x
+    /// Scale the window by a fixed amount and by DPI
+    /// So, if the monitor DPI is 2x and 2x is passed then the result will be 4x
     AutoFixed(usize),
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+### Version 0.3.1
+
+- Add half() and double() methods for Point and UPoint
+- Add neg() for Point
+- Add set_translate, get_translate and update_translate commands for PixelWrapper
+
 ### Version 0.3.0
 
 - BREAKING CHANGES:
