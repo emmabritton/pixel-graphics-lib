@@ -8,7 +8,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), pr
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.2.0"
+pixels-graphics-lib = "0.3.1"
 winit = "0.25"
 winit_input_helper = "0.10"
 ```
@@ -19,7 +19,7 @@ This bit of boilerplate/framework must be used inside your code to use this libr
 ```rust
 let event_loop = EventLoop::new();
 let mut input = WinitInputHelper::new();
-let (mut window, mut graphics) = setup(240, 160, "Example", true, &event_loop)?;
+let (mut window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Example", &event_loop)?;
 
 event_loop.run(move |event, _, control_flow| {
     if let Event::RedrawRequested(_) = event {
