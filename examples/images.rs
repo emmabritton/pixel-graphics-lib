@@ -1,15 +1,15 @@
+use anyhow::Result;
+use pixels_graphics_lib::color::BLACK;
+use pixels_graphics_lib::drawing::{DrawingMethods, PixelWrapper};
+use pixels_graphics_lib::image::Image;
+use pixels_graphics_lib::image_loading::load_image;
+use pixels_graphics_lib::scaling::Scaling;
+use pixels_graphics_lib::{setup, Tint, WindowScaling};
 use std::rc::Rc;
 use std::time::Instant;
 use winit::event::{Event, VirtualKeyCode};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit_input_helper::WinitInputHelper;
-use pixels_graphics_lib::color::BLACK;
-use pixels_graphics_lib::drawing::PixelWrapper;
-use pixels_graphics_lib::{setup, Tint, WindowScaling};
-use anyhow::Result;
-use pixels_graphics_lib::image::Image;
-use pixels_graphics_lib::image_loading::load_image;
-use pixels_graphics_lib::scaling::Scaling;
 
 /// This example shows how to load, display and alter an image
 /// It also shows an example of how to do delta
@@ -17,7 +17,12 @@ use pixels_graphics_lib::scaling::Scaling;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup((300, 300), WindowScaling::Fixed(2), "Image Example", &event_loop)?;
+    let (window, mut graphics) = setup(
+        (300, 300),
+        WindowScaling::Fixed(2),
+        "Image Example",
+        &event_loop,
+    )?;
     let mut time = Instant::now();
 
     let mut scene = ImageScene::new("examples/resources/marker.png", 300, 300)?;
@@ -27,21 +32,21 @@ fn main() -> Result<()> {
         let delta = now.duration_since(time).as_secs_f32();
         time = now;
         if let Event::RedrawRequested(_) = event {
-            if graphics.pixels
+            scene.render(&mut graphics);
+            if graphics
+                .pixels
                 .render()
-                .map_err( | e | eprintln ! ("pixels.render() failed: {:?}", e))
+                .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
                 .is_err()
             {
                 *control_flow = ControlFlow::Exit;
                 return;
             }
-
-            scene.render(&mut graphics);
         }
 
         scene.update(delta);
 
-        if input.update( & event) {
+        if input.update(&event) {
             if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
                 *control_flow = ControlFlow::Exit;
                 return;
@@ -63,17 +68,20 @@ struct Sprite {
     size: (usize, usize),
     image: Rc<Image>,
     dir: (f32, f32),
-    speed: f32
+    speed: f32,
 }
 
 impl Sprite {
     pub fn new(image: Rc<Image>) -> Self {
         Sprite {
-            pos: (fastrand::isize(100..200) as f32, fastrand::isize(100..200) as f32),
+            pos: (
+                fastrand::isize(100..200) as f32,
+                fastrand::isize(100..200) as f32,
+            ),
             size: (image.width(), image.height()),
             image,
             dir: (fastrand::f32() * 2.0 - 1.0, fastrand::f32() * 2.0 - 1.0),
-            speed: fastrand::f32() * 100.0
+            speed: fastrand::f32() * 100.0,
         }
     }
 }
@@ -81,16 +89,16 @@ impl Sprite {
 struct ImageScene {
     width: usize,
     height: usize,
-    sprites: Vec<Sprite>
+    sprites: Vec<Sprite>,
 }
 
 impl ImageScene {
     pub fn new(path: &str, width: usize, height: usize) -> Result<Self> {
         let image = load_image(path)?;
         let mut red = image.clone();
-        red.tint_mul(1.0,0.0,0.0,1.0); //the original image is white so set the green and blue channels to 0
+        red.tint_mul(1.0, 0.0, 0.0, 1.0); //the original image is white so set the green and blue channels to 0
         let mut double_blue = image.scale(Scaling::Epx2x);
-        double_blue.tint_add(-255,-255,0,0);
+        double_blue.tint_add(-255, -255, 0, 0);
 
         let image = Rc::new(image);
         let red = Rc::new(red);
@@ -107,7 +115,7 @@ impl ImageScene {
         Ok(ImageScene {
             width,
             height,
-            sprites
+            sprites,
         })
     }
 }
@@ -118,17 +126,17 @@ impl ImageScene {
         let sh = self.height;
 
         let is_off_screen = |sprite: &Sprite| {
-            sprite.pos.0 < -(sprite.size.0 as f32) ||
-            sprite.pos.1 < -(sprite.size.1 as f32) ||
-            sprite.pos.0 > (sw + sprite.size.0) as f32 ||
-            sprite.pos.1 > (sh + sprite.size.1) as f32
+            sprite.pos.0 < -(sprite.size.0 as f32)
+                || sprite.pos.1 < -(sprite.size.1 as f32)
+                || sprite.pos.0 > (sw + sprite.size.0) as f32
+                || sprite.pos.1 > (sh + sprite.size.1) as f32
         };
 
         for sprite in self.sprites.iter_mut() {
             sprite.pos.0 += sprite.dir.0 * sprite.speed * delta;
             sprite.pos.1 += sprite.dir.1 * sprite.speed * delta;
             if is_off_screen(sprite) {
-                sprite.pos = (fastrand::f32() * sw as f32,fastrand::f32() * sh as f32);
+                sprite.pos = (fastrand::f32() * sw as f32, fastrand::f32() * sh as f32);
             }
         }
     }
@@ -137,9 +145,9 @@ impl ImageScene {
         graphics.clear(BLACK);
         for sprite in &self.sprites {
             graphics.draw_image(
-                sprite.pos.0.round() as isize,
-                sprite.pos.1.round() as isize,
-                &sprite.image
+                sprite.pos.0.round() as usize,
+                sprite.pos.1.round() as usize,
+                &sprite.image,
             );
         }
     }

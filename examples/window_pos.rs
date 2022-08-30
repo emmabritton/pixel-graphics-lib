@@ -1,14 +1,14 @@
+use anyhow::Result;
+use pixels_graphics_lib::color::{Color, BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW};
+use pixels_graphics_lib::drawing::PixelWrapper;
+use pixels_graphics_lib::prefs::WindowPreferences;
+use pixels_graphics_lib::text::{TextPos, TextSize};
+use pixels_graphics_lib::{setup, WindowScaling};
 use std::thread::sleep;
 use std::time::Duration;
 use winit::event::{Event, VirtualKeyCode};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit_input_helper::WinitInputHelper;
-use pixels_graphics_lib::color::{BLACK, BLUE, Color, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW};
-use pixels_graphics_lib::drawing::PixelWrapper;
-use pixels_graphics_lib::{setup, WindowScaling};
-use anyhow::Result;
-use pixels_graphics_lib::prefs::WindowPreferences;
-use pixels_graphics_lib::text::TextSize;
 
 /// Running this example will create preference directories and files on your computer!
 ///
@@ -18,7 +18,12 @@ use pixels_graphics_lib::text::TextSize;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (mut window, mut graphics) = setup((240, 160), WindowScaling::AutoFixed(2), "Window Position Example", &event_loop)?;
+    let (mut window, mut graphics) = setup(
+        (240, 160),
+        WindowScaling::AutoFixed(2),
+        "Window Position Example",
+        &event_loop,
+    )?;
     let mut prefs = WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2")?;
     prefs.load()?;
     prefs.restore(&mut window);
@@ -29,26 +34,27 @@ fn main() -> Result<()> {
         if let Event::LoopDestroyed = event {
             prefs.store(&window);
             //can't return from here so just print out error
-            let _result = prefs.save()
+            let _result = prefs
+                .save()
                 .map_err(|err| eprintln!("Unable to save prefs: {:?}", err));
         }
 
         if let Event::RedrawRequested(_) = event {
-            if graphics.pixels
+            scene.render(&mut graphics);
+            if graphics
+                .pixels
                 .render()
-                .map_err( | e | eprintln ! ("pixels.render() failed: {:?}", e))
+                .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
                 .is_err()
             {
                 *control_flow = ControlFlow::Exit;
                 return;
             }
-
-            scene.render(&mut graphics);
         }
 
         scene.update();
 
-        if input.update( & event) {
+        if input.update(&event) {
             if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
                 *control_flow = ControlFlow::Exit;
                 return;
@@ -71,14 +77,24 @@ struct WindowPrefsScene {
     text: &'static str,
     pos: (usize, usize),
     colors: Vec<Color>,
-    idx: usize
+    idx: usize,
 }
 
 impl WindowPrefsScene {
-    pub fn new(graphics: &mut PixelWrapper, text: &'static str, width: usize, height: usize) -> Self {
-        let (w, h) = graphics.get_text_size(&text, 12, TextSize::Normal);
+    pub fn new(
+        graphics: &mut PixelWrapper,
+        text: &'static str,
+        width: usize,
+        height: usize,
+    ) -> Self {
+        let (w, h) = graphics.get_text_size(text, 12, TextSize::Normal);
         let pos = (width / 2 - w / 2, height / 2 - h / 2);
-        WindowPrefsScene { text, pos, colors: vec![GREEN, RED, BLUE, WHITE, MAGENTA, YELLOW, CYAN], idx: 0 }
+        WindowPrefsScene {
+            text,
+            pos,
+            colors: vec![GREEN, RED, BLUE, WHITE, MAGENTA, YELLOW, CYAN],
+            idx: 0,
+        }
     }
 }
 
@@ -97,7 +113,12 @@ impl WindowPrefsScene {
         for (i, letter) in self.text.chars().enumerate() {
             let mut pos = self.pos;
             pos.0 += TextSize::Normal.get_size().0 * i + TextSize::Normal.get_margin() * i;
-            graphics.draw_letter_px(pos.0 as isize, pos.1 as isize, letter, TextSize::Normal, self.colors[color_idx]);
+            graphics.draw_letter(
+                TextPos::Px(pos.0 as isize, pos.1 as isize),
+                letter,
+                TextSize::Normal,
+                self.colors[color_idx],
+            );
 
             color_idx += 1;
             if color_idx >= self.colors.len() {
