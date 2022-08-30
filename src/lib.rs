@@ -20,6 +20,7 @@
 //!
 //! event_loop.run(move |event, _, control_flow| {
 //!     if let Event::RedrawRequested(_) = event {
+//!        //put your rendering code here
 //!         if graphics.pixels
 //!         .render()
 //!         .map_err(|e| eprintln ! ("pixels.render() failed: {:?}", e))
@@ -30,7 +31,6 @@
 //!         }
 //!     }
 //!
-//!     //put your rendering code here
 //!
 //!     if input.update(&event) {
 //!         if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
@@ -65,9 +65,11 @@
 //! # use winit::event_loop::EventLoop;
 //! # use pixels_graphics_lib::text::TextSize;
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! # let event_loop = EventLoop::new();
+//! # use pixels_graphics_lib::drawing::DrawingMethods;
+//! # use pixels_graphics_lib::text::TextPos;
+//! let event_loop = EventLoop::new();
 //! # let (window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Example", &event_loop)?;
-//! graphics.draw_text("Some text", 9, 1, 1, TextSize::Normal, BLACK);
+//! graphics.draw_text("Some text", None, TextPos::Coord(1, 1), TextSize::Normal, BLACK);
 //! graphics.draw_line(30, 30, 100, 120, BLUE);
 //! # Ok(()) }
 //! ```
@@ -77,13 +79,13 @@
 pub mod color;
 pub mod drawing;
 pub mod image;
-pub mod math;
-pub mod scaling;
-pub mod text;
 #[cfg(feature = "image_loading")]
 pub mod image_loading;
+pub mod math;
 #[cfg(feature = "window_prefs")]
 pub mod prefs;
+pub mod scaling;
+pub mod text;
 
 use crate::drawing::PixelWrapper;
 use pixels::{Pixels, SurfaceTexture};
@@ -143,12 +145,10 @@ pub fn setup(
 ) -> Result<(Window, PixelWrapper), GraphicsError> {
     let win = create_window(canvas_size, title, window_scaling, event_loop)?;
     let surface = SurfaceTexture::new(win.inner_size().width, win.inner_size().height, &win);
-    let pixels = Pixels::new(canvas_size.0 as u32, canvas_size.1 as u32, surface).map_err(GraphicsError::PixelsInit)?;
+    let pixels = Pixels::new(canvas_size.0 as u32, canvas_size.1 as u32, surface)
+        .map_err(GraphicsError::PixelsInit)?;
 
-    Ok((
-        win,
-        PixelWrapper::new(pixels, canvas_size.0, canvas_size.1),
-    ))
+    Ok((win, PixelWrapper::new(pixels, canvas_size.0, canvas_size.1)))
 }
 
 pub enum WindowScaling {
@@ -179,13 +179,17 @@ fn create_window(
         WindowScaling::Auto => window.scale_factor().ceil(),
         WindowScaling::Fixed(amount) => {
             if amount == 0 {
-                return Err(GraphicsError::WindowInit(String::from("Fixed window scaling must be at least 1")));
+                return Err(GraphicsError::WindowInit(String::from(
+                    "Fixed window scaling must be at least 1",
+                )));
             }
             amount as f64
-        },
+        }
         WindowScaling::AutoFixed(amount) => {
             if amount == 0 {
-                return Err(GraphicsError::WindowInit(String::from("AutoFixed window scaling must be at least 1")));
+                return Err(GraphicsError::WindowInit(String::from(
+                    "AutoFixed window scaling must be at least 1",
+                )));
             }
             amount as f64 + window.scale_factor().ceil()
         }
