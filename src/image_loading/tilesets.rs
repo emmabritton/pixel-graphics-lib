@@ -1,9 +1,9 @@
+use crate::image::Image;
+use crate::image_loading::ImageWrapperError::*;
+use crate::image_loading::{convert_image, ImageWrapperError};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs;
-use serde::Deserialize;
-use crate::image::Image;
-use crate::image_loading::{convert_image, ImageWrapperError};
-use crate::image_loading::ImageWrapperError::*;
 
 /// BasicTileset can be used for simple tile sets/atlas
 ///
@@ -49,16 +49,17 @@ impl BasicTileset {
         let mut map = HashMap::new();
 
         let json = fs::read_to_string(path).map_err(TilesetFileError)?;
-        let tileset: BasicTileset = serde_json::from_str(&json).map_err(|err| TilesetFormatError(err.to_string()))?;
-        let tileset_image = image::open(&tileset.image_file)
-            .map_err(ImageFileError)?;
+        let tileset: BasicTileset =
+            serde_json::from_str(&json).map_err(|err| TilesetFormatError(err.to_string()))?;
+        let tileset_image = image::open(&tileset.image_file).map_err(ImageFileError)?;
 
         for tile in tileset.tiles {
             let image = convert_image(tileset_image.crop_imm(
                 (tile.x * tileset.tile_sizes.width) as u32,
                 (tile.y * tileset.tile_sizes.height) as u32,
                 tileset.tile_sizes.width as u32,
-                tileset.tile_sizes.height as u32))?;
+                tileset.tile_sizes.height as u32,
+            ))?;
             map.insert(tile.id, image);
         }
 
