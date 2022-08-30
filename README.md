@@ -8,9 +8,9 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), pr
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.3.1"
-winit = "0.25"
-winit_input_helper = "0.10"
+pixels-graphics-lib = "0.4.0"
+winit = "0.27.2"
+winit_input_helper = "0.13.0"
 ```
 
 ### Code
@@ -23,6 +23,7 @@ let (mut window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Example
 
 event_loop.run(move |event, _, control_flow| {
     if let Event::RedrawRequested(_) = event {
+        //put your rendering code here
         if graphics.pixels
         .render()
         .map_err( | e | eprintln ! ("pixels.render() failed: {:?}", e))
@@ -31,8 +32,6 @@ event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Exit;
             return;
         }
-
-        //put your rendering code here
     }
 
     //put your update code here
@@ -56,7 +55,7 @@ event_loop.run(move |event, _, control_flow| {
 
 Drawing is then quite simple:
 ```rust
-graphics.draw_text("Some text", 4, 1, 1, TextSize::Normal, BLACK);
+graphics.draw_text("Some text", None, TextPos::Px(1, 1), TextSize::Normal, BLACK);
 graphics.draw_image(20, 20, &image);
 graphics.draw_rect(1, 1, 100, 100, GREY);
 ```
