@@ -1,8 +1,25 @@
 /// TextSize is used to set the size and positioning in pixels of text
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash)]
 pub enum TextSize {
     Small,
     Normal,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum TextPos {
+    Px(isize, isize),
+    /// See [TextSize::get_max_characters] for maximum x and y
+    Coord(usize, usize),
+}
+
+impl TextPos {
+    pub fn usize_px(x: usize, y: usize) -> TextPos {
+        TextPos::Px(x as isize, y as isize)
+    }
+
+    pub fn f32_px(x: f32, y: f32) -> TextPos {
+        TextPos::Px(x as isize, y as isize)
+    }
 }
 
 impl TextSize {
@@ -26,7 +43,7 @@ impl TextSize {
     pub fn get_max_characters(&self, screen_width: usize, screen_height: usize) -> (usize, usize) {
         let size = self.get_size();
         if screen_width < size.0 || screen_height < size.1 {
-            return (0,0);
+            return (0, 0);
         }
         let sw = screen_width as f32;
         let cw = (size.0 + self.get_margin()) as f32;
