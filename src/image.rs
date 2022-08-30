@@ -323,12 +323,12 @@ mod test {
             3,
             2,
         )
-            .unwrap();
+        .unwrap();
 
         let epx2 = image.scale(Scaling::Epx2x);
         let epx4 = image.scale(Scaling::Epx4x);
-        let nn2 = image.scale(Scaling::nearest_neighbour(2,2));
-        let nn3 = image.scale(Scaling::nearest_neighbour(3,3));
+        let nn2 = image.scale(Scaling::nearest_neighbour(2, 2));
+        let nn3 = image.scale(Scaling::nearest_neighbour(3, 3));
 
         assert_eq!(image.width, 3);
         assert_eq!(image.height, 2);
@@ -348,11 +348,11 @@ mod test {
         let epx2 = image.scale(Scaling::Epx2x);
         let epx4 = image.scale(Scaling::Epx4x);
         let nn_double = image.scale(Scaling::nn_double());
-        let nn2 = image.scale(Scaling::nearest_neighbour(2,2));
-        let nn3 = image.scale(Scaling::nearest_neighbour(3,3));
-        let nn1_1 = image.scale(Scaling::nearest_neighbour(1,1));
-        let nn1_2 = image.scale(Scaling::nearest_neighbour(1,2));
-        let nn2_1 = image.scale(Scaling::nearest_neighbour(2,1));
+        let nn2 = image.scale(Scaling::nearest_neighbour(2, 2));
+        let nn3 = image.scale(Scaling::nearest_neighbour(3, 3));
+        let nn1_1 = image.scale(Scaling::nearest_neighbour(1, 1));
+        let nn1_2 = image.scale(Scaling::nearest_neighbour(1, 2));
+        let nn2_1 = image.scale(Scaling::nearest_neighbour(2, 1));
 
         assert_eq!(image.width, 3);
         assert_eq!(image.height, 3);

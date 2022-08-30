@@ -140,13 +140,13 @@ mod test {
     use super::*;
 
     fn clone_and_add(initial: Color, r: isize, g: isize, b: isize, a: isize) -> Color {
-        let mut color = initial.clone();
+        let mut color = initial;
         color.tint_add(r, g, b, a);
         color
     }
 
     fn clone_and_mul(initial: Color, r: f32, g: f32, b: f32, a: f32) -> Color {
-        let mut color = initial.clone();
+        let mut color = initial;
         color.tint_mul(r, g, b, a);
         color
     }
