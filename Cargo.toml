@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 authors = ["Ray Britton <raybritton@pm.me>"]
 description = "Simple wrapper library around Pixels"
@@ -17,12 +17,12 @@ image_loading = ["image"]
 window_prefs = ["directories", "serde_json"]
 
 [dependencies]
-pixels = "0.6"
-winit = "0.25"
-winit_input_helper = "0.10"
+pixels = "0.8.0"
+winit = "0.27.2"
+winit_input_helper = "0.13.0"
 thiserror = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-image = {version = "0.23", optional = true }
+image = {version = "0.24.3", optional = true }
 directories = {version = "4.0", optional = true }
 serde_json = {version = "1.0", optional = true }
 

@@ -1,5 +1,15 @@
 # Changelog
 
+### Version 0.4.0
+- Update dependencies:
+  - `pixels` to `0.8.0`
+  - `winit` to `0.27.2`
+  - `winit_input_helper` to `0.13.0`
+  - `image` to `0.24.3`
+- Text now uses `TextPos::Px` and `TextPos::Coord` for positioning instead of multiple methods
+- You may need to run `cargo update -p raw-window-handle@0.4`
+- Most of the drawing methods (`draw_rect`, `draw_circle`, etc) now support `isize`, `usize`, `i32`, `u32`, `i64`, `u64`, `f32` and `f64`, these are converted using `as isize`
+
 ### Version 0.3.1
 
 - Add half() and double() methods for Point and UPoint
