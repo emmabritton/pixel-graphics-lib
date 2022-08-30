@@ -1,12 +1,13 @@
 use crate::math::{Point, Rect, UPoint, URect};
 
-
 impl Point {
     pub const fn new(x: isize, y: isize) -> Self {
         Point { x, y }
     }
 
-    pub const fn zero() -> Self { Point::new(0, 0) }
+    pub const fn zero() -> Self {
+        Point::new(0, 0)
+    }
 }
 
 impl UPoint {
@@ -14,7 +15,9 @@ impl UPoint {
         UPoint { x, y }
     }
 
-    pub const fn zero() -> Self { UPoint::new(0, 0) }
+    pub const fn zero() -> Self {
+        UPoint::new(0, 0)
+    }
 }
 
 impl URect {

@@ -1,6 +1,6 @@
-use std::ops::Neg;
-use crate::math::{Point, UPoint};
 use crate::math::traits::{SimpleMath, Swap};
+use crate::math::{Point, UPoint};
+use std::ops::Neg;
 
 impl Swap for Point {
     fn swap(&self) -> Self {

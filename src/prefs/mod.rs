@@ -1,10 +1,10 @@
 pub mod preferences;
 
-use thiserror::Error;
+use crate::prefs::preferences::{get_pref_dir, Preferences};
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 use winit::window::Window;
-use crate::prefs::preferences::{get_pref_dir, Preferences};
 
 const PREF_WINDOW: &str = "window.pref";
 

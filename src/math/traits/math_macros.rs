@@ -71,9 +71,6 @@ macro_rules! impl_ops_primitive {
     };
 }
 
-
-
-
 // COMPARE
 
 /// Implement a `std::cmp` method (min, max, etc) on a type with x and y fields
@@ -145,8 +142,6 @@ macro_rules! impl_cmp_primitive {
     };
 }
 
-
-
 // CLAMP
 
 /// Implement clamp on a type with x and y fields
@@ -211,10 +206,6 @@ macro_rules! impl_clamp_primitive {
         }
     };
 }
-
-
-
-
 
 macro_rules! impl_primitives {
     ($type: ty, $field: ty, $($t:ty)+) => ($(

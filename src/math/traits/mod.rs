@@ -1,6 +1,6 @@
-mod math_macros;
-mod impls;
 mod cast_macros;
+mod impls;
+mod math_macros;
 
 use crate::math::{Point, UPoint};
 
@@ -81,32 +81,32 @@ mod test {
 
     #[test]
     fn swaps() {
-        assert_eq!(Point::new(5,10).swap(), Point::new(10, 5));
-        assert_eq!(UPoint::new(2,8).swap(), UPoint::new(8, 2));
+        assert_eq!(Point::new(5, 10).swap(), Point::new(10, 5));
+        assert_eq!(UPoint::new(2, 8).swap(), UPoint::new(8, 2));
     }
 
     #[allow(unused_must_use)]
     mod check_all_methods {
-        use std::ops::Neg;
-        use crate::math::{Point, UPoint};
-        use crate::math::traits::{Add, ClampXy, MaxXy, MinXy, Mul, Sub, Swap};
         use crate::math::traits::test::{point, upoint};
+        use crate::math::traits::{Add, ClampXy, MaxXy, MinXy, Mul, Sub, Swap};
+        use crate::math::{Point, UPoint};
+        use std::ops::Neg;
 
         #[test]
         fn casts() {
-            assert_eq!(Point::from(upoint()), Point::new(1,2));
-            assert_eq!(UPoint::try_from(point()).unwrap(), UPoint::new(1,2));
+            assert_eq!(Point::from(upoint()), Point::new(1, 2));
+            assert_eq!(UPoint::try_from(point()).unwrap(), UPoint::new(1, 2));
         }
 
         #[test]
         fn negative() {
-            assert_eq!(point().neg(), Point::new(-1,-2));
+            assert_eq!(point().neg(), Point::new(-1, -2));
         }
 
         #[test]
         fn swaps() {
-            assert_eq!(point().swap(), Point::new(2,1));
-            assert_eq!(upoint().swap(), UPoint::new(2,1));
+            assert_eq!(point().swap(), Point::new(2, 1));
+            assert_eq!(upoint().swap(), UPoint::new(2, 1));
         }
 
         #[test]
@@ -122,16 +122,16 @@ mod test {
             upoint().min_xy(1_usize);
             upoint().max_xy(1_usize);
 
-            point().add((1_usize,1));
-            point().sub((1_usize,1));
-            point().mul((1_usize,1));
-            point().min_xy((1_usize,1));
-            point().max_xy((1_usize,1));
-            upoint().add((1_usize,1));
-            upoint().sub((1_usize,1));
-            upoint().mul((1_usize,1));
-            upoint().min_xy((1_usize,1));
-            upoint().max_xy((1_usize,1));
+            point().add((1_usize, 1));
+            point().sub((1_usize, 1));
+            point().mul((1_usize, 1));
+            point().min_xy((1_usize, 1));
+            point().max_xy((1_usize, 1));
+            upoint().add((1_usize, 1));
+            upoint().sub((1_usize, 1));
+            upoint().mul((1_usize, 1));
+            upoint().min_xy((1_usize, 1));
+            upoint().max_xy((1_usize, 1));
 
             upoint().add(upoint());
 
@@ -190,16 +190,16 @@ mod test {
             upoint().min_xy(1_u16);
             upoint().max_xy(1_u16);
 
-            point().add((1_u16,1));
-            point().sub((1_u16,1));
-            point().mul((1_u16,1));
-            point().min_xy((1_u16,1));
-            point().max_xy((1_u16,1));
-            upoint().add((1_u16,1));
-            upoint().sub((1_u16,1));
-            upoint().mul((1_u16,1));
-            upoint().min_xy((1_u16,1));
-            upoint().max_xy((1_u16,1));
+            point().add((1_u16, 1));
+            point().sub((1_u16, 1));
+            point().mul((1_u16, 1));
+            point().min_xy((1_u16, 1));
+            point().max_xy((1_u16, 1));
+            upoint().add((1_u16, 1));
+            upoint().sub((1_u16, 1));
+            upoint().mul((1_u16, 1));
+            upoint().min_xy((1_u16, 1));
+            upoint().max_xy((1_u16, 1));
 
             Point::from((1_u16, 1));
             UPoint::from((1_u16, 1));
@@ -223,16 +223,16 @@ mod test {
             upoint().min_xy(1_u32);
             upoint().max_xy(1_u32);
 
-            point().add((1_u32,1));
-            point().sub((1_u32,1));
-            point().mul((1_u32,1));
-            point().min_xy((1_u32,1));
-            point().max_xy((1_u32,1));
-            upoint().add((1_u32,1));
-            upoint().sub((1_u32,1));
-            upoint().mul((1_u32,1));
-            upoint().min_xy((1_u32,1));
-            upoint().max_xy((1_u32,1));
+            point().add((1_u32, 1));
+            point().sub((1_u32, 1));
+            point().mul((1_u32, 1));
+            point().min_xy((1_u32, 1));
+            point().max_xy((1_u32, 1));
+            upoint().add((1_u32, 1));
+            upoint().sub((1_u32, 1));
+            upoint().mul((1_u32, 1));
+            upoint().min_xy((1_u32, 1));
+            upoint().max_xy((1_u32, 1));
 
             Point::from((1_u32, 1));
             UPoint::from((1_u32, 1));
@@ -256,16 +256,16 @@ mod test {
             upoint().min_xy(1_u64);
             upoint().max_xy(1_u64);
 
-            point().add((1_u64,1));
-            point().sub((1_u64,1));
-            point().mul((1_u64,1));
-            point().min_xy((1_u64,1));
-            point().max_xy((1_u64,1));
-            upoint().add((1_u64,1));
-            upoint().sub((1_u64,1));
-            upoint().mul((1_u64,1));
-            upoint().min_xy((1_u64,1));
-            upoint().max_xy((1_u64,1));
+            point().add((1_u64, 1));
+            point().sub((1_u64, 1));
+            point().mul((1_u64, 1));
+            point().min_xy((1_u64, 1));
+            point().max_xy((1_u64, 1));
+            upoint().add((1_u64, 1));
+            upoint().sub((1_u64, 1));
+            upoint().mul((1_u64, 1));
+            upoint().min_xy((1_u64, 1));
+            upoint().max_xy((1_u64, 1));
 
             Point::from((1_u64, 1));
             UPoint::from((1_u64, 1));
@@ -381,10 +381,10 @@ mod test {
 
     #[test]
     fn check_impl() {
-        assert_eq!(point().add(3), Point::new(4,5));
-        assert_eq!(point().sub(3), Point::new(-2,-1));
-        assert_eq!(point().mul(3), Point::new(3,6));
-        assert_eq!(point().min_xy(1), Point::new(1,1));
-        assert_eq!(point().max_xy(2), Point::new(2,2));
+        assert_eq!(point().add(3), Point::new(4, 5));
+        assert_eq!(point().sub(3), Point::new(-2, -1));
+        assert_eq!(point().mul(3), Point::new(3, 6));
+        assert_eq!(point().min_xy(1), Point::new(1, 1));
+        assert_eq!(point().max_xy(2), Point::new(2, 2));
     }
 }
