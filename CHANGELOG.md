@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 0.5.0
+- Extract all drawing code to a separate lib [Buffer graphics](https://github.com/raybritton/buffer-graphics-lib)
+  - There's a few minor difference now:
+    - `setup()` now returns `(Window, Pixels)`
+    - On every frame create `Graphics` and use that to draw
+    - All drawing methods are the same
+  - This was done so the graphics can be done without Pixels or to support double buffering, etc
+
 ### Version 0.4.0
 - Update dependencies:
   - `pixels` to `0.8.0`

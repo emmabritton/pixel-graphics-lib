@@ -1,10 +1,11 @@
 use anyhow::Result;
-use pixels_graphics_lib::color::BLACK;
-use pixels_graphics_lib::drawing::{DrawingMethods, PixelWrapper};
-use pixels_graphics_lib::image::Image;
-use pixels_graphics_lib::image_loading::load_image;
-use pixels_graphics_lib::scaling::Scaling;
-use pixels_graphics_lib::{setup, Tint, WindowScaling};
+use buffer_graphics_lib::color::BLACK;
+use buffer_graphics_lib::drawing::DrawingMethods;
+use buffer_graphics_lib::image::Image;
+use buffer_graphics_lib::image_loading::load_image;
+use buffer_graphics_lib::scaling::Scaling;
+use buffer_graphics_lib::{Graphics, Tint};
+use pixels_graphics_lib::{setup, WindowScaling};
 use std::rc::Rc;
 use std::time::Instant;
 use winit::event::{Event, VirtualKeyCode};
@@ -17,7 +18,7 @@ use winit_input_helper::WinitInputHelper;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup(
+    let (window, mut pixels) = setup(
         (300, 300),
         WindowScaling::Fixed(2),
         "Image Example",
@@ -31,10 +32,10 @@ fn main() -> Result<()> {
         let now = Instant::now();
         let delta = now.duration_since(time).as_secs_f32();
         time = now;
+        let mut graphics = Graphics::new(pixels.get_frame(), 300, 300).unwrap();
         if let Event::RedrawRequested(_) = event {
             scene.render(&mut graphics);
-            if graphics
-                .pixels
+            if pixels
                 .render()
                 .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
                 .is_err()
@@ -53,7 +54,7 @@ fn main() -> Result<()> {
             }
 
             if let Some(size) = input.window_resized() {
-                graphics.pixels.resize_surface(size.width, size.height);
+                pixels.resize_surface(size.width, size.height);
             }
 
             //put your input handling code here
@@ -141,7 +142,7 @@ impl ImageScene {
         }
     }
 
-    fn render(&self, graphics: &mut PixelWrapper) {
+    fn render(&self, graphics: &mut Graphics<'_>) {
         graphics.clear(BLACK);
         for sprite in &self.sprites {
             graphics.draw_image(

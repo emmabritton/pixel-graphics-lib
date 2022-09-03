@@ -14,14 +14,14 @@
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let event_loop = EventLoop::new();
 //! let mut input = WinitInputHelper::new();
-//! let (mut window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Doc Example", &event_loop)?;
+//! let (mut window, mut pixels) = setup((240, 160), WindowScaling::Auto, "Doc Example", &event_loop)?;
 //!
 //! # let mut loop_count = 0;
 //!
 //! event_loop.run(move |event, _, control_flow| {
 //!     if let Event::RedrawRequested(_) = event {
 //!        //put your rendering code here
-//!         if graphics.pixels
+//!         if pixels
 //!         .render()
 //!         .map_err(|e| eprintln ! ("pixels.render() failed: {:?}", e))
 //!         .is_err()
@@ -39,7 +39,7 @@
 //!         }
 //!
 //!         if let Some(size) = input.window_resized() {
-//!             graphics.pixels.resize_surface(size.width, size.height);
+//!             pixels.resize_surface(size.width, size.height);
 //!         }
 //!
 //!         //put your update/input handling code here
@@ -55,39 +55,12 @@
 //!    # Ok(())
 //! # }
 //!```
-//!
-//! Using the library is as simple as:
-//!```
-//! # use std::error::Error;
-//! # use pixels_graphics_lib::drawing::PixelWrapper;
-//! # use pixels_graphics_lib::{WindowScaling, setup};
-//! # use pixels_graphics_lib::color::{BLUE, BLACK};
-//! # use winit::event_loop::EventLoop;
-//! # use pixels_graphics_lib::text::TextSize;
-//! # fn main() -> Result<(), Box<dyn Error>> {
-//! # use pixels_graphics_lib::drawing::DrawingMethods;
-//! # use pixels_graphics_lib::text::TextPos;
-//! let event_loop = EventLoop::new();
-//! # let (window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Example", &event_loop)?;
-//! graphics.draw_text("Some text", None, TextPos::Coord(1, 1), TextSize::Normal, BLACK);
-//! graphics.draw_line(30, 30, 100, 120, BLUE);
-//! # Ok(()) }
-//! ```
 
 #![deny(clippy::all)]
 
-pub mod color;
-pub mod drawing;
-pub mod image;
-#[cfg(feature = "image_loading")]
-pub mod image_loading;
-pub mod math;
 #[cfg(feature = "window_prefs")]
 pub mod prefs;
-pub mod scaling;
-pub mod text;
 
-use crate::drawing::PixelWrapper;
 use pixels::{Pixels, SurfaceTexture};
 use thiserror::Error;
 use winit::dpi::LogicalSize;
@@ -142,13 +115,13 @@ pub fn setup(
     window_scaling: WindowScaling,
     title: &str,
     event_loop: &EventLoop<()>,
-) -> Result<(Window, PixelWrapper), GraphicsError> {
+) -> Result<(Window, Pixels), GraphicsError> {
     let win = create_window(canvas_size, title, window_scaling, event_loop)?;
     let surface = SurfaceTexture::new(win.inner_size().width, win.inner_size().height, &win);
     let pixels = Pixels::new(canvas_size.0 as u32, canvas_size.1 as u32, surface)
         .map_err(GraphicsError::PixelsInit)?;
 
-    Ok((win, PixelWrapper::new(pixels, canvas_size.0, canvas_size.1)))
+    Ok((win, pixels))
 }
 
 pub enum WindowScaling {
@@ -202,15 +175,4 @@ fn create_window(
     window.set_visible(true);
 
     Ok(window)
-}
-
-pub trait Tint {
-    /// Add to the RGBA channels by the amounts specified
-    ///
-    /// Channels are clamped to 0..=255
-    fn tint_add(&mut self, r_diff: isize, g_diff: isize, b_diff: isize, a_diff: isize);
-    /// Multiple the RGBA channels by the amounts specified
-    ///
-    /// Channels are clamped to 0..=255
-    fn tint_mul(&mut self, r_diff: f32, g_diff: f32, b_diff: f32, a_diff: f32);
 }

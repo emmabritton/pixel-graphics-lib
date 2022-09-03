@@ -1,9 +1,9 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = ["Ray Britton <raybritton@pm.me>"]
-description = "Simple wrapper library around Pixels"
+description = "Simple wrapper library around Pixels/Buffer Graphics"
 license-file = "LICENSE"
 repository = "https://github.com/raybritton/rust-graphics-lib"
 readme = "README.md"
@@ -12,8 +12,7 @@ keywords = ["graphics", "gamedev", "pixels", "simple"]
 categories = ["graphics", "game-development"]
 
 [features]
-default = ["image_loading", "window_prefs"]
-image_loading = ["image"]
+default = ["window_prefs"]
 window_prefs = ["directories", "serde_json"]
 
 [dependencies]
@@ -21,8 +20,8 @@ pixels = "0.8.0"
 winit = "0.27.2"
 winit_input_helper = "0.13.0"
 thiserror = "1.0"
+buffer-graphics-lib = "0.2.1"
 serde = { version = "1.0", features = ["derive"] }
-image = {version = "0.24.3", optional = true }
 directories = {version = "4.0", optional = true }
 serde_json = {version = "1.0", optional = true }
 

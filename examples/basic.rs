@@ -1,6 +1,6 @@
 use anyhow::Result;
-use pixels_graphics_lib::color::Color;
-use pixels_graphics_lib::drawing::PixelWrapper;
+use buffer_graphics_lib::color::Color;
+use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::{setup, WindowScaling};
 use std::thread::sleep;
 use std::time::Duration;
@@ -13,7 +13,7 @@ use winit_input_helper::WinitInputHelper;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup(
+    let (window, mut pixels) = setup(
         (240, 160),
         WindowScaling::Auto,
         "Basic Example",
@@ -24,9 +24,9 @@ fn main() -> Result<()> {
 
     event_loop.run(move |event, _, control_flow| {
         if let Event::RedrawRequested(_) = event {
+            let mut graphics = Graphics::new(pixels.get_frame(), 240, 160).unwrap();
             basic.render(&mut graphics);
-            if graphics
-                .pixels
+            if pixels
                 .render()
                 .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
                 .is_err()
@@ -45,7 +45,7 @@ fn main() -> Result<()> {
             }
 
             if let Some(size) = input.window_resized() {
-                graphics.pixels.resize_surface(size.width, size.height);
+                pixels.resize_surface(size.width, size.height);
             }
 
             //put your input handling code here
@@ -76,7 +76,7 @@ impl Basic {
         }
     }
 
-    fn render(&self, graphics: &mut PixelWrapper) {
+    fn render(&self, graphics: &mut Graphics<'_>) {
         graphics.clear(Color::gray(self.greyscale))
     }
 }

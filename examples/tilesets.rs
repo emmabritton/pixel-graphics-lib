@@ -1,8 +1,9 @@
 use anyhow::Result;
-use pixels_graphics_lib::color::{BLUE, LIGHT_GRAY};
-use pixels_graphics_lib::drawing::{DrawingMethods, PixelWrapper};
-use pixels_graphics_lib::image::Image;
-use pixels_graphics_lib::image_loading::tilesets::BasicTileset;
+use buffer_graphics_lib::color::{BLUE, LIGHT_GRAY};
+use buffer_graphics_lib::drawing::DrawingMethods;
+use buffer_graphics_lib::image::Image;
+use buffer_graphics_lib::image_loading::tilesets::BasicTileset;
+use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::{setup, WindowScaling};
 use winit::event::{Event, VirtualKeyCode};
 use winit::event_loop::{ControlFlow, EventLoop};
@@ -13,7 +14,7 @@ use winit_input_helper::WinitInputHelper;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (window, mut graphics) = setup(
+    let (window, mut pixels) = setup(
         (300, 300),
         WindowScaling::None,
         "Tileset Example",
@@ -24,9 +25,9 @@ fn main() -> Result<()> {
 
     event_loop.run(move |event, _, control_flow| {
         if let Event::RedrawRequested(_) = event {
+            let mut graphics = Graphics::new(pixels.get_frame(), 300, 300).unwrap();
             scene.render(&mut graphics);
-            if graphics
-                .pixels
+            if pixels
                 .render()
                 .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
                 .is_err()
@@ -43,7 +44,7 @@ fn main() -> Result<()> {
             }
 
             if let Some(size) = input.window_resized() {
-                graphics.pixels.resize_surface(size.width, size.height);
+                pixels.resize_surface(size.width, size.height);
             }
 
             scene.input(&input);
@@ -107,7 +108,7 @@ impl TilesetScene {
         }
     }
 
-    fn render(&self, graphics: &mut PixelWrapper) {
+    fn render(&self, graphics: &mut Graphics<'_>) {
         graphics.clear(LIGHT_GRAY);
         graphics.draw_image(self.one_pos.0, self.one_pos.1, &self.one);
         graphics.draw_image(self.two_pos.0, self.two_pos.1, &self.two);

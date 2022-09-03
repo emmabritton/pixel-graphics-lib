@@ -1,8 +1,8 @@
 use anyhow::Result;
-use pixels_graphics_lib::color::{Color, BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW};
-use pixels_graphics_lib::drawing::PixelWrapper;
+use buffer_graphics_lib::color::*;
+use buffer_graphics_lib::text::{TextPos, TextSize};
+use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prefs::WindowPreferences;
-use pixels_graphics_lib::text::{TextPos, TextSize};
 use pixels_graphics_lib::{setup, WindowScaling};
 use std::thread::sleep;
 use std::time::Duration;
@@ -18,7 +18,7 @@ use winit_input_helper::WinitInputHelper;
 fn main() -> Result<()> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (mut window, mut graphics) = setup(
+    let (mut window, mut pixels) = setup(
         (240, 160),
         WindowScaling::AutoFixed(2),
         "Window Position Example",
@@ -28,21 +28,21 @@ fn main() -> Result<()> {
     prefs.load()?;
     prefs.restore(&mut window);
 
-    let mut scene = WindowPrefsScene::new(&mut graphics, "Example text", 240, 160);
+    let mut scene = WindowPrefsScene::new("Example text", 240, 160);
 
     event_loop.run(move |event, _, control_flow| {
         if let Event::LoopDestroyed = event {
             prefs.store(&window);
             //can't return from here so just print out error
-            let _result = prefs
+            let _ = prefs
                 .save()
                 .map_err(|err| eprintln!("Unable to save prefs: {:?}", err));
         }
 
         if let Event::RedrawRequested(_) = event {
+            let mut graphics = Graphics::new(pixels.get_frame(), 240, 160).unwrap();
             scene.render(&mut graphics);
-            if graphics
-                .pixels
+            if pixels
                 .render()
                 .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
                 .is_err()
@@ -61,7 +61,7 @@ fn main() -> Result<()> {
             }
 
             if let Some(size) = input.window_resized() {
-                graphics.pixels.resize_surface(size.width, size.height);
+                pixels.resize_surface(size.width, size.height);
             }
 
             //put your input handling code here
@@ -81,13 +81,8 @@ struct WindowPrefsScene {
 }
 
 impl WindowPrefsScene {
-    pub fn new(
-        graphics: &mut PixelWrapper,
-        text: &'static str,
-        width: usize,
-        height: usize,
-    ) -> Self {
-        let (w, h) = graphics.get_text_size(text, 12, TextSize::Normal);
+    pub fn new(text: &'static str, width: usize, height: usize) -> Self {
+        let (w, h) = Graphics::get_text_size(text, 12, TextSize::Normal);
         let pos = (width / 2 - w / 2, height / 2 - h / 2);
         WindowPrefsScene {
             text,
@@ -107,7 +102,7 @@ impl WindowPrefsScene {
         }
     }
 
-    fn render(&self, graphics: &mut PixelWrapper) {
+    fn render(&self, graphics: &mut Graphics<'_>) {
         graphics.clear(BLACK);
         let mut color_idx = self.idx;
         for (i, letter) in self.text.chars().enumerate() {
