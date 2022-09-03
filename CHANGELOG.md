@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.5.1
+- Add methods to clear or delete window preferences
+
 ### Version 0.5.0
 - Extract all drawing code to a separate lib [Buffer graphics](https://github.com/raybritton/buffer-graphics-lib)
   - There's a few minor difference now:

@@ -44,6 +44,14 @@ impl WindowPreferences {
         self.preferences.save()
     }
 
+    pub fn clear(&mut self)  {
+        self.preferences.clear(PREF_WINDOW);
+    }
+
+    pub fn delete_file(&self) -> bool {
+        self.preferences.delete_file()
+    }
+
     pub fn store(&mut self, window: &Window) {
         if let Ok(pos) = window.outer_position() {
             let size = window.inner_size();
