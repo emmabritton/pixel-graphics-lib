@@ -44,7 +44,7 @@ impl WindowPreferences {
         self.preferences.save()
     }
 
-    pub fn clear(&mut self)  {
+    pub fn clear(&mut self) {
         self.preferences.clear(PREF_WINDOW);
     }
 

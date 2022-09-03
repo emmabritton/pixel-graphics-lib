@@ -5,7 +5,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
-use std::fs::{File, remove_file};
+use std::fs::remove_file;
 use std::path::PathBuf;
 
 pub struct Preferences<T>

@@ -2,6 +2,7 @@
 
 ### Version 0.5.1
 - Add methods to clear or delete window preferences
+- Move buffer graphics dep to dev-deps as it's not needed any more
 
 ### Version 0.5.0
 - Extract all drawing code to a separate lib [Buffer graphics](https://github.com/raybritton/buffer-graphics-lib)
