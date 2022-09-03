@@ -66,6 +66,8 @@ use thiserror::Error;
 use winit::dpi::LogicalSize;
 use winit::event_loop::EventLoop;
 use winit::window::{Window, WindowBuilder};
+#[cfg(target_os = "windows")]
+use winit::platform::windows::WindowBuilderExtWindows;
 
 #[derive(Error, Debug)]
 pub enum GraphicsError {
@@ -142,10 +144,16 @@ fn create_window(
     scale: WindowScaling,
     event_loop: &EventLoop<()>,
 ) -> Result<Window, GraphicsError> {
-    let window = WindowBuilder::new()
+    #[allow()(unused_mut)] //needs to be mut for windows
+    let mut window_builder = WindowBuilder::new()
         .with_visible(false)
-        .with_title(title)
-        .build(event_loop)
+        .with_title(title);
+
+    #[cfg(target_os = "windows")] {
+        window_builder = window_builder.with_drag_and_drop(false);
+    }
+
+    let window = window_builder.build(event_loop)
         .map_err(|err| GraphicsError::WindowInit(format!("{:?}", err)))?;
     let factor = match scale {
         WindowScaling::None => 1.,
