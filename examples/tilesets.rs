@@ -2,8 +2,8 @@ use anyhow::Result;
 use buffer_graphics_lib::color::{BLUE, LIGHT_GRAY};
 use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::image_loading::tilesets::BasicTileset;
+use buffer_graphics_lib::shapes::{stroke, Shape};
 use buffer_graphics_lib::Graphics;
-use buffer_graphics_lib::shapes::{Shape, stroke};
 use pixels_graphics_lib::{setup, WindowScaling};
 use winit::event::{Event, VirtualKeyCode};
 use winit::event_loop::{ControlFlow, EventLoop};
@@ -109,9 +109,7 @@ impl TilesetScene {
         } else {
             self.two_pos.0 += diff.0;
             self.two_pos.1 += diff.1;
-            self.two_shape = self.two_shape
-                .move_to(self.two_pos)
-                .translate_by((9, 9))
+            self.two_shape = self.two_shape.move_to(self.two_pos).translate_by((9, 9))
         }
     }
 

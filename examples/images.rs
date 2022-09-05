@@ -144,10 +144,7 @@ impl ImageScene {
     fn render(&self, graphics: &mut Graphics<'_>) {
         graphics.clear(BLACK);
         for sprite in &self.sprites {
-            graphics.draw_image(
-                (sprite.pos.0.round(), sprite.pos.1.round()),
-                &sprite.image,
-            );
+            graphics.draw_image((sprite.pos.0.round(), sprite.pos.1.round()), &sprite.image);
         }
     }
 }
