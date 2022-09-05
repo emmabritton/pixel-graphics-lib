@@ -1,6 +1,6 @@
 # Graphics Lib
 
-This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), providing basic shape drawing, bitmap text and image rendering.
+This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphlics Lib](https://github.com/raybritton/buffer-graphics-lib)
 
 ## Usage
 
@@ -8,7 +8,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), pr
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.4.0"
+pixels-graphics-lib = "0.5.2"
 winit = "0.27.2"
 winit_input_helper = "0.13.0"
 ```
@@ -19,12 +19,15 @@ This bit of boilerplate/framework must be used inside your code to use this libr
 ```rust
 let event_loop = EventLoop::new();
 let mut input = WinitInputHelper::new();
-let (mut window, mut graphics) = setup((240, 160), WindowScaling::Auto, "Example", &event_loop)?;
+let (mut window, mut pixels) = setup((240, 160), WindowScaling::Auto, "Example", &event_loop)?;
 
 event_loop.run(move |event, _, control_flow| {
     if let Event::RedrawRequested(_) = event {
         //put your rendering code here
-        if graphics.pixels
+        //e.g. 
+        //  let graphics = Graphics::new(pixels.get_frame(),240,160).unwrap();
+        //  graphics.clear(BLACK);
+        if pixels
         .render()
         .map_err( | e | eprintln ! ("pixels.render() failed: {:?}", e))
         .is_err()
@@ -43,7 +46,7 @@ event_loop.run(move |event, _, control_flow| {
         }
         
         if let Some(size) = input.window_resized() {
-            graphics.pixels.resize_surface(size.width, size.height);
+            pixels.resize_surface(size.width, size.height);
         }
 
         //put your input handling code here
@@ -53,26 +56,7 @@ event_loop.run(move |event, _, control_flow| {
 });
 ```
 
-Drawing is then quite simple:
-```rust
-graphics.draw_text("Some text", None, TextPos::Px(1, 1), TextSize::Normal, BLACK);
-graphics.draw_image(20, 20, &image);
-graphics.draw_rect(1, 1, 100, 100, GREY);
-```
-
 ## Features
-
-Both features are enabled by default
-
-### `image_loading`
-
-Load files as `Image`s
-
-#### Code
-```rust
-let image = load_image("resources/example.png")?;
-graphics.draw_image(40,20,&image);
-```
 
 ### `window_prefs`
 

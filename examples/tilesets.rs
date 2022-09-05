@@ -1,9 +1,9 @@
 use anyhow::Result;
 use buffer_graphics_lib::color::{BLUE, LIGHT_GRAY};
-use buffer_graphics_lib::drawing::DrawingMethods;
 use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::image_loading::tilesets::BasicTileset;
 use buffer_graphics_lib::Graphics;
+use buffer_graphics_lib::shapes::{Shape, stroke};
 use pixels_graphics_lib::{setup, WindowScaling};
 use winit::event::{Event, VirtualKeyCode};
 use winit::event_loop::{ControlFlow, EventLoop};
@@ -59,6 +59,8 @@ struct TilesetScene {
     two: Image,
     one_pos: (isize, isize),
     two_pos: (isize, isize),
+    one_shape: Shape,
+    two_shape: Shape,
     active: bool,
 }
 
@@ -74,6 +76,8 @@ impl TilesetScene {
             one_pos: (100, 100),
             two_pos: (200, 100),
             active: true,
+            one_shape: Shape::rect((0, 0), (18, 18), stroke(BLUE)),
+            two_shape: Shape::circle((0, 0), 9, stroke(BLUE)),
         })
     }
 }
@@ -105,29 +109,20 @@ impl TilesetScene {
         } else {
             self.two_pos.0 += diff.0;
             self.two_pos.1 += diff.1;
+            self.two_shape = self.two_shape
+                .move_to(self.two_pos)
+                .translate_by((9, 9))
         }
     }
 
     fn render(&self, graphics: &mut Graphics<'_>) {
         graphics.clear(LIGHT_GRAY);
-        graphics.draw_image(self.one_pos.0, self.one_pos.1, &self.one);
-        graphics.draw_image(self.two_pos.0, self.two_pos.1, &self.two);
+        graphics.draw_image(self.one_pos, &self.one);
+        graphics.draw_image(self.two_pos, &self.two);
         if self.active {
-            graphics.draw_frame(
-                self.one_pos.0 - 1,
-                self.one_pos.1 - 1,
-                self.one_pos.0 + 18,
-                self.one_pos.1 + 18,
-                BLUE,
-            );
+            graphics.draw_at(self.one_pos, &self.one_shape);
         } else {
-            graphics.draw_frame(
-                self.two_pos.0 - 1,
-                self.two_pos.1 - 1,
-                self.two_pos.0 + 16,
-                self.two_pos.1 + 16,
-                BLUE,
-            );
+            graphics.draw(&self.two_shape);
         }
     }
 }

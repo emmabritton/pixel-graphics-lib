@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.5.2 
+- Update dev deps and examples
+
 ### Version 0.5.1
 - Add methods to clear or delete window preferences
 - Move buffer graphics dep to dev-deps as it's not needed any more

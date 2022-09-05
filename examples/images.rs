@@ -1,6 +1,5 @@
 use anyhow::Result;
 use buffer_graphics_lib::color::BLACK;
-use buffer_graphics_lib::drawing::DrawingMethods;
 use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::image_loading::load_image;
 use buffer_graphics_lib::scaling::Scaling;
@@ -146,8 +145,7 @@ impl ImageScene {
         graphics.clear(BLACK);
         for sprite in &self.sprites {
             graphics.draw_image(
-                sprite.pos.0.round() as usize,
-                sprite.pos.1.round() as usize,
+                (sprite.pos.0.round(), sprite.pos.1.round()),
                 &sprite.image,
             );
         }
