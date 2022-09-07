@@ -1,6 +1,6 @@
 use anyhow::Result;
 use buffer_graphics_lib::color::*;
-use buffer_graphics_lib::text::{TextPos, TextSize};
+use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prefs::WindowPreferences;
 use pixels_graphics_lib::{setup, WindowScaling};
@@ -107,9 +107,9 @@ impl WindowPrefsScene {
         let mut color_idx = self.idx;
         for (i, letter) in self.text.chars().enumerate() {
             let mut pos = self.pos;
-            pos.0 += TextSize::Normal.get_size().0 * i + TextSize::Normal.get_margin() * i;
+            pos.0 += TextSize::Normal.get_size().0 * i + TextSize::Normal.get_spacing() * i;
             graphics.draw_letter(
-                TextPos::Px(pos.0 as isize, pos.1 as isize),
+                (pos.0 as isize, pos.1 as isize),
                 letter,
                 TextSize::Normal,
                 self.colors[color_idx],

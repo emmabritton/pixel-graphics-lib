@@ -27,4 +27,4 @@ serde_json = {version = "1.0", optional = true }
 [dev-dependencies]
 fastrand = "1.6"
 anyhow = "1.0"
-buffer-graphics-lib = "0.4.1"
+buffer-graphics-lib = "0.5.0"
