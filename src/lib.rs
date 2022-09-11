@@ -10,50 +10,28 @@
 //! # use pixels_graphics_lib::{WindowScaling, setup};
 //! # use winit_input_helper::WinitInputHelper;
 //! # use winit::event_loop::{ControlFlow, EventLoop};
+//! # use pixels_graphics_lib::System;
+//! # use buffer_graphics_lib::Graphics;
+//! # use pixels_graphics_lib::run;
 //!
-//! # fn main() -> Result<(), Box<dyn Error>> {
-//! let event_loop = EventLoop::new();
-//! let mut input = WinitInputHelper::new();
-//! let (mut window, mut pixels) = setup((240, 160), WindowScaling::Auto, "Doc Example", &event_loop)?;
+//! struct Example {
+//! }
 //!
-//! # let mut loop_count = 0;
+//! impl System for Example {
+//!   fn update(&mut self, delta: f32) {
 //!
-//! event_loop.run(move |event, _, control_flow| {
-//!     if let Event::RedrawRequested(_) = event {
-//!        //put your rendering code here
-//!         if pixels
-//!         .render()
-//!         .map_err(|e| eprintln ! ("pixels.render() failed: {:?}", e))
-//!         .is_err()
-//!         {
-//!             *control_flow = ControlFlow::Exit;
-//!             return;
-//!         }
-//!     }
+//!   }
 //!
+//!   fn render(&self, graphics: &mut Graphics) {
 //!
-//!     if input.update(&event) {
-//!         if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
-//!             *control_flow = ControlFlow::Exit;
-//!             return;
-//!         }
+//!   }
+//! }
 //!
-//!         if let Some(size) = input.window_resized() {
-//!             pixels.resize_surface(size.width, size.height);
-//!         }
-//!
-//!         //put your update/input handling code here
-//!
-//!         window.request_redraw();
-//!     }
-//! # loop_count += 1;
-//! # if loop_count > 3 {
-//! #   *control_flow = ControlFlow::Exit;
-//! # }
-//! });
-//!
-//!    # Ok(())
-//! # }
+//! fn main() -> Result<(), Box<dyn Error>> {
+//!   let system = Example {};
+//!   run(240, 160, WindowScaling::Auto, "Doc Example", Box::new(system))?;
+//!   Ok(())
+//! }
 //!```
 
 #![deny(clippy::all)]
@@ -61,11 +39,18 @@
 #[cfg(feature = "window_prefs")]
 pub mod prefs;
 
+use crate::prefs::WindowPreferences;
+use crate::GraphicsError::LoadingWindowPref;
+use buffer_graphics_lib::Graphics;
 use pixels::{Pixels, SurfaceTexture};
+use std::thread::sleep;
+use std::time::{Duration, Instant};
 use thiserror::Error;
 use winit::dpi::LogicalSize;
-use winit::event_loop::EventLoop;
+use winit::event::{Event, VirtualKeyCode};
+use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{Window, WindowBuilder};
+use winit_input_helper::WinitInputHelper;
 
 #[derive(Error, Debug)]
 pub enum GraphicsError {
@@ -175,4 +160,144 @@ fn create_window(
     window.set_visible(true);
 
     Ok(window)
+}
+
+pub enum MouseButton {
+    Left,
+    Right,
+}
+
+#[allow(unused_variables)]
+pub trait System {
+    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+        vec![]
+    }
+    #[cfg(feature = "window_prefs")]
+    fn window_prefs(&self) -> Option<WindowPreferences> {
+        None
+    }
+    fn update(&mut self, delta: f32);
+    fn render(&self, graphics: &mut Graphics);
+    fn on_mouse_move(&mut self, x: usize, y: usize) {}
+    fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
+    fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
+    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {}
+    fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {}
+    fn on_window_closed(&mut self) {}
+    fn should_exit(&self) -> bool {
+        false
+    }
+}
+
+pub fn run(
+    width: usize,
+    height: usize,
+    window_scaling: WindowScaling,
+    title: &str,
+    mut system: Box<dyn System>,
+) -> Result<(), GraphicsError> {
+    let event_loop = EventLoop::new();
+    let mut input = WinitInputHelper::new();
+    let (mut window, mut pixels) = setup((width, height), window_scaling, title, &event_loop)?;
+
+    #[cfg(feature = "window_prefs")]
+    if let Some(mut prefs) = system.window_prefs() {
+        prefs.load().map_err(|e| LoadingWindowPref(e.to_string()))?;
+        prefs.restore(&mut window);
+    }
+
+    let mut time = Instant::now();
+    let mut mouse_x = 0;
+    let mut mouse_y = 0;
+
+    event_loop.run(move |event, _, control_flow| {
+        let now = Instant::now();
+        let delta = now.duration_since(time).as_secs_f32();
+        time = now;
+        if let Event::LoopDestroyed = event {
+            system.on_window_closed();
+            #[cfg(feature = "window_prefs")]
+            if let Some(mut prefs) = system.window_prefs() {
+                prefs.store(&window);
+                //can't return from here so just print out error
+                let _ = prefs
+                    .save()
+                    .map_err(|err| eprintln!("Unable to save prefs: {:?}", err));
+            }
+        }
+        if let Event::RedrawRequested(_) = event {
+            let mut graphics = Graphics::new(pixels.get_frame(), width, height).unwrap();
+            system.render(&mut graphics);
+            if pixels
+                .render()
+                .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
+                .is_err()
+            {
+                system.on_window_closed();
+                *control_flow = ControlFlow::Exit;
+                return;
+            }
+        }
+
+        system.update(delta);
+
+        if input.update(&event) {
+            if input.quit() {
+                system.on_window_closed();
+                *control_flow = ControlFlow::Exit;
+                return;
+            }
+
+            if let Some(size) = input.window_resized() {
+                pixels.resize_surface(size.width, size.height);
+            }
+
+            if let Some(mc) = input.mouse() {
+                let (x, y) = pixels
+                    .window_pos_to_pixel(mc)
+                    .unwrap_or_else(|pos| pixels.clamp_pixel_pos(pos));
+                mouse_x = x;
+                mouse_y = y;
+                system.on_mouse_move(x, y);
+            }
+
+            let mut held_buttons = vec![];
+            for button in system.action_keys() {
+                if input.key_held(button) {
+                    held_buttons.push(button);
+                }
+            }
+            system.on_key_down(held_buttons);
+
+            let mut released_buttons = vec![];
+            for button in system.action_keys() {
+                if input.key_released(button) {
+                    released_buttons.push(button);
+                }
+            }
+            system.on_key_up(released_buttons);
+
+            if input.mouse_held(0) {
+                system.on_mouse_down(mouse_x, mouse_y, MouseButton::Left);
+            }
+            if input.mouse_held(1) {
+                system.on_mouse_down(mouse_x, mouse_y, MouseButton::Right);
+            }
+
+            if input.mouse_released(0) {
+                system.on_mouse_up(mouse_x, mouse_y, MouseButton::Left);
+            }
+            if input.mouse_released(1) {
+                system.on_mouse_up(mouse_x, mouse_y, MouseButton::Right);
+            }
+
+            window.request_redraw();
+        }
+
+        if system.should_exit() {
+            *control_flow = ControlFlow::Exit;
+        }
+
+        sleep(Duration::from_millis(1));
+    });
 }

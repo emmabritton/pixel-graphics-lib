@@ -4,63 +4,25 @@ use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::image_loading::load_image;
 use buffer_graphics_lib::scaling::Scaling;
 use buffer_graphics_lib::{Graphics, Tint};
-use pixels_graphics_lib::{setup, WindowScaling};
+use pixels_graphics_lib::{run, System, WindowScaling};
 use std::rc::Rc;
-use std::time::Instant;
-use winit::event::{Event, VirtualKeyCode};
-use winit::event_loop::{ControlFlow, EventLoop};
-use winit_input_helper::WinitInputHelper;
+use winit::event::VirtualKeyCode;
 
 /// This example shows how to load, display and alter an image
 /// It also shows an example of how to do delta
 
 fn main() -> Result<()> {
-    let event_loop = EventLoop::new();
-    let mut input = WinitInputHelper::new();
-    let (window, mut pixels) = setup(
-        (300, 300),
+    let width = 300;
+    let height = 300;
+    let system = ImageScene::new("examples/resources/marker.png", width, height)?;
+    run(
+        width,
+        height,
         WindowScaling::Fixed(2),
         "Image Example",
-        &event_loop,
+        Box::new(system),
     )?;
-    let mut time = Instant::now();
-
-    let mut scene = ImageScene::new("examples/resources/marker.png", 300, 300)?;
-
-    event_loop.run(move |event, _, control_flow| {
-        let now = Instant::now();
-        let delta = now.duration_since(time).as_secs_f32();
-        time = now;
-        let mut graphics = Graphics::new(pixels.get_frame(), 300, 300).unwrap();
-        if let Event::RedrawRequested(_) = event {
-            scene.render(&mut graphics);
-            if pixels
-                .render()
-                .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
-                .is_err()
-            {
-                *control_flow = ControlFlow::Exit;
-                return;
-            }
-        }
-
-        scene.update(delta);
-
-        if input.update(&event) {
-            if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
-                *control_flow = ControlFlow::Exit;
-                return;
-            }
-
-            if let Some(size) = input.window_resized() {
-                pixels.resize_surface(size.width, size.height);
-            }
-
-            //put your input handling code here
-
-            window.request_redraw();
-        }
-    });
+    Ok(())
 }
 
 struct Sprite {
@@ -90,6 +52,7 @@ struct ImageScene {
     width: usize,
     height: usize,
     sprites: Vec<Sprite>,
+    should_exit: bool,
 }
 
 impl ImageScene {
@@ -116,11 +79,16 @@ impl ImageScene {
             width,
             height,
             sprites,
+            should_exit: false,
         })
     }
 }
 
-impl ImageScene {
+impl System for ImageScene {
+    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+        vec![VirtualKeyCode::Escape]
+    }
+
     fn update(&mut self, delta: f32) {
         let sw = self.width;
         let sh = self.height;
@@ -141,10 +109,18 @@ impl ImageScene {
         }
     }
 
-    fn render(&self, graphics: &mut Graphics<'_>) {
+    fn render(&self, graphics: &mut Graphics) {
         graphics.clear(BLACK);
         for sprite in &self.sprites {
             graphics.draw_image((sprite.pos.0.round(), sprite.pos.1.round()), &sprite.image);
         }
+    }
+
+    fn on_key_down(&mut self, _keys: Vec<VirtualKeyCode>) {
+        self.should_exit = true;
+    }
+
+    fn should_exit(&self) -> bool {
+        self.should_exit
     }
 }

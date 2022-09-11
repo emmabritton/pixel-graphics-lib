@@ -80,7 +80,7 @@ impl WindowPreferences {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct WindowPref {
+struct WindowPref {
     x: i32,
     y: i32,
     w: u32,

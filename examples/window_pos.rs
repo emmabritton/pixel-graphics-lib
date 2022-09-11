@@ -3,7 +3,7 @@ use buffer_graphics_lib::color::*;
 use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prefs::WindowPreferences;
-use pixels_graphics_lib::{setup, WindowScaling};
+use pixels_graphics_lib::{setup, System, WindowScaling};
 use std::thread::sleep;
 use std::time::Duration;
 use winit::event::{Event, VirtualKeyCode};
@@ -78,6 +78,7 @@ struct WindowPrefsScene {
     pos: (usize, usize),
     colors: Vec<Color>,
     idx: usize,
+    should_exit: bool,
 }
 
 impl WindowPrefsScene {
@@ -89,12 +90,17 @@ impl WindowPrefsScene {
             pos,
             colors: vec![GREEN, RED, BLUE, WHITE, MAGENTA, YELLOW, CYAN],
             idx: 0,
+            should_exit: false,
         }
     }
 }
 
-impl WindowPrefsScene {
-    fn update(&mut self) {
+impl System for WindowPrefsScene {
+    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+        vec![VirtualKeyCode::Escape]
+    }
+
+    fn update(&mut self, _delta: f32) {
         if self.idx < self.colors.len() - 1 {
             self.idx += 1;
         } else {
@@ -120,5 +126,13 @@ impl WindowPrefsScene {
                 color_idx = 0;
             }
         }
+    }
+
+    fn on_key_down(&mut self, _keys: Vec<VirtualKeyCode>) {
+        self.should_exit = true;
+    }
+
+    fn should_exit(&self) -> bool {
+        self.should_exit
     }
 }
