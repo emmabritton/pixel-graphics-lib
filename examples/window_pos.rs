@@ -3,12 +3,8 @@ use buffer_graphics_lib::color::*;
 use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prefs::WindowPreferences;
-use pixels_graphics_lib::{setup, System, WindowScaling};
-use std::thread::sleep;
-use std::time::Duration;
-use winit::event::{Event, VirtualKeyCode};
-use winit::event_loop::{ControlFlow, EventLoop};
-use winit_input_helper::WinitInputHelper;
+use pixels_graphics_lib::{run, System, WindowScaling};
+use winit::event::VirtualKeyCode;
 
 /// Running this example will create preference directories and files on your computer!
 ///
@@ -16,61 +12,17 @@ use winit_input_helper::WinitInputHelper;
 /// It also has a small text demo
 
 fn main() -> Result<()> {
-    let event_loop = EventLoop::new();
-    let mut input = WinitInputHelper::new();
-    let (mut window, mut pixels) = setup(
-        (240, 160),
+    let width = 240;
+    let height = 160;
+    let system = WindowPrefsScene::new("Example Text", width, height);
+    run(
+        width,
+        height,
         WindowScaling::AutoFixed(2),
-        "Window Position Example",
-        &event_loop,
+        "Window Pos Example",
+        Box::new(system),
     )?;
-    let mut prefs = WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2")?;
-    prefs.load()?;
-    prefs.restore(&mut window);
-
-    let mut scene = WindowPrefsScene::new("Example text", 240, 160);
-
-    event_loop.run(move |event, _, control_flow| {
-        if let Event::LoopDestroyed = event {
-            prefs.store(&window);
-            //can't return from here so just print out error
-            let _ = prefs
-                .save()
-                .map_err(|err| eprintln!("Unable to save prefs: {:?}", err));
-        }
-
-        if let Event::RedrawRequested(_) = event {
-            let mut graphics = Graphics::new(pixels.get_frame(), 240, 160).unwrap();
-            scene.render(&mut graphics);
-            if pixels
-                .render()
-                .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
-                .is_err()
-            {
-                *control_flow = ControlFlow::Exit;
-                return;
-            }
-        }
-
-        scene.update();
-
-        if input.update(&event) {
-            if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
-                *control_flow = ControlFlow::Exit;
-                return;
-            }
-
-            if let Some(size) = input.window_resized() {
-                pixels.resize_surface(size.width, size.height);
-            }
-
-            //put your input handling code here
-
-            window.request_redraw();
-        }
-
-        sleep(Duration::from_millis(30));
-    });
+    Ok(())
 }
 
 struct WindowPrefsScene {
@@ -98,6 +50,10 @@ impl WindowPrefsScene {
 impl System for WindowPrefsScene {
     fn action_keys(&self) -> Vec<VirtualKeyCode> {
         vec![VirtualKeyCode::Escape]
+    }
+
+    fn window_prefs(&self) -> Option<WindowPreferences> {
+        Some(WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2").unwrap())
     }
 
     fn update(&mut self, _delta: f32) {
@@ -128,8 +84,10 @@ impl System for WindowPrefsScene {
         }
     }
 
-    fn on_key_down(&mut self, _keys: Vec<VirtualKeyCode>) {
-        self.should_exit = true;
+    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {
+        if keys.contains(&VirtualKeyCode::Escape) {
+            self.should_exit = true;
+        }
     }
 
     fn should_exit(&self) -> bool {

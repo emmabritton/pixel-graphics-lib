@@ -43,8 +43,10 @@ impl System for Basic {
         graphics.clear(Color::gray(self.greyscale))
     }
 
-    fn on_key_down(&mut self, _keys: Vec<VirtualKeyCode>) {
-        self.should_exit = true;
+    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {
+        if keys.contains(&VirtualKeyCode::Escape) {
+            self.should_exit = true;
+        }
     }
 
     fn should_exit(&self) -> bool {
