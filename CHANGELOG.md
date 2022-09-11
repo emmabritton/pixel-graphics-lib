@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.6.1
+- 
+
 ### Version 0.6.0
 - Add `run` method that handles setting up and running winit
 

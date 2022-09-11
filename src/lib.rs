@@ -38,6 +38,7 @@
 
 #[cfg(feature = "window_prefs")]
 pub mod prefs;
+pub mod utilities;
 
 use crate::prefs::WindowPreferences;
 use crate::GraphicsError::LoadingWindowPref;

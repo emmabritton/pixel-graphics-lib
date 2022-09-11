@@ -9,8 +9,8 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 In your `Cargo.toml` file add
 ```toml
 graphics-shapes = "0.1.2"
-buffer-graphics-lib = "0.6.1"
-pixels-graphics-lib = "0.6.0"
+buffer-graphics-lib = "0.6.2"
+pixels-graphics-lib = "0.6.1"
 winit = "0.27.2"
 winit_input_helper = "0.13.0"
 ```

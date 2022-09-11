@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2021"
 authors = ["Ray Britton <raybritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
