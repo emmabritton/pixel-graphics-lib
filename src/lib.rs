@@ -182,6 +182,7 @@ pub trait System {
     fn on_mouse_move(&mut self, x: usize, y: usize) {}
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
+    fn on_key_pressed(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_window_closed(&mut self) {}
@@ -277,6 +278,14 @@ pub fn run(
                 }
             }
             system.on_key_up(released_buttons);
+
+            let mut typed_buttons = vec![];
+            for button in system.action_keys() {
+                if input.key_pressed(button) {
+                    typed_buttons.push(button);
+                }
+            }
+            system.on_key_pressed(typed_buttons);
 
             if input.mouse_held(0) {
                 system.on_mouse_down(mouse_x, mouse_y, MouseButton::Left);

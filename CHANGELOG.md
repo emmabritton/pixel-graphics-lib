@@ -1,7 +1,10 @@
 # Changelog
 
+### Version 0.6.2 
+- Add on_key_pressed for System
+
 ### Version 0.6.1
-- 
+- Add VirtualKeyCode collections
 
 ### Version 0.6.0
 - Add `run` method that handles setting up and running winit
