@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.6.3
+- Update buffer graphics lib (adding Ellipse)
+
 ### Version 0.6.2 
 - Add on_key_pressed for System
 
