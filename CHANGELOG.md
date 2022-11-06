@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.6.4
+- Update buffer graphics and pixels
+
 ### Version 0.6.3
 - Update buffer graphics lib (adding Ellipse)
 

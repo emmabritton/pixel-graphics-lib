@@ -228,7 +228,7 @@ pub fn run(
             }
         }
         if let Event::RedrawRequested(_) = event {
-            let mut graphics = Graphics::new(pixels.get_frame(), width, height).unwrap();
+            let mut graphics = Graphics::new(pixels.get_frame_mut(), width, height).unwrap();
             system.render(&mut graphics);
             if pixels
                 .render()

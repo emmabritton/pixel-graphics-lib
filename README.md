@@ -8,9 +8,9 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-graphics-shapes = "0.1.3"
-buffer-graphics-lib = "0.7.0"
-pixels-graphics-lib = "0.6.3"
+graphics-shapes = "0.1.4"
+buffer-graphics-lib = "0.7.1"
+pixels-graphics-lib = "0.6.4"
 winit = "0.27.2"
 winit_input_helper = "0.13.0" #only needed if you're not using `run()`
 ```
@@ -22,14 +22,14 @@ This bit of boilerplate/framework must be used inside your code to use this libr
 struct Example {}
 
 fn main() -> Result<()> {
-    let system = Box::new(Example::new());
+    let system = Box::new(Example {});
     run(240, 160, WindowScaling::Auto, "Example", system)?;
     Ok(())
 }
 
 impl System for Example {
-    fn render(&self, graphics: &mut Graphics) {}
     fn update(&mut self, delta: f32) {}
+    fn render(&self, graphics: &mut Graphics) {}
 }
 ```
 
