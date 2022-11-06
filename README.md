@@ -38,3 +38,5 @@ impl System for Example {
 ### `window_prefs`
 
 Save and restore window position and size
+
+To use this the `impl System` must override `System::window_prefs()`
