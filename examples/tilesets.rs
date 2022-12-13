@@ -74,7 +74,7 @@ impl System for TilesetScene {
         graphics.draw_image(self.one_pos, &self.one);
         graphics.draw_image(self.two_pos, &self.two);
         if self.active {
-            graphics.draw_at(self.one_pos, &self.one_shape);
+            graphics.draw_offset(self.one_pos, &self.one_shape);
         } else {
             graphics.draw(&self.two_shape);
         }
