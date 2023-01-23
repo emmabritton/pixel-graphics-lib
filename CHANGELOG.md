@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.7.4
+- Update buffer graphics lib
+
 ### Version 0.7.3
 - Update buffer graphics lib
 
