@@ -251,7 +251,9 @@ pub fn run(
             }
 
             if let Some(size) = input.window_resized() {
-                pixels.resize_surface(size.width, size.height);
+                pixels
+                    .resize_surface(size.width, size.height)
+                    .expect("Unable to resize buffer");
             }
 
             if let Some(mc) = input.mouse() {
