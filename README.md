@@ -23,12 +23,12 @@ struct Example {}
 
 fn main() -> Result<()> {
     let system = Box::new(Example {});
-    run(240, 160, WindowScaling::Auto, "Example", system)?;
+    run(240, 160, WindowScaling::Auto, "Example", system, ExecutionSpeed::standard())?;
     Ok(())
 }
 
 impl System for Example {
-    fn update(&mut self, delta: f32) {}
+    fn update(&mut self, timing: &Timing) {}
     fn render(&self, graphics: &mut Graphics) {}
 }
 ```
