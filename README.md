@@ -8,8 +8,6 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-graphics-shapes = "0.1.7"
-buffer-graphics-lib = "0.9.2"
 pixels-graphics-lib = "0.8.0"
 winit = "0.27.2"
 winit_input_helper = "0.13.0" #only needed if you're not using `run()`
@@ -19,6 +17,8 @@ winit_input_helper = "0.13.0" #only needed if you're not using `run()`
 
 This bit of boilerplate/framework must be used inside your code to use this library:
 ```rust
+use pixels_graphics_lib::prelude::*;
+
 struct Example {}
 
 fn main() -> Result<()> {
