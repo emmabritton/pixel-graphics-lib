@@ -4,7 +4,7 @@ use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::image_loading::load_image;
 use buffer_graphics_lib::scaling::Scaling;
 use buffer_graphics_lib::{Graphics, Tint};
-use pixels_graphics_lib::{run, System, WindowScaling};
+use pixels_graphics_lib::prelude::*;
 use std::rc::Rc;
 use winit::event::VirtualKeyCode;
 
@@ -21,6 +21,7 @@ fn main() -> Result<()> {
         WindowScaling::Fixed(2),
         "Image Example",
         Box::new(system),
+        ExecutionSpeed::standard(),
     )?;
     Ok(())
 }
@@ -89,7 +90,7 @@ impl System for ImageScene {
         vec![VirtualKeyCode::Escape]
     }
 
-    fn update(&mut self, delta: f32) {
+    fn update(&mut self, timing: &Timing) {
         let sw = self.width;
         let sh = self.height;
 
@@ -101,8 +102,8 @@ impl System for ImageScene {
         };
 
         for sprite in self.sprites.iter_mut() {
-            sprite.pos.0 += sprite.dir.0 * sprite.speed * delta;
-            sprite.pos.1 += sprite.dir.1 * sprite.speed * delta;
+            sprite.pos.0 += sprite.dir.0 * sprite.speed * timing.fixed_time_step_f32;
+            sprite.pos.1 += sprite.dir.1 * sprite.speed * timing.fixed_time_step_f32;
             if is_off_screen(sprite) {
                 sprite.pos = (fastrand::f32() * sw as f32, fastrand::f32() * sh as f32);
             }

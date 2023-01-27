@@ -1,5 +1,14 @@
 # Changelog
 
+### Version 0.8.0
+- Add prelude
+- Update buffer graphics lib
+- Update shapes lib
+- Unlocks frame rate
+- Replace `delta` in `update()` with `Timing` that provides more info
+- Fix when update and render are called to achieve more consistent update/render rates
+  - Use `fixed_time_step` instead of `delta` now generally
+
 ### Version 0.7.4
 - Update buffer graphics lib
 

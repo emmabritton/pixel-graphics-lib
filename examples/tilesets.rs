@@ -1,13 +1,16 @@
 use anyhow::Result;
-use buffer_graphics_lib::color::{BLUE, LIGHT_GRAY};
+use buffer_graphics_lib::color::{BLUE, LIGHT_GRAY, RED};
 use buffer_graphics_lib::drawable::{stroke, Drawable};
 use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::image_loading::tilesets::BasicTileset;
 use buffer_graphics_lib::shapes::CreateDrawable;
+use buffer_graphics_lib::text::format::Positioning::RightTop;
+use buffer_graphics_lib::text::pos::TextPos;
+use buffer_graphics_lib::text::TextSize::Normal;
 use buffer_graphics_lib::Graphics;
 use graphics_shapes::circle::Circle;
 use graphics_shapes::rect::Rect;
-use pixels_graphics_lib::{run, System, WindowScaling};
+use pixels_graphics_lib::prelude::*;
 use winit::event::VirtualKeyCode;
 
 /// This example shows how to use BasicTileset and handle user keyboard input
@@ -20,6 +23,7 @@ fn main() -> Result<()> {
         WindowScaling::None,
         "Tileset Example",
         Box::new(system),
+        ExecutionSpeed::standard(),
     )?;
     Ok(())
 }
@@ -33,6 +37,7 @@ struct TilesetScene {
     two_shape: Drawable<Circle>,
     active: bool,
     should_exit: bool,
+    fps: usize,
 }
 
 impl TilesetScene {
@@ -50,6 +55,7 @@ impl TilesetScene {
             one_shape: Drawable::from_obj(Rect::new((0, 0), (18, 18)), stroke(BLUE)),
             two_shape: Drawable::from_obj(Circle::new((0, 0), 9), stroke(BLUE)),
             should_exit: false,
+            fps: 0,
         })
     }
 }
@@ -67,7 +73,9 @@ impl System for TilesetScene {
         ]
     }
 
-    fn update(&mut self, _delta: f32) {}
+    fn update(&mut self, timing: &Timing) {
+        self.fps = timing.stats.fps;
+    }
 
     fn render(&self, graphics: &mut Graphics) {
         graphics.clear(LIGHT_GRAY);
@@ -78,6 +86,11 @@ impl System for TilesetScene {
         } else {
             graphics.draw(&self.two_shape);
         }
+        graphics.draw_text(
+            &format!("{}", self.fps),
+            TextPos::px((299, 1)),
+            (RED, Normal, RightTop),
+        );
     }
 
     fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {

@@ -6,19 +6,13 @@
 //!
 //! ```
 //! # use std::error::Error;
-//! # use winit::event::{Event, VirtualKeyCode};
-//! # use pixels_graphics_lib::{WindowScaling, setup};
-//! # use winit_input_helper::WinitInputHelper;
-//! # use winit::event_loop::{ControlFlow, EventLoop};
-//! # use pixels_graphics_lib::System;
-//! # use buffer_graphics_lib::Graphics;
-//! # use pixels_graphics_lib::run;
+//! use pixels_graphics_lib::prelude::*;
 //!
 //! struct Example {
 //! }
 //!
 //! impl System for Example {
-//!   fn update(&mut self, delta: f32) {
+//!   fn update(&mut self, delta: &Timing) {
 //!
 //!   }
 //!
@@ -28,8 +22,8 @@
 //! }
 //!
 //! fn main() -> Result<(), Box<dyn Error>> {
-//!   let system = Example {};
-//!   run(240, 160, WindowScaling::Auto, "Doc Example", Box::new(system))?;
+//! let system = Example {};
+//!   run(240, 160, WindowScaling::Auto, "Doc Example", Box::new(system), ExecutionSpeed::standard())?;
 //!   Ok(())
 //! }
 //!```
@@ -42,16 +36,24 @@ pub mod utilities;
 
 use crate::prefs::WindowPreferences;
 use crate::GraphicsError::LoadingWindowPref;
+pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
-use pixels::{Pixels, SurfaceTexture};
-use std::thread::sleep;
-use std::time::{Duration, Instant};
+pub use graphics_shapes;
+use pixels::wgpu::PresentMode;
+use pixels::{Pixels, PixelsBuilder, SurfaceTexture};
+use std::time::Instant;
 use thiserror::Error;
 use winit::dpi::LogicalSize;
-use winit::event::{Event, VirtualKeyCode};
+use winit::event::{Event, VirtualKeyCode, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{Window, WindowBuilder};
 use winit_input_helper::WinitInputHelper;
+
+pub mod prelude {
+    pub use crate::{run, setup, ExecutionSpeed, Stats, System, Timing, WindowScaling};
+    pub use buffer_graphics_lib::Graphics;
+    pub use graphics_shapes::prelude::*;
+}
 
 #[derive(Error, Debug)]
 pub enum GraphicsError {
@@ -104,9 +106,10 @@ pub fn setup(
 ) -> Result<(Window, Pixels), GraphicsError> {
     let win = create_window(canvas_size, title, window_scaling, event_loop)?;
     let surface = SurfaceTexture::new(win.inner_size().width, win.inner_size().height, &win);
-    let pixels = Pixels::new(canvas_size.0 as u32, canvas_size.1 as u32, surface)
+    let pixels = PixelsBuilder::new(canvas_size.0 as u32, canvas_size.1 as u32, surface)
+        .present_mode(PresentMode::AutoNoVsync)
+        .build()
         .map_err(GraphicsError::PixelsInit)?;
-
     Ok((win, pixels))
 }
 
@@ -132,7 +135,7 @@ fn create_window(
         .with_visible(false)
         .with_title(title)
         .build(event_loop)
-        .map_err(|err| GraphicsError::WindowInit(format!("{:?}", err)))?;
+        .map_err(|err| GraphicsError::WindowInit(format!("{err:?}")))?;
     let factor = match scale {
         WindowScaling::None => 1.,
         WindowScaling::Auto => window.scale_factor().ceil(),
@@ -177,7 +180,7 @@ pub trait System {
     fn window_prefs(&self) -> Option<WindowPreferences> {
         None
     }
-    fn update(&mut self, delta: f32);
+    fn update(&mut self, delta: &Timing);
     fn render(&self, graphics: &mut Graphics);
     fn on_mouse_move(&mut self, x: usize, y: usize) {}
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
@@ -186,8 +189,96 @@ pub trait System {
     fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_window_closed(&mut self) {}
+    fn on_visibility_changed(&mut self, visible: bool) {}
+    fn on_focus_changed(&mut self, focused: bool) {}
     fn should_exit(&self) -> bool {
         false
+    }
+}
+
+#[derive(Debug)]
+pub struct Stats {
+    pub fps: usize,
+    pub(crate) last_frame_count: usize,
+    pub(crate) last_frame_check: Instant,
+}
+
+#[derive(Debug)]
+pub struct Timing {
+    /// time factor for lerp, etc
+    pub delta: f64,
+    /// when execution started
+    pub started_at: Instant,
+    /// time at start of frame
+    pub now: Instant,
+    /// time at start of last frame
+    pub last: Instant,
+    /// number of updates so far
+    pub updates: usize,
+    /// number of renders so far
+    pub renders: usize,
+    accumulated_time: f64,
+    max_render_time: f64,
+    pub fixed_time_step: f64,
+    pub fixed_time_step_f32: f32,
+    pub stats: Stats,
+}
+
+impl Timing {
+    pub(crate) fn new(speed: ExecutionSpeed) -> Timing {
+        Timing {
+            delta: 0.0,
+            started_at: Instant::now(),
+            now: Instant::now(),
+            last: Instant::now(),
+            updates: 0,
+            renders: 0,
+            accumulated_time: 0.0,
+            max_render_time: 0.1,
+            fixed_time_step: 1.0 / (speed.ups as f64),
+            fixed_time_step_f32: 1.0 / (speed.ups as f32),
+            stats: Stats {
+                fps: 0,
+                last_frame_count: 0,
+                last_frame_check: Instant::now(),
+            },
+        }
+    }
+
+    pub(crate) fn update_fps(&mut self) {
+        if self
+            .now
+            .duration_since(self.stats.last_frame_check)
+            .as_secs_f32()
+            >= 1.0
+        {
+            self.stats.fps = self.renders - self.stats.last_frame_count;
+            self.stats.last_frame_check = self.now;
+            self.stats.last_frame_count = self.renders;
+        }
+    }
+
+    pub(crate) fn update(&mut self) {
+        self.now = Instant::now();
+        self.delta = self.now.duration_since(self.last).as_secs_f64();
+        if self.delta > self.max_render_time {
+            self.delta = self.max_render_time;
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct ExecutionSpeed {
+    pub ups: usize,
+}
+
+impl ExecutionSpeed {
+    pub fn new(ups: usize) -> Self {
+        Self { ups }
+    }
+
+    pub fn standard() -> Self {
+        Self::new(240)
     }
 }
 
@@ -197,6 +288,7 @@ pub fn run(
     window_scaling: WindowScaling,
     title: &str,
     mut system: Box<dyn System>,
+    speed: ExecutionSpeed,
 ) -> Result<(), GraphicsError> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
@@ -208,40 +300,55 @@ pub fn run(
         prefs.restore(&mut window);
     }
 
-    let mut time = Instant::now();
+    let mut timing = Timing::new(speed);
     let mut mouse_x = 0;
     let mut mouse_y = 0;
 
     event_loop.run(move |event, _, control_flow| {
-        let now = Instant::now();
-        let delta = now.duration_since(time).as_secs_f32();
-        time = now;
-        if let Event::LoopDestroyed = event {
-            system.on_window_closed();
-            #[cfg(feature = "window_prefs")]
-            if let Some(mut prefs) = system.window_prefs() {
-                prefs.store(&window);
-                //can't return from here so just print out error
-                let _ = prefs
-                    .save()
-                    .map_err(|err| eprintln!("Unable to save prefs: {:?}", err));
-            }
-        }
-        if let Event::RedrawRequested(_) = event {
-            let mut graphics = Graphics::new(pixels.get_frame_mut(), width, height).unwrap();
-            system.render(&mut graphics);
-            if pixels
-                .render()
-                .map_err(|e| eprintln!("pixels.render() failed: {:?}", e))
-                .is_err()
-            {
+        timing.update();
+        match &event {
+            Event::LoopDestroyed => {
                 system.on_window_closed();
-                *control_flow = ControlFlow::Exit;
-                return;
+                #[cfg(feature = "window_prefs")]
+                if let Some(mut prefs) = system.window_prefs() {
+                    prefs.store(&window);
+                    //can't return from here so just print out error
+                    let _ = prefs
+                        .save()
+                        .map_err(|err| eprintln!("Unable to save prefs: {err:?}"));
+                }
             }
+            Event::MainEventsCleared => {
+                window.request_redraw();
+            }
+            Event::RedrawRequested(_) => {
+                let mut graphics = Graphics::new(pixels.get_frame_mut(), width, height).unwrap();
+                system.render(&mut graphics);
+                timing.renders += 1;
+                if pixels
+                    .render()
+                    .map_err(|e| eprintln!("pixels.render() failed: {e:?}"))
+                    .is_err()
+                {
+                    system.on_window_closed();
+                    *control_flow = ControlFlow::Exit;
+                    return;
+                }
+            }
+            Event::WindowEvent { event, .. } => match event {
+                WindowEvent::Occluded(hidden) => system.on_visibility_changed(!*hidden),
+                WindowEvent::Focused(focused) => system.on_focus_changed(*focused),
+                _ => {}
+            },
+            _ => {}
         }
 
-        system.update(delta);
+        timing.accumulated_time += timing.delta;
+        while timing.accumulated_time >= timing.fixed_time_step {
+            system.update(&timing);
+            timing.accumulated_time -= timing.fixed_time_step;
+            timing.updates += 1;
+        }
 
         if input.update(&event) {
             if input.quit() {
@@ -310,6 +417,8 @@ pub fn run(
             *control_flow = ControlFlow::Exit;
         }
 
-        sleep(Duration::from_millis(1));
+        timing.update_fps();
+
+        timing.last = timing.now;
     });
 }

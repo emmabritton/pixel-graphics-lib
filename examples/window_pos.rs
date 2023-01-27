@@ -3,7 +3,7 @@ use buffer_graphics_lib::color::*;
 use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prefs::WindowPreferences;
-use pixels_graphics_lib::{run, System, WindowScaling};
+use pixels_graphics_lib::prelude::*;
 use winit::event::VirtualKeyCode;
 
 /// Running this example will create preference directories and files on your computer!
@@ -21,6 +21,7 @@ fn main() -> Result<()> {
         WindowScaling::AutoFixed(2),
         "Window Pos Example",
         Box::new(system),
+        ExecutionSpeed::standard(),
     )?;
     Ok(())
 }
@@ -56,7 +57,7 @@ impl System for WindowPrefsScene {
         Some(WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2").unwrap())
     }
 
-    fn update(&mut self, _delta: f32) {
+    fn update(&mut self, _delta: &Timing) {
         if self.idx < self.colors.len() - 1 {
             self.idx += 1;
         } else {

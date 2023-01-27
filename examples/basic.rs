@@ -1,14 +1,21 @@
 use anyhow::Result;
 use buffer_graphics_lib::color::Color;
 use buffer_graphics_lib::Graphics;
-use pixels_graphics_lib::{run, System, WindowScaling};
+use pixels_graphics_lib::prelude::*;
 use winit::event::VirtualKeyCode;
 
 /// This example shows the minimum code needed to use the library
 
 fn main() -> Result<()> {
     let system = Box::new(Basic::new());
-    run(240, 160, WindowScaling::Auto, "Basic Example", system)?;
+    run(
+        240,
+        160,
+        WindowScaling::Auto,
+        "Basic Example",
+        system,
+        ExecutionSpeed::standard(),
+    )?;
     Ok(())
 }
 
@@ -31,7 +38,7 @@ impl System for Basic {
         vec![VirtualKeyCode::Escape]
     }
 
-    fn update(&mut self, _delta: f32) {
+    fn update(&mut self, _delta: &Timing) {
         if self.greyscale < 255 {
             self.greyscale += 1;
         } else {
