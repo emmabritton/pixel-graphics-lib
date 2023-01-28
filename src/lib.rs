@@ -53,6 +53,7 @@ pub mod prelude {
     pub use crate::{run, setup, ExecutionSpeed, Stats, System, Timing, WindowScaling};
     pub use buffer_graphics_lib::Graphics;
     pub use graphics_shapes::prelude::*;
+    pub use winit::event::VirtualKeyCode;
 }
 
 #[derive(Error, Debug)]

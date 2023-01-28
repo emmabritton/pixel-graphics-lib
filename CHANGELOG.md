@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.8.1
+- Update buffer graphics lib
+- Update shapes lib
+
 ### Version 0.8.0
 - Add prelude
 - Update buffer graphics lib
