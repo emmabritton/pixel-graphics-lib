@@ -24,6 +24,7 @@ pub enum PrefError {
     MakingDirs(String, String),
 }
 
+#[derive(Clone, Debug)]
 pub struct WindowPreferences {
     preferences: Preferences<WindowPref>,
 }
@@ -79,7 +80,7 @@ impl WindowPreferences {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 struct WindowPref {
     x: i32,
     y: i32,

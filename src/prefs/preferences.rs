@@ -8,6 +8,7 @@ use std::fs;
 use std::fs::remove_file;
 use std::path::PathBuf;
 
+#[derive(Clone, Debug)]
 pub struct Preferences<T>
 where
     T: Serialize + DeserializeOwned,

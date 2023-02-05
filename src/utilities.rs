@@ -65,8 +65,10 @@ pub mod virtual_key_codes {
         VirtualKeyCode::Tab,
         VirtualKeyCode::Back,
     ];
-    pub const SYMBOLS: [VirtualKeyCode; 9] = [
+    pub const SYMBOLS: [VirtualKeyCode; 12] = [
         VirtualKeyCode::Minus,
+        VirtualKeyCode::Plus,
+        VirtualKeyCode::Asterisk,
         VirtualKeyCode::Semicolon,
         VirtualKeyCode::Equals,
         VirtualKeyCode::LBracket,
@@ -75,6 +77,7 @@ pub mod virtual_key_codes {
         VirtualKeyCode::Period,
         VirtualKeyCode::Slash,
         VirtualKeyCode::Apostrophe,
+        VirtualKeyCode::Backslash,
     ];
 }
 
