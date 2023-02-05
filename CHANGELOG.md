@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 0.8.3
+- Add UI
+- Add scenes
+- Add dialogs
+
 ### Version 0.8.2
 - Update buffer graphics lib
 - Added option for vsync
