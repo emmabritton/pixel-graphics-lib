@@ -20,10 +20,12 @@ fn main() -> Result<()> {
     run(
         300,
         300,
-        WindowScaling::None,
         "Tileset Example",
         Box::new(system),
-        ExecutionSpeed::standard(),
+        Options {
+            scaling: WindowScaling::None,
+            ..Options::default()
+        },
     )?;
     Ok(())
 }

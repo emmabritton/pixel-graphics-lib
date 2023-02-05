@@ -2,6 +2,10 @@
 
 ### Version 0.8.2
 - Update buffer graphics lib
+- Added option for vsync
+
+### Version 0.8.2
+- Update buffer graphics lib
 
 ### Version 0.8.1
 - Update buffer graphics lib

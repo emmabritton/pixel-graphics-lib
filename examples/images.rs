@@ -1,7 +1,6 @@
 use anyhow::Result;
 use buffer_graphics_lib::color::BLACK;
 use buffer_graphics_lib::image::Image;
-use buffer_graphics_lib::image_loading::load_image;
 use buffer_graphics_lib::scaling::Scaling;
 use buffer_graphics_lib::{Graphics, Tint};
 use pixels_graphics_lib::prelude::*;
@@ -18,10 +17,9 @@ fn main() -> Result<()> {
     run(
         width,
         height,
-        WindowScaling::Fixed(2),
         "Image Example",
         Box::new(system),
-        ExecutionSpeed::standard(),
+        Options::default(),
     )?;
     Ok(())
 }
@@ -58,7 +56,7 @@ struct ImageScene {
 
 impl ImageScene {
     pub fn new(path: &str, width: usize, height: usize) -> Result<Self> {
-        let image = load_image(path)?;
+        let image = open_image(path)?;
         let mut red = image.clone();
         red.tint_mul(1.0, 0.0, 0.0, 1.0); //the original image is white so set the green and blue channels to 0
         let mut double_blue = image.scale(Scaling::Epx2x);

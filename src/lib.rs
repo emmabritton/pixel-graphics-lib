@@ -23,15 +23,18 @@
 //!
 //! fn main() -> Result<(), Box<dyn Error>> {
 //! let system = Example {};
-//!   run(240, 160, WindowScaling::Auto, "Doc Example", Box::new(system), ExecutionSpeed::standard())?;
+//!   run(240, 160, "Doc Example", Box::new(system), Options::default())?;
 //!   Ok(())
 //! }
 //!```
 
 #![deny(clippy::all)]
 
+pub mod dialogs;
 #[cfg(feature = "window_prefs")]
 pub mod prefs;
+pub mod scenes;
+pub mod ui;
 pub mod utilities;
 
 use crate::prefs::WindowPreferences;
@@ -39,20 +42,22 @@ use crate::GraphicsError::LoadingWindowPref;
 pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
 pub use graphics_shapes;
-use pixels::wgpu::PresentMode;
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture};
 use std::time::Instant;
 use thiserror::Error;
 use winit::dpi::LogicalSize;
 use winit::event::{Event, VirtualKeyCode, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
-use winit::window::{Window, WindowBuilder};
+use winit::window::{CursorGrabMode, Window, WindowBuilder};
 use winit_input_helper::WinitInputHelper;
+use crate::ui::styles::UiStyle;
 
 pub mod prelude {
-    pub use crate::{run, setup, ExecutionSpeed, Stats, System, Timing, WindowScaling};
-    pub use buffer_graphics_lib::Graphics;
-    pub use graphics_shapes::prelude::*;
+    pub use crate::dialogs::*;
+    pub use crate::scenes::*;
+    pub use crate::ui::*;
+    pub use crate::*;
+    pub use buffer_graphics_lib::prelude::*;
     pub use winit::event::VirtualKeyCode;
 }
 
@@ -101,19 +106,20 @@ pub enum GraphicsError {
 /// * `WindowInit` - If the window can not be created
 pub fn setup(
     canvas_size: (usize, usize),
-    window_scaling: WindowScaling,
+    options: &Options,
     title: &str,
     event_loop: &EventLoop<()>,
 ) -> Result<(Window, Pixels), GraphicsError> {
-    let win = create_window(canvas_size, title, window_scaling, event_loop)?;
+    let win = create_window(canvas_size, title, options.scaling, event_loop)?;
     let surface = SurfaceTexture::new(win.inner_size().width, win.inner_size().height, &win);
     let pixels = PixelsBuilder::new(canvas_size.0 as u32, canvas_size.1 as u32, surface)
-        .present_mode(PresentMode::AutoNoVsync)
+        .enable_vsync(options.vsync)
         .build()
         .map_err(GraphicsError::PixelsInit)?;
     Ok((win, pixels))
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum WindowScaling {
     /// Make the canvas and window be the same of numbers, this ignores DPI
     None,
@@ -167,6 +173,7 @@ fn create_window(
     Ok(window)
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum MouseButton {
     Left,
     Right,
@@ -186,6 +193,7 @@ pub trait System {
     fn on_mouse_move(&mut self, x: usize, y: usize) {}
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
+    fn on_scroll(&mut self, diff: isize) {}
     fn on_key_pressed(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {}
@@ -226,7 +234,7 @@ pub struct Timing {
 }
 
 impl Timing {
-    pub(crate) fn new(speed: ExecutionSpeed) -> Timing {
+    pub(crate) fn new(speed: usize) -> Timing {
         Timing {
             delta: 0.0,
             started_at: Instant::now(),
@@ -236,8 +244,8 @@ impl Timing {
             renders: 0,
             accumulated_time: 0.0,
             max_render_time: 0.1,
-            fixed_time_step: 1.0 / (speed.ups as f64),
-            fixed_time_step_f32: 1.0 / (speed.ups as f32),
+            fixed_time_step: 1.0 / (speed as f64),
+            fixed_time_step_f32: 1.0 / (speed as f32),
             stats: Stats {
                 fps: 0,
                 last_frame_count: 0,
@@ -269,31 +277,69 @@ impl Timing {
 }
 
 #[derive(Debug)]
-pub struct ExecutionSpeed {
+pub struct Options {
     pub ups: usize,
+    pub scaling: WindowScaling,
+    pub vsync: bool,
+    pub hide_cursor: bool,
+    pub confine_cursor: bool,
+    pub style: UiStyle
 }
 
-impl ExecutionSpeed {
-    pub fn new(ups: usize) -> Self {
-        Self { ups }
+impl Options {
+    pub fn new(
+        ups: usize,
+        scaling: WindowScaling,
+        vsync: bool,
+        hide_cursor: bool,
+        confine_cursor: bool,
+        style: UiStyle
+    ) -> Self {
+        Self {
+            ups,
+            scaling,
+            vsync,
+            hide_cursor,
+            confine_cursor,
+            style
+        }
     }
+}
 
-    pub fn standard() -> Self {
-        Self::new(240)
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            ups: 240,
+            scaling: WindowScaling::Auto,
+            vsync: true,
+            hide_cursor: false,
+            confine_cursor: false,
+            style: UiStyle::default()
+        }
     }
 }
 
 pub fn run(
     width: usize,
     height: usize,
-    window_scaling: WindowScaling,
     title: &str,
     mut system: Box<dyn System>,
-    speed: ExecutionSpeed,
+    options: Options,
 ) -> Result<(), GraphicsError> {
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
-    let (mut window, mut pixels) = setup((width, height), window_scaling, title, &event_loop)?;
+    let (mut window, mut pixels) = setup((width, height), &options, title, &event_loop)?;
+
+    if options.confine_cursor {
+        #[cfg(target_os = "macos")]
+        let _ = window.set_cursor_grab(CursorGrabMode::Locked);
+        #[cfg(not(target_os = "macos"))]
+        let _ = window.set_cursor_grab(CursorGrabMode::Confined);
+    }
+
+    if options.hide_cursor {
+        window.set_cursor_visible(false);
+    }
 
     #[cfg(feature = "window_prefs")]
     if let Some(mut prefs) = system.window_prefs() {
@@ -301,7 +347,7 @@ pub fn run(
         prefs.restore(&mut window);
     }
 
-    let mut timing = Timing::new(speed);
+    let mut timing = Timing::new(options.ups);
     let mut mouse_x = 0;
     let mut mouse_y = 0;
 
@@ -409,6 +455,10 @@ pub fn run(
             }
             if input.mouse_released(1) {
                 system.on_mouse_up(mouse_x, mouse_y, MouseButton::Right);
+            }
+            let scroll = input.scroll_diff();
+            if scroll != 0.0 {
+                system.on_scroll(scroll.trunc() as isize);
             }
 
             window.request_redraw();

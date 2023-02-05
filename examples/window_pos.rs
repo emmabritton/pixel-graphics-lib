@@ -18,10 +18,9 @@ fn main() -> Result<()> {
     run(
         width,
         height,
-        WindowScaling::AutoFixed(2),
         "Window Pos Example",
         Box::new(system),
-        ExecutionSpeed::standard(),
+        Options::default(),
     )?;
     Ok(())
 }

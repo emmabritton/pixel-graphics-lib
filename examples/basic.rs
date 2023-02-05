@@ -8,14 +8,7 @@ use winit::event::VirtualKeyCode;
 
 fn main() -> Result<()> {
     let system = Box::new(Basic::new());
-    run(
-        240,
-        160,
-        WindowScaling::Auto,
-        "Basic Example",
-        system,
-        ExecutionSpeed::standard(),
-    )?;
+    run(240, 160, "Basic Example", system, Options::default())?;
     Ok(())
 }
 

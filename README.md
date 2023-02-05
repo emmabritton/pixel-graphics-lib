@@ -39,3 +39,23 @@ impl System for Example {
 Save and restore window position and size
 
 To use this the `impl System` must override `System::window_prefs()`
+
+## Projects
+
+### Retro Games
+
+A few retro games
+
+[Repo](https://github.com/emmabritton/retro-games)
+
+### ICI Image editor
+
+Editor for `IndexedImage`
+
+[Repo](https://github.com/emmabritton/ici-image-editor)
+
+### USFX Tester
+
+Test GUI for [USFX](https://github.com/tversteeg/usfx)
+
+[Repo](https://github.com/emmabritton/uxfs-test)
