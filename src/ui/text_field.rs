@@ -62,7 +62,7 @@ pub struct TextField {
     text_size: TextSize,
     cursor: Drawable<Rect>,
     filters: Vec<TextFilter>,
-    style: TextFieldStyle
+    style: TextFieldStyle,
 }
 
 impl TextField {
@@ -73,7 +73,7 @@ impl TextField {
         min_width: Option<usize>,
         initial_content: &str,
         filters: &[TextFilter],
-        style: &TextFieldStyle
+        style: &TextFieldStyle,
     ) -> Self {
         let rect = Rect::new_with_size(
             xy,
@@ -103,7 +103,7 @@ impl TextField {
             text_size,
             cursor,
             filters: filters.to_vec(),
-            style: style.clone()
+            style: style.clone(),
         }
     }
 }
@@ -155,10 +155,8 @@ impl TextField {
                 }
             }
             None => {
-                if key == VirtualKeyCode::Back {
-                    if !self.content.is_empty() {
-                        self.content.remove(self.content.len() - 1);
-                    }
+                if key == VirtualKeyCode::Back && !self.content.is_empty() {
+                    self.content.remove(self.content.len() - 1);
                 }
             }
         }
@@ -219,8 +217,11 @@ impl Ui for TextField {
                         0,
                     );
             }
-            if let Some(color) =self.style.cursor.get(hovered, self.focused) {
-                self.cursor.with_draw_type(fill(color)).with_move(xy).render(graphics);
+            if let Some(color) = self.style.cursor.get(hovered, self.focused) {
+                self.cursor
+                    .with_draw_type(fill(color))
+                    .with_move(xy)
+                    .render(graphics);
             }
         }
     }

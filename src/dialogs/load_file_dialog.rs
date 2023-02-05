@@ -35,7 +35,7 @@ where
         height: usize,
         style: &DialogStyle,
     ) -> Box<Self> {
-        let background = dialog_background(width, height, &style);
+        let background = dialog_background(width, height, style);
         //This is a potential problem
         let path = UserDirs::new()
             .unwrap()
@@ -70,7 +70,7 @@ where
             Some(dir_panel.bounds().width()),
             &path,
             &[All],
-            &style.text_field
+            &style.text_field,
         );
         let docs = Button::new(
             style.bounds.top_left() + (6, 18),

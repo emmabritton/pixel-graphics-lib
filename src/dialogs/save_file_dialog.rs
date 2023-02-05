@@ -22,7 +22,7 @@ where
     save: Button,
     cancel: Button,
     background: ShapeCollection,
-    expected_ext: Option<String>
+    expected_ext: Option<String>,
 }
 
 impl<SR: Clone + Debug + PartialEq, SN: Clone + Debug + PartialEq> SaveFileDialog<SR, SN>
@@ -36,7 +36,7 @@ where
         height: usize,
         style: &DialogStyle,
     ) -> Box<Self> {
-        let background = dialog_background(width, height, &style);
+        let background = dialog_background(width, height, style);
         let path = match filepath {
             None => UserDirs::new()
                 .unwrap()
@@ -78,7 +78,7 @@ where
             Some(dir_panel.bounds().width()),
             &path,
             &[All],
-            &style.text_field
+            &style.text_field,
         );
         let name_field = TextField::new(
             style.bounds.top_left() + (6, 121),
@@ -87,7 +87,7 @@ where
             Some(dir_panel.bounds().width()),
             "",
             &[Filename],
-            &style.text_field
+            &style.text_field,
         );
         let docs = Button::new(
             style.bounds.top_left() + (6, 18),
@@ -125,7 +125,7 @@ where
             save,
             cancel,
             background,
-            expected_ext: expected_ext.map(|s| s.to_string())
+            expected_ext: expected_ext.map(|s| s.to_string()),
         })
     }
 }
@@ -198,19 +198,17 @@ where
                 .set_content(&UserDirs::new().unwrap().home_dir().to_string_lossy());
             self.dir_panel.set_dir(self.current_dir_field.content());
         }
-        if self.save.on_mouse_click(xy) {
-            if !self.name_field.content().is_empty() {
-                let mut path = PathBuf::from(self.current_dir_field.content());
-                path.push(self.name_field.content());
-                if let Some(ext) = &self.expected_ext {
-                    if !path.ends_with(ext) {
-                        path.set_extension(ext);
-                    }
+        if self.save.on_mouse_click(xy) && !self.name_field.content().is_empty() {
+            let mut path = PathBuf::from(self.current_dir_field.content());
+            path.push(self.name_field.content());
+            if let Some(ext) = &self.expected_ext {
+                if !path.ends_with(ext) {
+                    path.set_extension(ext);
                 }
-                self.result = SceneUpdateResult::Pop(Some(SR::save_file_result(
-                    path.to_string_lossy().to_string(),
-                )))
             }
+            self.result = SceneUpdateResult::Pop(Some(SR::save_file_result(
+                path.to_string_lossy().to_string(),
+            )));
         }
     }
 

@@ -100,6 +100,7 @@ impl DialogStyle {
         )
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         bounds: Rect,
         background: Option<Color>,

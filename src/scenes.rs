@@ -1,10 +1,10 @@
 use crate::prelude::*;
+use crate::ui::styles::UiStyle;
 use crate::utilities::virtual_key_codes::{ARROWS, LETTERS, MODIFIERS, NUMBERS, SYMBOLS, TYPING};
 use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
 use std::collections::HashSet;
 use std::fmt::Debug;
-use crate::ui::styles::UiStyle;
 
 pub fn run_scenes<
     SR: Clone + PartialEq + Debug + 'static,
@@ -18,12 +18,18 @@ pub fn run_scenes<
     init_scene: Box<dyn Scene<SR, SN>>,
     options: Options,
 ) -> Result<(), GraphicsError> {
-    let system = Box::new(SceneHost::new(init_scene, window_prefs, scene_switcher, options.style.clone()));
+    let system = Box::new(SceneHost::new(
+        init_scene,
+        window_prefs,
+        scene_switcher,
+        options.style.clone(),
+    ));
     run(width, height, title, system, options)?;
     Ok(())
 }
 
-pub type SceneSwitcher<SR, SN> = fn(style: &UiStyle, scenes: &mut Vec<Box<dyn Scene<SR, SN>>>, new_scene: SN);
+pub type SceneSwitcher<SR, SN> =
+    fn(style: &UiStyle, scenes: &mut Vec<Box<dyn Scene<SR, SN>>>, new_scene: SN);
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum SceneUpdateResult<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
@@ -60,7 +66,7 @@ struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     scenes: Vec<Box<dyn Scene<SR, SN>>>,
     window_prefs: Option<WindowPreferences>,
     scene_switcher: SceneSwitcher<SR, SN>,
-    style: UiStyle
+    style: UiStyle,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR, SN> {
@@ -68,7 +74,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
         init_scene: Box<dyn Scene<SR, SN>>,
         window_prefs: Option<WindowPreferences>,
         scene_switcher: SceneSwitcher<SR, SN>,
-        style: UiStyle
+        style: UiStyle,
     ) -> Self {
         let mut keys = vec![];
         keys.extend_from_slice(&LETTERS);
@@ -85,7 +91,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
             scenes: vec![init_scene],
             window_prefs,
             scene_switcher,
-            style
+            style,
         }
     }
 }

@@ -34,25 +34,25 @@ impl Alert {
         height: usize,
         style: &AlertStyle,
     ) -> Self {
-        let mut message= message;
-        let pos = Coord::from((width / 2, height / 2))-Coord::from(ALERT_SIZE)/2;
-        let (bounds, background) = Self::background(&style, pos);
+        let mut message = message;
+        let pos = Coord::from((width / 2, height / 2)) - Coord::from(ALERT_SIZE) / 2;
+        let (bounds, background) = Self::background(style, pos);
         let min = Button::calc_bounds(
             Coord::default(),
             positive_text,
             None,
             style.button.text_size,
         )
-            .width()
-            .max(
-                Button::calc_bounds(
-                    Coord::default(),
-                    negative_text,
-                    None,
-                    style.button.text_size,
-                )
-                    .width(),
-            );
+        .width()
+        .max(
+            Button::calc_bounds(
+                Coord::default(),
+                negative_text,
+                None,
+                style.button.text_size,
+            )
+            .width(),
+        );
         let positive = Button::new(
             pos + (ALERT_SIZE.0 - min - 6, BUTTON_Y as usize),
             positive_text,
@@ -79,8 +79,8 @@ impl Alert {
     }
 
     pub fn new_warning(message: &[&str], width: usize, height: usize, style: &AlertStyle) -> Self {
-        let pos = Coord::from((width / 2, height / 2))-Coord::from(ALERT_SIZE)/2;
-        let (bounds, background) = Self::background(&style, pos);
+        let pos = Coord::from((width / 2, height / 2)) - Coord::from(ALERT_SIZE) / 2;
+        let (bounds, background) = Self::background(style, pos);
         let positive = Button::new(pos + ACK_OFFSET, "OK", Some(25), &style.button);
         Self {
             negative: None,
@@ -98,7 +98,11 @@ impl Alert {
             output.push(Text::new(
                 line,
                 TextPos::px(
-                    pos + TEXT_POS + (0, i * (text_size.get_size().1 + text_size.get_spacing() * 2)),
+                    pos + TEXT_POS
+                        + (
+                            0,
+                            i * (text_size.get_size().1 + text_size.get_spacing() * 2),
+                        ),
                 ),
                 (color, text_size, WrappingStrategy::Cutoff(30), Center),
             ));
@@ -133,9 +137,7 @@ impl Alert {
         for (i, line) in text.iter().enumerate() {
             output.push(Text::new(
                 line,
-                TextPos::px(
-                    pos + TEXT_POS + (0, i * (size.get_size().1 + size.get_spacing() * 2)),
-                ),
+                TextPos::px(pos + TEXT_POS + (0, i * (size.get_size().1 + size.get_spacing() * 2))),
                 (color, size, WrappingStrategy::Cutoff(30), Center),
             ));
         }

@@ -79,7 +79,7 @@ impl ToggleColorSet {
         hover: Option<Color>,
         toggled: Option<Color>,
     ) -> Self {
-        Self::new(normal, hover, toggled, hover.clone())
+        Self::new(normal, hover, toggled, hover)
     }
 
     pub fn new_same(color: Color) -> Self {

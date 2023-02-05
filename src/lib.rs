@@ -38,6 +38,7 @@ pub mod ui;
 pub mod utilities;
 
 use crate::prefs::WindowPreferences;
+use crate::ui::styles::UiStyle;
 use crate::GraphicsError::LoadingWindowPref;
 pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
@@ -50,7 +51,6 @@ use winit::event::{Event, VirtualKeyCode, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{CursorGrabMode, Window, WindowBuilder};
 use winit_input_helper::WinitInputHelper;
-use crate::ui::styles::UiStyle;
 
 pub mod prelude {
     pub use crate::dialogs::*;
@@ -283,7 +283,7 @@ pub struct Options {
     pub vsync: bool,
     pub hide_cursor: bool,
     pub confine_cursor: bool,
-    pub style: UiStyle
+    pub style: UiStyle,
 }
 
 impl Options {
@@ -293,7 +293,7 @@ impl Options {
         vsync: bool,
         hide_cursor: bool,
         confine_cursor: bool,
-        style: UiStyle
+        style: UiStyle,
     ) -> Self {
         Self {
             ups,
@@ -301,7 +301,7 @@ impl Options {
             vsync,
             hide_cursor,
             confine_cursor,
-            style
+            style,
         }
     }
 }
@@ -314,7 +314,7 @@ impl Default for Options {
             vsync: true,
             hide_cursor: false,
             confine_cursor: false,
-            style: UiStyle::default()
+            style: UiStyle::default(),
         }
     }
 }
