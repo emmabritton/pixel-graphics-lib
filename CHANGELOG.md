@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.8.4
+- Update buffer graphics lib
+
 ### Version 0.8.3
 - Add UI
 - Add scenes
