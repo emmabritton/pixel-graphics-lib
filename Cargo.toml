@@ -5,9 +5,8 @@ edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
 license-file = "LICENSE"
-repository = "https://github.com/raybritton/rust-graphics-lib"
+repository = "https://github.com/emmabritton/rust-graphics-lib"
 readme = "README.md"
-homepage = "https://github.com/raybritton/rust-graphics-lib"
 keywords = ["graphics", "gamedev", "pixels", "simple"]
 categories = ["graphics", "game-development"]
 

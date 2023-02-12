@@ -1,6 +1,6 @@
 # Graphics Lib
 
-This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphlics Lib](https://github.com/raybritton/buffer-graphics-lib)
+This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphlics Lib](https://github.com/emmabritton/buffer-graphics-lib)
 
 ## Usage
 
