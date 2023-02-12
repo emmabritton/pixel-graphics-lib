@@ -2,7 +2,7 @@
 name = "pixels-graphics-lib"
 version = "0.8.4"
 edition = "2021"
-authors = ["Ray Britton <raybritton@pm.me>"]
+authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
 license-file = "LICENSE"
 repository = "https://github.com/raybritton/rust-graphics-lib"
