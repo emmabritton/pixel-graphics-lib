@@ -183,7 +183,6 @@ where
         if self.open.on_mouse_click(xy) {
             if let Some(entry) = self.dir_panel.highlighted() {
                 self.result = SceneUpdateResult::Pop(Some(SR::load_file_result(entry.path)))
-                //open file
             }
         }
     }
@@ -194,10 +193,11 @@ where
 
     fn update(
         &mut self,
-        _: &Timing,
+        timing: &Timing,
         _: Coord,
         _: &Vec<&VirtualKeyCode>,
     ) -> SceneUpdateResult<SR, SN> {
+        self.current_dir_field.update(timing);
         self.result.clone()
     }
 
