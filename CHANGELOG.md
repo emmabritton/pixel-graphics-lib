@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.8.5
+- Fix bug in load dialog UI
+- Update buffer dep (adds IndexedImage)
+
 ### Version 0.8.4
 - Update buffer graphics lib
 
