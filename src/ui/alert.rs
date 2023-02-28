@@ -5,7 +5,7 @@ use crate::ui::styles::AlertStyle;
 
 const BUTTON_Y: isize = 28;
 const ALERT_SIZE: (usize, usize) = (200, 50);
-const ACK_OFFSET: Coord = Coord::new(46, BUTTON_Y);
+const ACK_OFFSET: Coord = Coord::new(90, BUTTON_Y);
 const NEGATIVE_OFFSET: Coord = Coord::new(6, BUTTON_Y);
 const TEXT_POS: Coord = Coord::new(ALERT_SIZE.0 as isize / 2, 10);
 
@@ -81,7 +81,7 @@ impl Alert {
     pub fn new_warning(message: &[&str], width: usize, height: usize, style: &AlertStyle) -> Self {
         let pos = Coord::from((width / 2, height / 2)) - Coord::from(ALERT_SIZE) / 2;
         let (bounds, background) = Self::background(style, pos);
-        let positive = Button::new(pos + ACK_OFFSET, "OK", Some(25), &style.button);
+        let positive = Button::new(pos + ACK_OFFSET, "OK", Some(20), &style.button);
         Self {
             negative: None,
             positive,
