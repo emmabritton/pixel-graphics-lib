@@ -116,13 +116,8 @@ impl Menu {
             icon.clone(),
             &style.toggle_icon_button,
         );
-        let toggle_icon3 = ToggleIconButton::new(
-            (200, 100),
-            "3",
-            LeftTop,
-            icon,
-            &style.toggle_icon_button,
-        );
+        let toggle_icon3 =
+            ToggleIconButton::new((200, 100), "3", LeftTop, icon, &style.toggle_icon_button);
         let icon_group = ToggleIconButtonGroup::new(vec![
             (0, toggle_icon1),
             (1, toggle_icon2),
