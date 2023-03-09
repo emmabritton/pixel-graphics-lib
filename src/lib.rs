@@ -399,7 +399,7 @@ pub fn run(
         }
 
         if input.update(&event) {
-            if input.quit() {
+            if input.close_requested() || input.destroyed() {
                 system.on_window_closed();
                 *control_flow = ControlFlow::Exit;
                 return;
