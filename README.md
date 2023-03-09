@@ -8,8 +8,8 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.9.0"
-winit_input_helper = "0.13.0" #only needed if you're not using `run()`
+pixels-graphics-lib = "0.9.1"
+winit_input_helper = "0.14.0" #only needed if you're not using `run()`
 ```
 
 ### Code

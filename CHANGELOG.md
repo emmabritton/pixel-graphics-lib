@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.9.1
+- Update winit
+
 ### Version 0.9.0
 - Fix OK button positioning in alerts
 - Add icon buttons, toggle icon buttons, tooltips
