@@ -1,32 +1,37 @@
-use winit::event::VirtualKeyCode;
 use crate::buffer_graphics_lib::prelude::*;
 use crate::buffer_graphics_lib::shapes::polyline::Polyline;
-use crate::buffer_graphics_lib::text::format::Positioning::Center;
-use crate::buffer_graphics_lib::text::pos::TextPos;
-use crate::buffer_graphics_lib::text::wrapping::WrappingStrategy;
-use crate::buffer_graphics_lib::text::Text;
-use crate::Timing;
-use crate::ui::styles::ButtonStyle;
+use crate::prelude::styles::IconButtonStyle;
+use crate::ui::tooltip::Tooltip;
 use crate::ui::{ElementState, UiElement};
+use crate::Timing;
 
 #[derive(Debug)]
-pub struct Button {
-    text: Text,
+pub struct IconButton {
+    tooltip: Tooltip,
+    icon: IndexedImage,
+    icon_xy: Coord,
     bounds: Rect,
     border: Polyline,
     shadow: Polyline,
-    style: ButtonStyle,
-    state: ElementState
+    style: IconButtonStyle,
+    state: ElementState,
 }
 
-impl Button {
+impl IconButton {
     pub fn new<P: Into<Coord>>(
         xy: P,
-        text: &str,
-        min_width: Option<usize>,
-        style: &ButtonStyle,
+        tooltip_text: &str,
+        tooltip_positioning: Positioning,
+        icon: IndexedImage,
+        style: &IconButtonStyle,
     ) -> Self {
-        let bounds = Self::calc_bounds(xy.into(), text, min_width, style.text_size);
+        let xy = xy.into();
+        let (w, h) = icon.size();
+        let bounds = Rect::new_with_size(
+            xy,
+            w as usize + style.padding + style.padding,
+            h as usize + style.padding + style.padding,
+        );
         let border = Polyline::rounded_rect(
             bounds.left(),
             bounds.top(),
@@ -45,38 +50,37 @@ impl Button {
             WHITE,
         )
         .unwrap();
-        let text = Text::new(
-            text,
-            TextPos::px(bounds.center() + (0, 1)),
-            (WHITE, style.text_size, WrappingStrategy::None, Center),
+        let tooltip = Tooltip::new(
+            xy + (w, h),
+            tooltip_text,
+            tooltip_positioning,
+            &style.tooltip,
         );
         Self {
-            text,
+            tooltip,
+            icon,
+            icon_xy: xy + (style.padding, style.padding) + (1, 1),
             bounds,
             border,
             shadow,
             style: style.clone(),
-            state: ElementState::Normal
+            state: ElementState::Normal,
         }
-    }
-
-    pub fn calc_bounds(
-        xy: Coord,
-        text: &str,
-        min_width: Option<usize>,
-        text_size: TextSize,
-    ) -> Rect {
-        let min_width = min_width.unwrap_or_default();
-        let (w, h) = text_size.measure(text, WrappingStrategy::None);
-        Rect::new_with_size(
-            xy,
-            ((w as f32 * 1.2) as usize).max(min_width),
-            (h as f32 * 2.0) as usize,
-        )
     }
 }
 
-impl UiElement for Button {
+impl IconButton {
+    #[must_use]
+    pub fn on_mouse_click(&mut self, xy: Coord) -> bool {
+        if self.state != ElementState::Disabled {
+            self.bounds.contains(xy)
+        } else {
+            false
+        }
+    }
+}
+
+impl UiElement for IconButton {
     #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
@@ -85,43 +89,28 @@ impl UiElement for Button {
     fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
         let (error, disabled) = self.state.get_err_dis();
         let hovering = self.bounds.contains(mouse_xy);
-        if let Some(color) = self.style.shadow.get(hovering, error,disabled) {
+        if let Some(color) = self.style.shadow.get(hovering, error, disabled) {
             self.shadow.with_color(color).render(graphics);
         }
-        if let Some(color) = self.style.border.get(hovering, error,disabled) {
+        if let Some(color) = self.style.border.get(hovering, error, disabled) {
             self.border.with_color(color).render(graphics);
         }
-        if let Some(color) = self.style.text.get(hovering, error,disabled) {
-            self.text.with_color(color).render(graphics);
+        graphics.draw_indexed_image(self.icon_xy, &self.icon);
+        if !disabled && hovering {
+            self.tooltip.render(graphics, mouse_xy);
         }
     }
 
-    #[inline]
-    #[must_use]
-     fn get_state(&self) -> ElementState {
-        self.state
-    }
+    fn update(&mut self, _: &Timing) {}
 
     #[inline]
     fn set_state(&mut self, state: ElementState) {
         self.state = state;
     }
 
-    #[must_use]
     #[inline]
-    fn on_mouse_click(&mut self, xy: Coord) -> bool {
-        if self.state != ElementState::Disabled {
-            self.bounds.contains(xy)
-        } else {
-            false
-        }
-    }
-
-    fn update(&mut self, _: &Timing) {
-
-    }
-
-    fn on_key_press(&mut self, _: VirtualKeyCode) {
-
+    #[must_use]
+    fn get_state(&self) -> ElementState {
+        self.state
     }
 }

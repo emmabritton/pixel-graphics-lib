@@ -59,11 +59,12 @@ pub mod virtual_key_codes {
         VirtualKeyCode::LControl,
         VirtualKeyCode::RControl,
     ];
-    pub const TYPING: [VirtualKeyCode; 4] = [
+    pub const TYPING: [VirtualKeyCode; 5] = [
         VirtualKeyCode::Space,
         VirtualKeyCode::Return,
         VirtualKeyCode::Tab,
         VirtualKeyCode::Back,
+        VirtualKeyCode::Delete,
     ];
     pub const SYMBOLS: [VirtualKeyCode; 12] = [
         VirtualKeyCode::Minus,

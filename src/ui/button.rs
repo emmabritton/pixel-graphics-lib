@@ -5,7 +5,8 @@ use crate::buffer_graphics_lib::text::pos::TextPos;
 use crate::buffer_graphics_lib::text::wrapping::WrappingStrategy;
 use crate::buffer_graphics_lib::text::Text;
 use crate::ui::styles::ButtonStyle;
-use crate::ui::Ui;
+use crate::ui::{ElementState, UiElement};
+use crate::Timing;
 
 #[derive(Debug)]
 pub struct Button {
@@ -14,6 +15,7 @@ pub struct Button {
     border: Polyline,
     shadow: Polyline,
     style: ButtonStyle,
+    state: ElementState,
 }
 
 impl Button {
@@ -53,6 +55,7 @@ impl Button {
             border,
             shadow,
             style: style.clone(),
+            state: ElementState::Normal,
         }
     }
 
@@ -70,31 +73,47 @@ impl Button {
             (h as f32 * 2.0) as usize,
         )
     }
-}
 
-impl Button {
     #[must_use]
-    pub fn on_mouse_click(&self, xy: Coord) -> bool {
-        self.bounds.contains(xy)
+    pub fn on_mouse_click(&mut self, xy: Coord) -> bool {
+        if self.state != ElementState::Disabled {
+            self.bounds.contains(xy)
+        } else {
+            false
+        }
     }
 }
 
-impl Ui for Button {
+impl UiElement for Button {
     #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }
 
     fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+        let (error, disabled) = self.state.get_err_dis();
         let hovering = self.bounds.contains(mouse_xy);
-        if let Some(color) = self.style.shadow.get(hovering) {
+        if let Some(color) = self.style.shadow.get(hovering, error, disabled) {
             self.shadow.with_color(color).render(graphics);
         }
-        if let Some(color) = self.style.border.get(hovering) {
+        if let Some(color) = self.style.border.get(hovering, error, disabled) {
             self.border.with_color(color).render(graphics);
         }
-        if let Some(color) = self.style.text.get(hovering) {
+        if let Some(color) = self.style.text.get(hovering, error, disabled) {
             self.text.with_color(color).render(graphics);
         }
+    }
+
+    fn update(&mut self, _: &Timing) {}
+
+    #[inline]
+    fn set_state(&mut self, state: ElementState) {
+        self.state = state;
+    }
+
+    #[inline]
+    #[must_use]
+    fn get_state(&self) -> ElementState {
+        self.state
     }
 }

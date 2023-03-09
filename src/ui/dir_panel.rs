@@ -20,21 +20,22 @@ enum FileEntry {
 }
 
 impl FileEntry {
-    pub fn to_result(&self) -> ClickResult {
+    pub fn to_result(&self) -> DirResult {
         match self {
-            ParentDir(path) => ClickResult::new(path.clone(), false),
-            File(info) => ClickResult::new(info.path.clone(), true),
-            Dir(path, _) => ClickResult::new(path.clone(), false),
+            ParentDir(path) => DirResult::new(path.clone(), false),
+            File(info) => DirResult::new(info.path.clone(), true),
+            Dir(path, _) => DirResult::new(path.clone(), false),
         }
     }
 }
 
-pub struct ClickResult {
+#[derive(Debug, Clone)]
+pub struct DirResult {
     pub path: String,
     pub is_file: bool,
 }
 
-impl ClickResult {
+impl DirResult {
     pub fn new(path: String, is_file: bool) -> Self {
         Self { path, is_file }
     }
@@ -72,6 +73,7 @@ struct FileInfo {
     pub size: String,
 }
 
+/// Call [get_click_result] if [on_mouse_click] returns true
 #[derive(Debug)]
 pub struct DirPanel {
     current_dir: String,
@@ -83,6 +85,7 @@ pub struct DirPanel {
     error: Option<String>,
     highlight: Option<usize>,
     allowed_ext: Option<String>,
+    state: ElementState,
 }
 
 impl DirPanel {
@@ -101,6 +104,7 @@ impl DirPanel {
             background,
             highlight: None,
             allowed_ext: allowed_ext.map(|s| s.to_string()),
+            state: ElementState::Normal,
         };
         panel.set_dir(current_dir);
         panel
@@ -173,7 +177,7 @@ impl DirPanel {
     }
 
     #[must_use]
-    pub fn highlighted(&self) -> Option<ClickResult> {
+    pub fn highlighted(&self) -> Option<DirResult> {
         if let Some(i) = self.highlight {
             self.files.get(i).map(|e| e.to_result())
         } else {
@@ -195,24 +199,10 @@ impl DirPanel {
         }
     }
 
+    #[inline]
     #[must_use]
     pub fn current_dir(&self) -> &str {
         &self.current_dir
-    }
-
-    #[must_use]
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<ClickResult> {
-        if self.bounds.contains(mouse_xy) {
-            for i in 0..self.entry_visible_count {
-                if self.bounds_for_row(i).contains(mouse_xy) {
-                    return self
-                        .files
-                        .get(i + self.first_visible_file_index)
-                        .map(|e| e.to_result());
-                }
-            }
-        }
-        None
     }
 
     pub fn on_scroll(&mut self, diff: isize) {
@@ -243,9 +233,27 @@ impl DirPanel {
             ),
         )
     }
+
+    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<DirResult> {
+        if self.state == ElementState::Disabled {
+            return None;
+        }
+        if self.bounds.contains(mouse_xy) {
+            for i in 0..self.entry_visible_count {
+                if self.bounds_for_row(i).contains(mouse_xy) {
+                    return self
+                        .files
+                        .get(i + self.first_visible_file_index)
+                        .map(|e| e.to_result());
+                }
+            }
+        }
+        None
+    }
 }
 
-impl Ui for DirPanel {
+impl UiElement for DirPanel {
+    #[inline]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }
@@ -286,5 +294,17 @@ impl Ui for DirPanel {
                 }
             }
         }
+    }
+
+    fn update(&mut self, _: &Timing) {}
+
+    #[inline]
+    fn set_state(&mut self, new_state: ElementState) {
+        self.state = new_state;
+    }
+
+    #[inline]
+    fn get_state(&self) -> ElementState {
+        self.state
     }
 }

@@ -10,12 +10,20 @@ pub struct UiStyle {
     pub toggle_button: ToggleButtonStyle,
     pub alert: AlertStyle,
     pub dialog: DialogStyle,
+    pub background: Color,
+    pub title_text: TextFormat,
+    pub body_text: TextFormat,
+    pub tooltip: TooltipStyle,
+    pub icon_button: IconButtonStyle,
+    pub toggle_icon_button: ToggleIconButtonStyle,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ColorSet {
     pub normal: Option<Color>,
     pub hover: Option<Color>,
+    pub error: Option<Color>,
+    pub disabled: Option<Color>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -24,6 +32,8 @@ pub struct ToggleColorSet {
     pub hover: Option<Color>,
     pub toggled: Option<Color>,
     pub hover_toggled: Option<Color>,
+    pub error: Option<Color>,
+    pub disabled: Option<Color>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -31,12 +41,13 @@ pub struct FocusColorSet {
     pub normal: Option<Color>,
     pub hover: Option<Color>,
     pub focused: Option<Color>,
+    pub error: Option<Color>,
+    pub disabled: Option<Color>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TextFieldStyle {
     pub text_color: FocusColorSet,
-    pub text_size: TextSize,
     pub background_color: FocusColorSet,
     pub border_color: FocusColorSet,
     pub cursor: FocusColorSet,
@@ -52,12 +63,40 @@ pub struct ButtonStyle {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct IconButtonStyle {
+    pub tooltip: TooltipStyle,
+    pub border: ColorSet,
+    pub shadow: ColorSet,
+    pub rounding: usize,
+    pub padding: usize,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct TooltipStyle {
+    pub text: ColorSet,
+    pub background: ColorSet,
+    pub border: ColorSet,
+    pub shadow: ColorSet,
+    pub size: TextSize,
+    pub padding: usize,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ToggleButtonStyle {
     pub text: ToggleColorSet,
     pub border: ToggleColorSet,
     pub shadow: ToggleColorSet,
     pub text_size: TextSize,
     pub rounding: usize,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct ToggleIconButtonStyle {
+    pub tooltip: TooltipStyle,
+    pub border: ToggleColorSet,
+    pub shadow: ToggleColorSet,
+    pub rounding: usize,
+    pub padding: usize,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]

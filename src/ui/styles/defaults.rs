@@ -1,5 +1,6 @@
 use crate::prelude::styles::*;
 use crate::prelude::MIN_FILE_DIALOG_SIZE;
+use buffer_graphics_lib::prelude::Positioning::LeftTop;
 use buffer_graphics_lib::prelude::*;
 
 impl Default for UiStyle {
@@ -10,6 +11,17 @@ impl Default for UiStyle {
             toggle_button: Default::default(),
             alert: Default::default(),
             dialog: DialogStyle::new_default_size(MIN_FILE_DIALOG_SIZE),
+            background: Color {
+                r: 30,
+                g: 30,
+                b: 140,
+                a: 255,
+            },
+            title_text: TextFormat::new(WrappingStrategy::None, Large, WHITE, LeftTop),
+            body_text: TextFormat::new(WrappingStrategy::None, Normal, WHITE, LeftTop),
+            tooltip: Default::default(),
+            icon_button: Default::default(),
+            toggle_icon_button: Default::default(),
         }
     }
 }
@@ -17,9 +29,9 @@ impl Default for UiStyle {
 impl Default for ButtonStyle {
     fn default() -> Self {
         Self {
-            text: ColorSet::new_same(WHITE),
+            text: ColorSet::new_values(WHITE, WHITE, WHITE, LIGHT_GRAY),
             text_size: Normal,
-            border: ColorSet::new_values(LIGHT_GRAY, CYAN),
+            border: ColorSet::new_values(LIGHT_GRAY, CYAN, RED, DARK_GRAY),
             shadow: ColorSet::new_same(DARK_GRAY),
             rounding: 2,
         }
@@ -31,8 +43,10 @@ impl Default for ToggleButtonStyle {
         Self {
             text: ToggleColorSet::new_same(WHITE),
             text_size: Normal,
-            border: ToggleColorSet::new_values(LIGHT_GRAY, CYAN, WHITE, CYAN),
-            shadow: ToggleColorSet::new_values(DARK_GRAY, DARK_GRAY, WHITE, WHITE),
+            border: ToggleColorSet::new_values(LIGHT_GRAY, CYAN, WHITE, CYAN, RED, DARK_GRAY),
+            shadow: ToggleColorSet::new_values(
+                DARK_GRAY, DARK_GRAY, WHITE, WHITE, DARK_GRAY, DARK_GRAY,
+            ),
             rounding: 6,
         }
     }
@@ -41,10 +55,9 @@ impl Default for ToggleButtonStyle {
 impl Default for TextFieldStyle {
     fn default() -> Self {
         Self {
-            text_color: FocusColorSet::new_same(BLACK),
-            text_size: Small,
+            text_color: FocusColorSet::new_values(BLACK, BLACK, BLACK, RED, DARK_GRAY),
             background_color: FocusColorSet::new_same(WHITE),
-            border_color: FocusColorSet::new_values(DARK_GRAY, DARK_GRAY, CYAN),
+            border_color: FocusColorSet::new_values(DARK_GRAY, DARK_GRAY, CYAN, RED, LIGHT_GRAY),
             cursor: FocusColorSet::new_same(BLACK),
         }
     }
@@ -122,6 +135,45 @@ impl DialogStyle {
             border,
             shadow,
             shade,
+        }
+    }
+}
+
+impl Default for TooltipStyle {
+    fn default() -> Self {
+        Self {
+            text: ColorSet::new_same(WHITE),
+            background: ColorSet::new_same(BLACK),
+            border: ColorSet::new_same(LIGHT_GRAY),
+            shadow: ColorSet::new_same(DARK_GRAY),
+            size: Small,
+            padding: 2,
+        }
+    }
+}
+
+impl Default for IconButtonStyle {
+    fn default() -> Self {
+        Self {
+            tooltip: TooltipStyle::default(),
+            border: ColorSet::new_values(LIGHT_GRAY, CYAN, RED, DARK_GRAY),
+            shadow: ColorSet::new_same(DARK_GRAY),
+            rounding: 2,
+            padding: 4,
+        }
+    }
+}
+
+impl Default for ToggleIconButtonStyle {
+    fn default() -> Self {
+        Self {
+            tooltip: TooltipStyle::default(),
+            border: ToggleColorSet::new_values(LIGHT_GRAY, CYAN, WHITE, CYAN, RED, DARK_GRAY),
+            shadow: ToggleColorSet::new_values(
+                DARK_GRAY, DARK_GRAY, WHITE, WHITE, DARK_GRAY, DARK_GRAY,
+            ),
+            rounding: 4,
+            padding: 4,
         }
     }
 }

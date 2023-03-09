@@ -1,11 +1,11 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.8.5"
+version = "0.9.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
 license-file = "LICENSE"
-repository = "https://github.com/emmabritton/rust-graphics-lib"
+repository = "https://github.com/emmabritton/pixel-graphics-lib"
 readme = "README.md"
 keywords = ["graphics", "gamedev", "pixels", "simple"]
 categories = ["graphics", "game-development"]
@@ -23,7 +23,8 @@ serde = { version = "1.0", features = ["derive"], optional = true }
 directories = { version = "4.0", optional = true }
 serde_json = { version = "1.0", optional = true }
 graphics-shapes = "0.1.11"
-buffer-graphics-lib = { version = "0.10.2", features = ["image_loading", "ici", "serde_derive"] }
+buffer-graphics-lib = { version = "0.10.3", features = ["image_loading", "ici", "serde_derive"] }
+rustc-hash = "1.1.0"
 
 [dev-dependencies]
 fastrand = "1.6"

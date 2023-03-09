@@ -144,25 +144,20 @@ impl Alert {
         self.message = output
     }
 
-    pub fn on_mouse_click(&self, mouse_xy: Coord) -> Option<AlertResult> {
+    #[must_use]
+    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<AlertResult> {
         if self.positive.on_mouse_click(mouse_xy) {
             return Some(Positive);
         }
-        if let Some(neg) = &self.negative {
+        if let Some(neg) = &mut self.negative {
             if neg.on_mouse_click(mouse_xy) {
                 return Some(Negative);
             }
         }
         None
     }
-}
 
-impl Ui for Alert {
-    fn bounds(&self) -> &Rect {
-        &self.bounds
-    }
-
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    pub fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
         if let Some(color) = self.style.shade {
             graphics.draw_rect(
                 Rect::new_with_size((0, 0), graphics.width(), graphics.height()),

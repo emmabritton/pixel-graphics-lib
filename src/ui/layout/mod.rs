@@ -1,54 +1,44 @@
-use buffer_graphics_lib::Graphics;
+use crate::prelude::UiElement;
+use crate::ui::ElementState;
 use graphics_shapes::coord::Coord;
 use graphics_shapes::prelude::Rect;
-use winit::event::VirtualKeyCode;
-use crate::prelude::{ElementState, UiElement};
-use crate::Timing;
+use rustc_hash::FxHashMap;
 
-trait Layout: UiElement {
-    fn on_mouse_click(&self, mouse_xy: Coord) -> Option<ID>;
+pub mod collection;
+pub mod column;
+pub mod row;
 
-    fn get(&self, id: ID) -> Option<&Box<dyn UiElement>>;
+type ID = u64;
 
-    fn get_mut(&mut self, id: ID) -> Option<&mut Box<dyn UiElement>>;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum ElementType {
+    Button,
+    IconButton,
+    ToggleButton,
+    ToggleIconButton,
+    TextField,
+    DirPanel
+}
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum Positioning {
+    Absolute,
+    Column,
+    Row,
+}
+
+struct UiCollection {
+    elements: FxHashMap<ID, Box<dyn UiElement>>,
+    bounds: Rect,
+    positioning: Positioning,
+    ids_order: Vec<ID>,
+    state: ElementState,
+}
+
+pub trait Layout: UiElement {
     fn add(&mut self, id: ID, element: Box<dyn UiElement>) -> bool;
 
     fn remove(&mut self, id: ID) -> bool;
 
     fn relayout(&mut self);
-}
-
-struct Column {
-    ui: UiCollection
-}
-
-impl UiElement for Column {
-    fn bounds(&self) -> &Rect {
-        self.ui.bounds
-    }
-
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
-        self.ui.render(graphics, mouse_xy);
-    }
-
-    fn update(&mut self, timing: &Timing) {
-        todo!()
-    }
-
-    fn on_mouse_click(&mut self, mouse_xy: Coord) -> bool {
-        todo!()
-    }
-
-    fn on_key_press(&mut self, keys: &[VirtualKeyCode]) {
-        todo!()
-    }
-
-    fn set_state(&mut self, new_state: ElementState) {
-        todo!()
-    }
-
-    fn get_state(&self) -> ElementState {
-        todo!()
-    }
 }

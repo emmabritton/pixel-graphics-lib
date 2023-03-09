@@ -1,6 +1,6 @@
 # Graphics Lib
 
-This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphlics Lib](https://github.com/emmabritton/buffer-graphics-lib)
+This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
 
 ## Usage
 
@@ -8,7 +8,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.8.5"
+pixels-graphics-lib = "0.9.0"
 winit_input_helper = "0.13.0" #only needed if you're not using `run()`
 ```
 

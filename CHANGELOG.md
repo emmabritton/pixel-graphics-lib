@@ -1,5 +1,15 @@
 # Changelog
 
+### Version 0.9.0
+- Fix OK button positioning in alerts
+- Add icon buttons, toggle icon buttons, tooltips
+- Add delete key to TYPING
+- Add cursor movement and text scrolling to text field
+- Add min and max width to text field
+- Add groups for toggle buttons and toggle icon buttons
+- Add disabled and error state for all UI elements
+- Add style to toggle button
+
 ### Version 0.8.5
 - Fix bug in load dialog UI
 - Update buffer dep (adds IndexedImage)

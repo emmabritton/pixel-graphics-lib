@@ -67,7 +67,7 @@ where
             style.bounds.top_left() + (6, 6),
             37,
             Small,
-            Some(dir_panel.bounds().width()),
+            (Some(dir_panel.bounds().width()), None),
             &path,
             &[All],
             &style.text_field,
