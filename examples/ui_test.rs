@@ -15,7 +15,7 @@ const WIDTH: usize = 280;
 const HEIGHT: usize = 240;
 
 fn main() -> Result<()> {
-    let switcher: SceneSwitcher<SceneResult, SceneName> = |style, list, name| {};
+    let switcher: SceneSwitcher<SceneResult, SceneName> = |_, _, _| {};
     let options = Options::default();
     let menu = Menu::new(&options.style);
     run_scenes(
@@ -120,7 +120,7 @@ impl Menu {
             (200, 100),
             "3",
             LeftTop,
-            icon.clone(),
+            icon,
             &style.toggle_icon_button,
         );
         let icon_group = ToggleIconButtonGroup::new(vec![
@@ -166,13 +166,13 @@ impl Scene<SceneResult, SceneName> for Menu {
         self.field3.render(graphics, mouse_xy);
     }
 
-    fn on_key_press(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {
+    fn on_key_press(&mut self, key: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {
         self.field1.on_key_press(key);
         self.field2.on_key_press(key);
         self.field3.on_key_press(key);
     }
 
-    fn on_mouse_click(&mut self, xy: Coord, held_keys: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_click(&mut self, xy: Coord, _: &Vec<&VirtualKeyCode>) {
         self.field1.on_mouse_click(xy);
         self.field2.on_mouse_click(xy);
         self.field3.on_mouse_click(xy);
@@ -183,8 +183,8 @@ impl Scene<SceneResult, SceneName> for Menu {
     fn update(
         &mut self,
         timing: &Timing,
-        mouse_xy: Coord,
-        held_keys: &Vec<&VirtualKeyCode>,
+        _: Coord,
+        _: &Vec<&VirtualKeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.field1.update(timing);
         self.field2.update(timing);
