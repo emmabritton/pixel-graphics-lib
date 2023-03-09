@@ -32,16 +32,16 @@ pub enum TextFilter {
 impl TextFilter {
     pub fn is_char_allowed(&self, chr: char) -> bool {
         match self {
-            TextFilter::Letters => ('a'..='z').contains(&chr),
-            TextFilter::Numbers => ('0'..='9').contains(&chr),
-            TextFilter::Hex => ('0'..='9').contains(&chr) || ('a'..='f').contains(&chr),
-            TextFilter::NegativeNumbers => ('0'..='9').contains(&chr) || chr == '-',
-            TextFilter::Decimal => ('0'..='9').contains(&chr) || chr == '-' || chr == '.',
+            TextFilter::Letters => chr.is_ascii_lowercase(),
+            TextFilter::Numbers => chr.is_ascii_digit(),
+            TextFilter::Hex => chr.is_ascii_hexdigit(),
+            TextFilter::NegativeNumbers => chr.is_ascii_digit() || chr == '-',
+            TextFilter::Decimal => chr.is_ascii_digit() || chr == '-' || chr == '.',
             TextFilter::Symbols => SUPPORTED_SYMBOLS.contains(&chr),
             TextFilter::Whitespace => chr == ' ',
             TextFilter::Filename => {
-                ('a'..='z').contains(&chr)
-                    || ('0'..='9').contains(&chr)
+                chr.is_ascii_lowercase()
+                    || chr.is_ascii_digit()
                     || ['(', ')', '-', '.', '_'].contains(&chr)
             }
             TextFilter::All => true,
