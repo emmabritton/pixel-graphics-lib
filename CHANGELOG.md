@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.9.3
+- Update buffer lib
+
 ### Version 0.9.2
 - Update pixels dep
 - update API to eventually support horizontal mouse scrolling, for now x scroll will always be 0
