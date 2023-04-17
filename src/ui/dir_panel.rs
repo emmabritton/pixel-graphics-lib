@@ -213,9 +213,11 @@ impl DirPanel {
                     .first_visible_file_index
                     .saturating_sub(factor.unsigned_abs());
             }
-            if !up && (self.first_visible_file_index + self.entry_visible_count < self.files.len()) {
-                self.first_visible_file_index = (self.first_visible_file_index + factor.unsigned_abs())
-                    .min(self.files.len() - self.entry_visible_count);
+            if !up && (self.first_visible_file_index + self.entry_visible_count < self.files.len())
+            {
+                self.first_visible_file_index = (self.first_visible_file_index
+                    + factor.unsigned_abs())
+                .min(self.files.len() - self.entry_visible_count);
             }
         }
     }
@@ -223,9 +225,9 @@ impl DirPanel {
     fn bounds_for_row(&self, row: usize) -> Rect {
         let xy = self.bounds.top_left()
             + (
-            2,
-            row * (Small.get_spacing() + Small.get_size().1) + Small.get_spacing() * 2,
-        );
+                2,
+                row * (Small.get_spacing() + Small.get_size().1) + Small.get_spacing() * 2,
+            );
         Rect::new(
             xy,
             (

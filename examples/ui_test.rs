@@ -51,7 +51,7 @@ pub struct Menu {
     field2: TextField,
     field3: TextField,
     icon_group: ToggleIconButtonGroup<usize>,
-    dir_panel: DirPanel
+    dir_panel: DirPanel,
 }
 
 impl Menu {
@@ -124,7 +124,7 @@ impl Menu {
             (1, toggle_icon2),
             (2, toggle_icon3),
         ]);
-        let dir_panel = DirPanel::new("/", Rect::new_with_size((8,160), 140, 50), None);
+        let dir_panel = DirPanel::new("/", Rect::new_with_size((8, 160), 140, 50), None);
         Box::new(Self {
             icon_group,
             result: Nothing,
@@ -140,7 +140,7 @@ impl Menu {
             field1,
             field2,
             field3,
-            dir_panel
+            dir_panel,
         })
     }
 }
@@ -177,14 +177,14 @@ impl Scene<SceneResult, SceneName> for Menu {
         self.field3.on_mouse_click(xy);
         self.toggle_buttons.on_mouse_click(xy);
         self.icon_group.on_mouse_click(xy);
-        if let Some(DirResult{ path, is_file }) = self.dir_panel.on_mouse_click(xy) {
+        if let Some(DirResult { path, is_file }) = self.dir_panel.on_mouse_click(xy) {
             if !is_file {
                 self.dir_panel.set_dir(&path);
             }
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, y_diff: isize, x_diff: isize) {
+    fn on_scroll(&mut self, xy: Coord, y_diff: isize, _x_diff: isize) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 
