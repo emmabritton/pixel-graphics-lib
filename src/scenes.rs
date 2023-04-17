@@ -44,7 +44,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     fn on_key_press(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>);
     fn on_mouse_click(&mut self, xy: Coord, held_keys: &Vec<&VirtualKeyCode>);
     #[allow(unused_variables)]
-    fn on_scroll(&mut self, diff: isize) {}
+    fn on_scroll(&mut self, xy: Coord, y_diff: isize, x_diff: isize) {}
     fn update(
         &mut self,
         timing: &Timing,
@@ -156,9 +156,10 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_scroll(&mut self, diff: isize) {
+    fn on_scroll(&mut self, x: usize, y: usize, y_diff: isize, x_diff: isize) {
+        self.mouse_coord = Coord::from((x, y));
         if let Some(active) = self.scenes.last_mut() {
-            active.on_scroll(diff);
+            active.on_scroll(self.mouse_coord, y_diff, x_diff);
         }
     }
 

@@ -187,8 +187,8 @@ where
         }
     }
 
-    fn on_scroll(&mut self, diff: isize) {
-        self.dir_panel.on_scroll(diff);
+    fn on_scroll(&mut self, xy: Coord, y_diff: isize, _: isize) {
+        self.dir_panel.on_scroll(xy, y_diff);
     }
 
     fn update(

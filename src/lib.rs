@@ -194,7 +194,7 @@ pub trait System {
     fn on_mouse_move(&mut self, x: usize, y: usize) {}
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
-    fn on_scroll(&mut self, diff: isize) {}
+    fn on_scroll(&mut self, x: usize, y: usize, y_diff: isize, x_diff: isize) {}
     fn on_key_pressed(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {}
@@ -370,7 +370,7 @@ pub fn run(
                 window.request_redraw();
             }
             Event::RedrawRequested(_) => {
-                let mut graphics = Graphics::new(pixels.get_frame_mut(), width, height).unwrap();
+                let mut graphics = Graphics::new(pixels.frame_mut(), width, height).unwrap();
                 system.render(&mut graphics);
                 timing.renders += 1;
                 if pixels
@@ -459,7 +459,7 @@ pub fn run(
             }
             let scroll = input.scroll_diff();
             if scroll != 0.0 {
-                system.on_scroll(scroll.trunc() as isize);
+                system.on_scroll(mouse_x, mouse_y, scroll.trunc() as isize, 0);
             }
 
             window.request_redraw();

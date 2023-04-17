@@ -124,12 +124,11 @@ fn fs_size(bytes: u64) -> String {
 }
 
 fn get_files(path: &str, dir: ReadDir, allowed_ext: &Option<String>) -> Vec<FileEntry> {
-    let parent = PathBuf::from(path)
-        .parent()
-        .unwrap()
-        .to_string_lossy()
-        .to_string();
-    let mut results = vec![ParentDir(parent)];
+    let path = PathBuf::from(path);
+    let mut results = vec![];
+    if let Some(parent) = path.parent() {
+        results.push(ParentDir(parent.to_string_lossy().to_string()));
+    }
     for file in dir.flatten() {
         if let Ok(file_type) = file.file_type() {
             if file_type.is_file() {
@@ -205,26 +204,28 @@ impl DirPanel {
         &self.current_dir
     }
 
-    pub fn on_scroll(&mut self, diff: isize) {
-        let factor = diff.abs() % 5;
-        let up = diff < 0;
-        if up && self.first_visible_file_index > 0 {
-            self.first_visible_file_index = self
-                .first_visible_file_index
-                .saturating_sub(factor.unsigned_abs());
-        }
-        if !up && (self.first_visible_file_index + self.entry_visible_count < self.files.len()) {
-            self.first_visible_file_index = (self.first_visible_file_index + factor.unsigned_abs())
-                .min(self.files.len() - self.entry_visible_count);
+    pub fn on_scroll(&mut self, xy: Coord, diff: isize) {
+        if self.bounds.contains(xy) {
+            let factor = diff.abs() % 5;
+            let up = diff < 0;
+            if up && self.first_visible_file_index > 0 {
+                self.first_visible_file_index = self
+                    .first_visible_file_index
+                    .saturating_sub(factor.unsigned_abs());
+            }
+            if !up && (self.first_visible_file_index + self.entry_visible_count < self.files.len()) {
+                self.first_visible_file_index = (self.first_visible_file_index + factor.unsigned_abs())
+                    .min(self.files.len() - self.entry_visible_count);
+            }
         }
     }
 
     fn bounds_for_row(&self, row: usize) -> Rect {
         let xy = self.bounds.top_left()
             + (
-                2,
-                row * (Small.get_spacing() + Small.get_size().1) + Small.get_spacing() * 2,
-            );
+            2,
+            row * (Small.get_spacing() + Small.get_size().1) + Small.get_spacing() * 2,
+        );
         Rect::new(
             xy,
             (
