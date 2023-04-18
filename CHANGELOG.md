@@ -1,5 +1,12 @@
 # Changelog
 
+### Version 0.9.4
+- Swap x and y parameters on scroll
+- Add `on_key_down()` and `on_key_up()` to `Scene`
+- Add mouse button to `Scene` `on_mouse_down()` and `on_mouse_up()`
+- Remove `on_key_press` as it's the same as `on_key_up()`
+- Add more docs
+
 ### Version 0.9.3
 - Update buffer lib
 

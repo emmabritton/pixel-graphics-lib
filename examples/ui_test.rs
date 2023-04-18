@@ -165,13 +165,16 @@ impl Scene<SceneResult, SceneName> for Menu {
         self.dir_panel.render(graphics, mouse_xy);
     }
 
-    fn on_key_press(&mut self, key: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {
         self.field1.on_key_press(key);
         self.field2.on_key_press(key);
         self.field3.on_key_press(key);
     }
 
-    fn on_mouse_click(&mut self, xy: Coord, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+        if button != MouseButton::Left {
+            return;
+        }
         self.field1.on_mouse_click(xy);
         self.field2.on_mouse_click(xy);
         self.field3.on_mouse_click(xy);
@@ -184,7 +187,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, y_diff: isize, _x_diff: isize) {
+    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&VirtualKeyCode>) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 

@@ -12,6 +12,7 @@ pub trait FileDialogResults<SR: Clone + Debug + PartialEq> {
     fn load_file_result(path: String) -> SR;
 }
 
+/// Creates a shade and outline for dialogs
 pub fn dialog_background(width: usize, height: usize, style: &DialogStyle) -> ShapeCollection {
     let mut background = ShapeCollection::new();
     if let Some(color) = style.shade {

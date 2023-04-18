@@ -82,10 +82,18 @@ pub mod virtual_key_codes {
     ];
 }
 
+/// Converts key code to char
+///
+/// Passing `VirtualKeyCode::A, false)` returns `Some('a')` and `VirtualKeyCode::A, true)` returns `Some('A')`
+///
+/// # Arguments
+/// * `shift` - If shift is being held down
 pub fn key_press_to_char(code: VirtualKeyCode, shift: bool) -> Option<char> {
     key_code_to_char(code).map(|(c1, c2)| if shift { c2 } else { c1 })
 }
 
+/// Convert key code to (char, shifted char)
+/// So `VirtualKeyCode::Key1` (the `1` key) returns `('1', '!')` and VirtualKeyCode::A (the `A` key) returns `('a', 'A')`
 pub fn key_code_to_char(code: VirtualKeyCode) -> Option<(char, char)> {
     match code {
         VirtualKeyCode::Key1 => Some(('1', '!')),

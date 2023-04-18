@@ -194,8 +194,7 @@ pub trait System {
     fn on_mouse_move(&mut self, x: usize, y: usize) {}
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
-    fn on_scroll(&mut self, x: usize, y: usize, y_diff: isize, x_diff: isize) {}
-    fn on_key_pressed(&mut self, keys: Vec<VirtualKeyCode>) {}
+    fn on_scroll(&mut self, x: usize, y: usize, x_diff: isize, y_diff: isize) {}
     fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {}
     fn on_window_closed(&mut self) {}
@@ -277,13 +276,26 @@ impl Timing {
     }
 }
 
+/// Options for programs
 #[derive(Debug)]
 pub struct Options {
+    /// Target and max number of times [Scene::update] can be called per second
+    /// Default is 240
     pub ups: usize,
+    /// How the window should be scaled
+    /// Default is [Auto][WindowScaling::Auto]
     pub scaling: WindowScaling,
+    /// If vsync should be enabled
+    /// Default is true
     pub vsync: bool,
+    /// If OS mouse cursor should be hidden
+    /// (you'll have to draw your own if this is true, this is often called software cursor in other programs)
+    /// Default is false
     pub hide_cursor: bool,
+    /// If the mouse cursor should be locked to within this window while it's in the foreground
+    /// Default is false
     pub confine_cursor: bool,
+    /// Style data for [UiElement]
     pub style: UiStyle,
 }
 
@@ -436,14 +448,6 @@ pub fn run(
             }
             system.on_key_up(released_buttons);
 
-            let mut typed_buttons = vec![];
-            for button in system.action_keys() {
-                if input.key_pressed(button) {
-                    typed_buttons.push(button);
-                }
-            }
-            system.on_key_pressed(typed_buttons);
-
             if input.mouse_held(0) {
                 system.on_mouse_down(mouse_x, mouse_y, MouseButton::Left);
             }
@@ -459,7 +463,7 @@ pub fn run(
             }
             let scroll = input.scroll_diff();
             if scroll != 0.0 {
-                system.on_scroll(mouse_x, mouse_y, scroll.trunc() as isize, 0);
+                system.on_scroll(mouse_x, mouse_y, 0, scroll.trunc() as isize);
             }
 
             window.request_redraw();

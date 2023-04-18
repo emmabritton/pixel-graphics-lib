@@ -128,7 +128,7 @@ where
         self.home.render(graphics, mouse_xy);
     }
 
-    fn on_key_press(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {
         if self.current_dir_field.is_focused() {
             if key == VirtualKeyCode::V {
                 if held_keys.contains(&&VirtualKeyCode::RControl) {}
@@ -139,7 +139,10 @@ where
         }
     }
 
-    fn on_mouse_click(&mut self, xy: Coord, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+        if button != MouseButton::Left {
+            return;
+        }
         if self.downloads.on_mouse_click(xy) {
             self.current_dir_field.set_content(
                 &UserDirs::new()
@@ -187,7 +190,7 @@ where
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, y_diff: isize, _: isize) {
+    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&VirtualKeyCode>) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 
