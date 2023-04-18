@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.10.1
+- Update buffer lib
+
 ### Version 0.10.0
 - Swap x and y parameters on scroll
 - Add `on_key_down()` and `on_key_up()` to `Scene`
