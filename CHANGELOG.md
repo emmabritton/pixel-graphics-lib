@@ -1,6 +1,6 @@
 # Changelog
 
-### Version 0.9.4
+### Version 0.10.0
 - Swap x and y parameters on scroll
 - Add `on_key_down()` and `on_key_up()` to `Scene`
 - Add mouse button to `Scene` `on_mouse_down()` and `on_mouse_up()`
