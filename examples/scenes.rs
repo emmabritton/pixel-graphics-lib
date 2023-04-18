@@ -60,9 +60,12 @@ impl Scene<SceneResult, SceneName> for Scene1 {
         graphics.clear(BLUE);
     }
 
-    fn on_key_press(&mut self, _: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {}
+    fn on_key_up(&mut self, _: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {}
 
-    fn on_mouse_click(&mut self, _: Coord, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+        if button != MouseButton::Left {
+            return;
+        }
         self.result = Push(false, S2)
     }
 
@@ -91,11 +94,14 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         graphics.clear(RED);
     }
 
-    fn on_key_press(&mut self, key: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {
         self.result = Pop(Some(FromKey(key)))
     }
 
-    fn on_mouse_click(&mut self, xy: Coord, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+        if button != MouseButton::Left {
+            return;
+        }
         if xy.y < 100 {
             self.result = Push(false, S3(GREEN))
         } else {
@@ -122,9 +128,12 @@ impl Scene<SceneResult, SceneName> for Scene3 {
         graphics.draw_rect(Rect::new((90, 90), (190, 150)), fill(self.back));
     }
 
-    fn on_key_press(&mut self, _: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {}
+    fn on_key_up(&mut self, _: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {}
 
-    fn on_mouse_click(&mut self, _: Coord, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+        if button != MouseButton::Left {
+            return;
+        }
         self.result = Pop(None);
     }
 
