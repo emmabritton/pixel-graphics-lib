@@ -22,7 +22,7 @@ struct Example {}
 
 fn main() -> Result<()> {
     let system = Box::new(Example {});
-    run(240, 160, WindowScaling::Auto, "Example", system, ExecutionSpeed::standard())?;
+    run(240, 160, "Example", Box::new(system), Options::default())?;
     Ok(())
 }
 
