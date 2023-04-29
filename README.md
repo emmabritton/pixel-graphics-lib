@@ -1,3 +1,6 @@
+[![Crates.io](https://img.shields.io/crates/v/pixels-graphics-lib)](https://crates.io/crates/pixels-graphics-lib "Crates.io version")
+[![Documentation](https://img.shields.io/docsrs/pixels-graphics-lib)](https://docs.rs/pixels-graphics-lib "Documentation")
+
 # Graphics Lib
 
 This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
@@ -8,7 +11,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.10.4"
+pixels-graphics-lib = "0.10.5"
 winit_input_helper = "0.14.1" #only needed if you're not using `run()`
 ```
 
@@ -42,20 +45,14 @@ To use this the `impl System` must override `System::window_prefs()`
 
 ## Projects
 
-### Retro Games
+### [Retro Games](https://github.com/emmabritton/retro-games)
 
 A few retro games
 
-[Repo](https://github.com/emmabritton/retro-games)
-
-### ICI Image editor
+### [ICI Image editor](https://github.com/emmabritton/ici-image-editor)
 
 Editor for `IndexedImage`
 
-[Repo](https://github.com/emmabritton/ici-image-editor)
-
-### USFX Tester
+### [USFX Tester](https://github.com/emmabritton/uxfs-test)
 
 Test GUI for [USFX](https://github.com/tversteeg/usfx)
-
-[Repo](https://github.com/emmabritton/uxfs-test)
