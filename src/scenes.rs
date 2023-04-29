@@ -8,6 +8,8 @@ use std::fmt::Debug;
 
 /// Convenience method for programs built using [Scene]s
 ///
+/// If you're not using scenes consider [run]
+///
 /// # Arguments
 /// * `width` - Width of the whole window canvas in pixels
 /// * `height` - Height of the whole window canvas in pixels
@@ -81,7 +83,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// If this is a fullscreen scene it should draw a color over the whole screen otherwise
     /// you may see rendering issues (use `graphics.clear(Color)`).
     /// # Note
-    /// mouse_xy will be -1,-1 if this screen is in the background
+    /// mouse_xy will be -1,-1 if this screen is in the background and a non full screen scene is active
     fn render(&self, graphics: &mut Graphics, mouse_xy: Coord);
     /// Called when a keyboard key is being pressed down
     ///
@@ -152,9 +154,10 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// Called when a child scene is closing
     ///
     /// # Arguments
-    /// * `result` - Optionally data from child scene
+    /// * `result` - Optional data from child scene
     fn resuming(&mut self, result: Option<SR>);
-    /// Return true if this scene doesn't fill the screen
+    /// Return true if this scene doesn't fill the screen or is transparent
+    /// If this returns false the previous fullscreen scene will render as well
     fn is_dialog(&self) -> bool {
         false
     }

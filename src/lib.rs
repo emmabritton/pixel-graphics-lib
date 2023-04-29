@@ -332,6 +332,16 @@ impl Default for Options {
     }
 }
 
+/// Helper method that sets up the screen and runs the loop
+///
+/// If you want to use [Scene][scenes::Scene]s consider [run_scenes][scenes::run_scenes]
+///
+/// # Arguments
+/// * `width` - Width of the whole window canvas in pixels
+/// * `height` - Height of the whole window canvas in pixels
+/// * `title` - Window title
+/// * `system` - Your program
+/// * `options` - [Options] controls how fast the program can update, [UiElement] styling, etc
 pub fn run(
     width: usize,
     height: usize,
