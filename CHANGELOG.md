@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.10.7
+- Update buffer lib
+
 ### Version 0.10.6
 - Update buffer lib
 

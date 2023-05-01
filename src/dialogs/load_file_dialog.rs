@@ -8,6 +8,7 @@ use buffer_graphics_lib::prelude::*;
 use directories::UserDirs;
 use std::fmt::Debug;
 
+/// You should use something like `rfd` instead of this
 #[derive(Debug)]
 pub struct LoadFileDialog<SR: Clone + Debug + PartialEq, SN: Clone + Debug + PartialEq>
 where
