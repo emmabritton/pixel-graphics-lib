@@ -125,3 +125,5 @@
 //         self.should_exit
 //     }
 // }
+
+fn main() {}
