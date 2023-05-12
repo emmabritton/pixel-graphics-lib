@@ -12,7 +12,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 In your `Cargo.toml` file add
 ```toml
 pixels-graphics-lib = "0.11.0"
-winit_input_helper = {git = "https://github.com/rukai/winit_input_helper.git", rev = "00f37cee2b80fe17f3c7fce861b944d00fd82b01" } #only needed if you're not using `run()`
+winit_input_helper_temp = "0.14.2" #only needed if you're not using `run()`
 ```
 
 ### Code

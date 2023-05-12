@@ -51,7 +51,7 @@ use winit::dpi::LogicalSize;
 use winit::event::{Event, VirtualKeyCode, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{CursorGrabMode, Window, WindowBuilder};
-use winit_input_helper::WinitInputHelper;
+use winit_input_helper_temp::WinitInputHelper;
 
 pub mod prelude {
     pub use crate::dialogs::*;
