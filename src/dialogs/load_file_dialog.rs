@@ -129,7 +129,7 @@ where
         self.home.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held_keys: &Vec<&VirtualKeyCode>) {
         if self.current_dir_field.is_focused() {
             if key == VirtualKeyCode::V {
                 if held_keys.contains(&&VirtualKeyCode::RControl) {}

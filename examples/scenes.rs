@@ -60,8 +60,6 @@ impl Scene<SceneResult, SceneName> for Scene1 {
         graphics.clear(BLUE);
     }
 
-    fn on_key_up(&mut self, _: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {}
-
     fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
         if button != MouseButton::Left {
             return;
@@ -94,7 +92,7 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         graphics.clear(RED);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, _: &Vec<&VirtualKeyCode>) {
         self.result = Pop(Some(FromKey(key)))
     }
 
@@ -127,8 +125,6 @@ impl Scene<SceneResult, SceneName> for Scene3 {
     fn render(&self, graphics: &mut Graphics, _: Coord) {
         graphics.draw_rect(Rect::new((90, 90), (190, 150)), fill(self.back));
     }
-
-    fn on_key_up(&mut self, _: VirtualKeyCode, _: &Vec<&VirtualKeyCode>) {}
 
     fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
         if button != MouseButton::Left {

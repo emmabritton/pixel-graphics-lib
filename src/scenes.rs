@@ -91,14 +91,26 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_down(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {}
+    fn on_key_down(
+        &mut self,
+        key: VirtualKeyCode,
+        mouse_xy: Coord,
+        held_keys: &Vec<&VirtualKeyCode>,
+    ) {
+    }
     /// Called when a keyboard key has been released
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_up(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {}
+    fn on_key_up(
+        &mut self,
+        key: VirtualKeyCode,
+        mouse_xy: Coord,
+        held_keys: &Vec<&VirtualKeyCode>,
+    ) {
+    }
     /// Called when a mouse button has been pressed down
     ///
     /// # Arguments
@@ -282,7 +294,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         for key in keys {
             self.held_keys.insert(key);
             if let Some(active) = self.scenes.last_mut() {
-                active.on_key_down(key, &self.held_keys.iter().collect());
+                active.on_key_down(key, self.mouse_coord, &self.held_keys.iter().collect());
             }
         }
     }
@@ -291,7 +303,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         for key in keys {
             self.held_keys.remove(&key);
             if let Some(active) = self.scenes.last_mut() {
-                active.on_key_up(key, &self.held_keys.iter().collect());
+                active.on_key_up(key, self.mouse_coord, &self.held_keys.iter().collect());
             }
         }
     }

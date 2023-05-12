@@ -1,5 +1,17 @@
 # Changelog
 
+### Version 0.11.0
+- Update to graphics-shapes 0.2.0
+  - Adding intersects and contains check
+  - Removing Ellipse
+- Update to buffer-graphics-lib 0.11.0
+  - Adding clipping
+- Add `mouse_xy` to `on_key_up`, `on_key_down` for `Scene`
+
+### Version 0.10.8
+- Use exact version of winit_input_helper to add horz scrolling
+- Add horz scrolling 
+
 ### Version 0.10.7
 - Update buffer lib
 

@@ -2,6 +2,7 @@ use crate::ui::alert::AlertResult::{Negative, Positive};
 use crate::ui::prelude::Positioning::Center;
 use crate::ui::prelude::*;
 use crate::ui::styles::AlertStyle;
+use graphics_shapes::coord;
 
 const BUTTON_Y: isize = 28;
 const ALERT_SIZE: (usize, usize) = (200, 50);
@@ -117,7 +118,7 @@ impl Alert {
             InsertShape::insert_above(&mut back, rect.clone(), fill(color));
         }
         if let Some(color) = style.shadow {
-            InsertShape::insert_above(&mut back, rect.translate_by((1, 1)), stroke(color));
+            InsertShape::insert_above(&mut back, rect.translate_by(coord!(1, 1)), stroke(color));
         }
         if let Some(color) = style.border {
             InsertShape::insert_above(&mut back, rect.clone(), stroke(color));

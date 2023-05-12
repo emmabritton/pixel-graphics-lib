@@ -1,5 +1,6 @@
 use crate::prelude::styles::DialogStyle;
 use buffer_graphics_lib::prelude::*;
+use graphics_shapes::coord;
 use std::fmt::Debug;
 
 pub mod load_file_dialog;
@@ -28,7 +29,7 @@ pub fn dialog_background(width: usize, height: usize, style: &DialogStyle) -> Sh
     if let Some(color) = style.shadow {
         InsertShape::insert_above(
             &mut background,
-            style.bounds.translate_by((1, 1)),
+            style.bounds.translate_by(coord!(1, 1)),
             stroke(color),
         );
     }

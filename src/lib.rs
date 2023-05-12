@@ -55,6 +55,7 @@ use winit_input_helper::WinitInputHelper;
 
 pub mod prelude {
     pub use crate::dialogs::*;
+    pub use crate::prefs::*;
     pub use crate::scenes::*;
     pub use crate::ui::*;
     pub use crate::*;
@@ -472,8 +473,13 @@ pub fn run(
                 system.on_mouse_up(mouse_x, mouse_y, MouseButton::Right);
             }
             let scroll = input.scroll_diff();
-            if scroll != 0.0 {
-                system.on_scroll(mouse_x, mouse_y, 0, scroll.trunc() as isize);
+            if scroll.0 != 0.0 || scroll.1 != 0.0 {
+                system.on_scroll(
+                    mouse_x,
+                    mouse_y,
+                    scroll.0.trunc() as isize,
+                    scroll.1.trunc() as isize,
+                );
             }
 
             window.request_redraw();
