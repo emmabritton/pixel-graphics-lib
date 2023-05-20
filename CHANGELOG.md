@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.11.1
+- Update to graphics-shapes 0.2.1
+  - Adding Ellipse
+
 ### Version 0.11.0
 - Update to graphics-shapes 0.2.0
   - Adding intersects and contains check
