@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.11.2
+- Update buffer/ici-files
+
 ### Version 0.11.1
 - Update to graphics-shapes 0.2.1
   - Adding Ellipse
