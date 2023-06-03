@@ -6,7 +6,8 @@
 //!
 //! ```
 //! # use std::error::Error;
-//! use pixels_graphics_lib::prelude::*;
+//! # use pixels_graphics_lib::prelude::*;
+//! # use buffer_graphics_lib::Graphics;
 //!
 //! struct Example {
 //! }
@@ -57,9 +58,7 @@ pub mod prelude {
     pub use crate::dialogs::*;
     pub use crate::prefs::*;
     pub use crate::scenes::*;
-    pub use crate::ui::*;
     pub use crate::*;
-    pub use buffer_graphics_lib::prelude::*;
     pub use winit::event::VirtualKeyCode;
 }
 
@@ -183,15 +182,15 @@ pub enum MouseButton {
 
 #[allow(unused_variables)]
 pub trait System {
-    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
         vec![]
     }
     #[cfg(feature = "window_prefs")]
-    fn window_prefs(&self) -> Option<WindowPreferences> {
+    fn window_prefs(&mut self) -> Option<WindowPreferences> {
         None
     }
     fn update(&mut self, delta: &Timing);
-    fn render(&self, graphics: &mut Graphics);
+    fn render(&mut self, graphics: &mut Graphics);
     fn on_mouse_move(&mut self, x: usize, y: usize) {}
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
@@ -201,7 +200,7 @@ pub trait System {
     fn on_window_closed(&mut self) {}
     fn on_visibility_changed(&mut self, visible: bool) {}
     fn on_focus_changed(&mut self, focused: bool) {}
-    fn should_exit(&self) -> bool {
+    fn should_exit(&mut self) -> bool {
         false
     }
 }

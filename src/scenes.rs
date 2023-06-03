@@ -214,11 +214,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for SceneHost<SR, SN> {
-    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
         self.keys.clone()
     }
 
-    fn window_prefs(&self) -> Option<WindowPreferences> {
+    fn window_prefs(&mut self) -> Option<WindowPreferences> {
         self.window_prefs.clone()
     }
 
@@ -246,7 +246,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn render(&self, graphics: &mut Graphics) {
+    fn render(&mut self, graphics: &mut Graphics) {
         if let Some(active) = self.scenes.last() {
             if active.is_dialog() {
                 match self.scenes.iter().rposition(|scn| !scn.is_dialog()) {
@@ -308,7 +308,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn should_exit(&self) -> bool {
+    fn should_exit(&mut self) -> bool {
         self.should_exit
     }
 }
