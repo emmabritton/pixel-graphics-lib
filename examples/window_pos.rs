@@ -48,11 +48,11 @@ impl WindowPrefsScene {
 }
 
 impl System for WindowPrefsScene {
-    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
         vec![VirtualKeyCode::Escape]
     }
 
-    fn window_prefs(&self) -> Option<WindowPreferences> {
+    fn window_prefs(&mut self) -> Option<WindowPreferences> {
         Some(WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2").unwrap())
     }
 
@@ -64,7 +64,7 @@ impl System for WindowPrefsScene {
         }
     }
 
-    fn render(&self, graphics: &mut Graphics<'_>) {
+    fn render(&mut self, graphics: &mut Graphics<'_>) {
         graphics.clear(BLACK);
         let mut color_idx = self.idx;
         for (i, letter) in self.text.chars().enumerate() {
@@ -90,7 +90,7 @@ impl System for WindowPrefsScene {
         }
     }
 
-    fn should_exit(&self) -> bool {
+    fn should_exit(&mut self) -> bool {
         self.should_exit
     }
 }

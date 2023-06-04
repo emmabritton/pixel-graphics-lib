@@ -16,6 +16,8 @@ pub struct ToggleIconButton {
     style: ToggleIconButtonStyle,
     state: ElementState,
     selected: bool,
+    tooltip_text: String,
+    tooltip_positioning: Positioning,
 }
 
 impl ToggleIconButton {
@@ -33,6 +35,30 @@ impl ToggleIconButton {
             w as usize + style.padding + style.padding,
             h as usize + style.padding + style.padding,
         );
+        let (icon_xy, border, shadow, tooltip) =
+            Self::layout(&bounds, style, tooltip_text, tooltip_positioning, (w, h));
+        Self {
+            tooltip,
+            icon,
+            icon_xy,
+            bounds,
+            border,
+            shadow,
+            style: style.clone(),
+            state: ElementState::Normal,
+            selected: false,
+            tooltip_text: tooltip_text.to_string(),
+            tooltip_positioning,
+        }
+    }
+
+    fn layout(
+        bounds: &Rect,
+        style: &ToggleIconButtonStyle,
+        tooltip_text: &str,
+        tooltip_positioning: Positioning,
+        (w, h): (u8, u8),
+    ) -> (Coord, Polyline, Polyline, Tooltip) {
         let border = Polyline::rounded_rect(
             bounds.left(),
             bounds.top(),
@@ -52,22 +78,17 @@ impl ToggleIconButton {
         )
         .unwrap();
         let tooltip = Tooltip::new(
-            xy + (w, h),
+            bounds.top_left() + (w, h),
             tooltip_text,
             tooltip_positioning,
             &style.tooltip,
         );
-        Self {
-            tooltip,
-            icon,
-            icon_xy: xy + (style.padding, style.padding) + (1, 1),
-            bounds,
+        (
+            bounds.top_left() + (style.padding, style.padding) + (1, 1),
             border,
             shadow,
-            style: style.clone(),
-            state: ElementState::Normal,
-            selected: false,
-        }
+            tooltip,
+        )
     }
 }
 
@@ -92,6 +113,21 @@ impl ToggleIconButton {
 }
 
 impl UiElement for ToggleIconButton {
+    fn set_position(&mut self, top_left: Coord) {
+        self.bounds = self.bounds.move_to(top_left);
+        let (icon_xy, border, shadow, tooltip) = Self::layout(
+            &self.bounds,
+            &self.style,
+            &self.tooltip_text,
+            self.tooltip_positioning,
+            (self.icon.width(), self.icon.height()),
+        );
+        self.icon_xy = icon_xy;
+        self.border = border;
+        self.shadow = shadow;
+        self.tooltip = tooltip;
+    }
+
     #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds

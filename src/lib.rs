@@ -17,7 +17,7 @@
 //!
 //!   }
 //!
-//!   fn render(&self, graphics: &mut Graphics) {
+//!   fn render(&mut self, graphics: &mut Graphics) {
 //!
 //!   }
 //! }

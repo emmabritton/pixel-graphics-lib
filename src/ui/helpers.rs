@@ -1,6 +1,5 @@
-use crate::prelude::toggle_button::ToggleButton;
-use crate::prelude::UiElement;
-use crate::ui::prelude::ToggleIconButton;
+use crate::prelude::*;
+use crate::ui::prelude::*;
 use buffer_graphics_lib::Graphics;
 use graphics_shapes::prelude::Coord;
 use rustc_hash::FxHashMap;

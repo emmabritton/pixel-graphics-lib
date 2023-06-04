@@ -1,10 +1,9 @@
 use crate::SceneName::*;
 use crate::SceneResult::*;
 use anyhow::Result;
-use buffer_graphics_lib::color::Color;
-use buffer_graphics_lib::Graphics;
+use buffer_graphics_lib::prelude::*;
+use pixels_graphics_lib::prelude::SceneUpdateResult::*;
 use pixels_graphics_lib::prelude::*;
-use pixels_graphics_lib::scenes::SceneUpdateResult::*;
 use winit::event::VirtualKeyCode;
 
 fn main() -> Result<()> {

@@ -1,4 +1,4 @@
-use crate::prelude::{ElementState, UiElement};
+use crate::ui::prelude::*;
 use crate::ui::styles::TooltipStyle;
 use crate::Timing;
 use buffer_graphics_lib::prelude::DrawType::Fill;
@@ -6,6 +6,7 @@ use buffer_graphics_lib::prelude::*;
 
 #[derive(Debug)]
 pub struct Tooltip {
+    label: String,
     text: Text,
     background: Drawable<Rect>,
     border: Polyline,
@@ -26,6 +27,23 @@ impl Tooltip {
             bounds.width() + (style.padding),
             bounds.height() + (style.padding),
         );
+        let label = text;
+        let (border, shadow, background, text) = Self::layout(&bounds, label, style);
+        Self {
+            label: label.to_string(),
+            text,
+            background,
+            border,
+            shadow,
+            style: style.clone(),
+        }
+    }
+
+    fn layout(
+        bounds: &Rect,
+        label: &str,
+        style: &TooltipStyle,
+    ) -> (Polyline, Polyline, Drawable<Rect>, Text) {
         let border = Polyline::rounded_rect(
             bounds.left(),
             bounds.top(),
@@ -49,17 +67,11 @@ impl Tooltip {
             Fill(BLACK),
         );
         let text = Text::new(
-            text,
+            label,
             TextPos::px(bounds.top_left() + (style.padding, style.padding)),
             (WHITE, style.size, WrappingStrategy::SpaceBeforeCol(20)),
         );
-        Self {
-            text,
-            background,
-            border,
-            shadow,
-            style: style.clone(),
-        }
+        (border, shadow, background, text)
     }
 }
 
@@ -77,6 +89,15 @@ impl Tooltip {
 }
 
 impl UiElement for Tooltip {
+    fn set_position(&mut self, top_left: Coord) {
+        self.background = self.background.with_move(top_left);
+        let (border, shadow, _, text) =
+            Self::layout(self.background.obj(), &self.label, &self.style);
+        self.border = border;
+        self.shadow = shadow;
+        self.text = text;
+    }
+
     fn bounds(&self) -> &Rect {
         self.background.obj()
     }

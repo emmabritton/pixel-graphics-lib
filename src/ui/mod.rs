@@ -3,7 +3,7 @@ pub mod button;
 pub mod dir_panel;
 pub mod helpers;
 pub mod icon_button;
-// pub mod layout;
+pub mod layout;
 pub mod styles;
 pub mod text_field;
 pub mod toggle_button;
@@ -11,6 +11,7 @@ pub mod toggle_icon_button;
 pub mod tooltip;
 
 use crate::prelude::*;
+use graphics_shapes::prelude::*;
 use std::fmt::Debug;
 
 pub mod prelude {
@@ -19,6 +20,8 @@ pub mod prelude {
     pub use crate::ui::dir_panel::*;
     pub use crate::ui::helpers::*;
     pub use crate::ui::icon_button::*;
+    pub use crate::ui::layout::column::*;
+    pub use crate::ui::layout::row::*;
     pub use crate::ui::styles::*;
     pub use crate::ui::text_field::*;
     pub use crate::ui::toggle_button::*;
@@ -28,6 +31,8 @@ pub mod prelude {
 }
 
 pub trait UiElement {
+    fn set_position(&mut self, top_left: Coord);
+
     fn bounds(&self) -> &Rect;
 
     fn render(&self, graphics: &mut Graphics, mouse_xy: Coord);

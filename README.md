@@ -11,7 +11,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.11.3"
+pixels-graphics-lib = "0.11.4"
 winit_input_helper_temp = "0.14.2" #only needed if you're not using `run()`
 ```
 
@@ -61,7 +61,7 @@ impl ExampleScene {
 }
 
 impl Scene<SceneResult, SceneName> for ExampleScene {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&mut self, graphics: &mut Graphics, mouse_xy: Coord) {
         todo!()
     }
 
@@ -93,7 +93,7 @@ fn main() -> Result<()> {
 //Check `src/scenes.rs` for examples of implementing held keys, etc
 impl System for Example {
     fn update(&mut self, timing: &Timing) {}
-    fn render(&self, graphics: &mut Graphics) {}
+    fn render(&mut self, graphics: &mut Graphics) {}
 }
 ```
 

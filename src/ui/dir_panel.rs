@@ -1,8 +1,8 @@
-use crate::prelude::Positioning::LeftTop;
 use crate::prelude::*;
 use crate::ui::dir_panel::FileEntry::*;
-use crate::ui::prelude::Positioning::Center;
 use crate::ui::prelude::*;
+use buffer_graphics_lib::prelude::Positioning::*;
+use buffer_graphics_lib::prelude::*;
 use std::cmp::Ordering;
 use std::fs::{read_dir, ReadDir};
 use std::path::PathBuf;
@@ -90,10 +90,7 @@ pub struct DirPanel {
 
 impl DirPanel {
     pub fn new(current_dir: &str, bounds: Rect, allowed_ext: Option<&str>) -> Self {
-        let mut background = ShapeCollection::new();
-        InsertShape::insert_above(&mut background, bounds.clone(), fill(WHITE));
-        InsertShape::insert_above(&mut background, bounds.clone(), stroke(DARK_GRAY));
-        let entry_visible_count = bounds.height() / (Small.get_size().1 + Small.get_spacing());
+        let (background, entry_visible_count) = Self::layout(&bounds);
         let mut panel = Self {
             error: None,
             current_dir: current_dir.to_string(),
@@ -108,6 +105,14 @@ impl DirPanel {
         };
         panel.set_dir(current_dir);
         panel
+    }
+
+    fn layout(bounds: &Rect) -> (ShapeCollection, usize) {
+        let mut background = ShapeCollection::new();
+        InsertShape::insert_above(&mut background, bounds.clone(), fill(WHITE));
+        InsertShape::insert_above(&mut background, bounds.clone(), stroke(DARK_GRAY));
+        let entry_visible_count = bounds.height() / (Small.get_size().1 + Small.get_spacing());
+        (background, entry_visible_count)
     }
 }
 
@@ -256,6 +261,13 @@ impl DirPanel {
 }
 
 impl UiElement for DirPanel {
+    fn set_position(&mut self, top_left: Coord) {
+        self.bounds = self.bounds.move_to(top_left);
+        let (background, entry_visible_count) = Self::layout(&self.bounds);
+        self.background = background;
+        self.entry_visible_count = entry_visible_count;
+    }
+
     #[inline]
     fn bounds(&self) -> &Rect {
         &self.bounds

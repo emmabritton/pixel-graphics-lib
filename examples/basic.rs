@@ -27,7 +27,7 @@ impl Basic {
 }
 
 impl System for Basic {
-    fn action_keys(&self) -> Vec<VirtualKeyCode> {
+    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
         vec![VirtualKeyCode::Escape]
     }
 
@@ -39,7 +39,7 @@ impl System for Basic {
         }
     }
 
-    fn render(&self, graphics: &mut Graphics) {
+    fn render(&mut self, graphics: &mut Graphics) {
         graphics.clear(Color::gray(self.greyscale))
     }
 
@@ -49,7 +49,7 @@ impl System for Basic {
         }
     }
 
-    fn should_exit(&self) -> bool {
+    fn should_exit(&mut self) -> bool {
         self.should_exit
     }
 }

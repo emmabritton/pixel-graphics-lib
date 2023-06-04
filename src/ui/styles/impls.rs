@@ -1,4 +1,6 @@
-use crate::prelude::styles::*;
+use crate::prelude::*;
+use crate::ui::prelude::*;
+use buffer_graphics_lib::prelude::*;
 
 impl ColorSet {
     pub fn new(

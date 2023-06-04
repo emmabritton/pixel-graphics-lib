@@ -2,6 +2,7 @@ use crate::prelude::*;
 use crate::scenes::*;
 use crate::ui::prelude::TextFilter::{All, Filename};
 use crate::ui::prelude::*;
+use buffer_graphics_lib::prelude::*;
 use directories::UserDirs;
 use std::fmt::Debug;
 use std::path::PathBuf;

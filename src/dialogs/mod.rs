@@ -1,4 +1,4 @@
-use crate::prelude::styles::DialogStyle;
+use crate::ui::prelude::*;
 use buffer_graphics_lib::prelude::*;
 use graphics_shapes::coord;
 use std::fmt::Debug;

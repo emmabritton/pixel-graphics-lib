@@ -10,6 +10,7 @@ use crate::Timing;
 
 #[derive(Debug)]
 pub struct Button {
+    label: String, //needed for relayout
     text: Text,
     bounds: Rect,
     border: Polyline,
@@ -26,6 +27,20 @@ impl Button {
         style: &ButtonStyle,
     ) -> Self {
         let bounds = Self::calc_bounds(xy.into(), text, min_width, style.text_size);
+        let label = text.to_string();
+        let (text, border, shadow) = Self::layout(&bounds, style, text);
+        Self {
+            label,
+            text,
+            bounds,
+            border,
+            shadow,
+            style: style.clone(),
+            state: ElementState::Normal,
+        }
+    }
+
+    fn layout(bounds: &Rect, style: &ButtonStyle, text: &str) -> (Text, Polyline, Polyline) {
         let border = Polyline::rounded_rect(
             bounds.left(),
             bounds.top(),
@@ -49,14 +64,7 @@ impl Button {
             TextPos::px(bounds.center() + (0, 1)),
             (WHITE, style.text_size, WrappingStrategy::None, Center),
         );
-        Self {
-            text,
-            bounds,
-            border,
-            shadow,
-            style: style.clone(),
-            state: ElementState::Normal,
-        }
+        (text, border, shadow)
     }
 
     pub fn calc_bounds(
@@ -85,6 +93,14 @@ impl Button {
 }
 
 impl UiElement for Button {
+    fn set_position(&mut self, top_left: Coord) {
+        self.bounds = self.bounds.move_to(top_left);
+        let (text, border, shadow) = Self::layout(&self.bounds, &self.style, &self.label);
+        self.text = text;
+        self.shadow = shadow;
+        self.border = border;
+    }
+
     #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds

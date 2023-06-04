@@ -1,9 +1,11 @@
-use crate::buffer_graphics_lib::prelude::Positioning::LeftCenter;
 use crate::prelude::*;
-use crate::ui::prelude::WrappingStrategy::Cutoff;
+use crate::ui::prelude::*;
 use crate::ui::styles::TextFieldStyle;
 use crate::ui::UiElement;
 use crate::utilities::key_code_to_char;
+use buffer_graphics_lib::prelude::Positioning::LeftCenter;
+use buffer_graphics_lib::prelude::WrappingStrategy::Cutoff;
+use buffer_graphics_lib::prelude::*;
 
 const CURSOR_BLINK_RATE: f64 = 0.5;
 
@@ -101,8 +103,7 @@ impl TextField {
             ((text_size.get_size().1 + text_size.get_spacing()) as f32 * 1.4) as usize,
         );
         let visible_count = rect.width() / (text_size.get_size().0 + text_size.get_spacing());
-        let background = Drawable::from_obj(rect.clone(), fill(WHITE));
-        let border = Drawable::from_obj(rect.clone(), stroke(DARK_GRAY));
+        let (background, border) = Self::layout(&rect);
         let cursor =
             Drawable::from_obj(Rect::new((0, 0), (1, text_size.get_size().1)), fill(BLACK));
         let mut filters = filters.to_vec();
@@ -127,6 +128,12 @@ impl TextField {
             style: style.clone(),
             state: ElementState::Normal,
         }
+    }
+
+    fn layout(bounds: &Rect) -> (Drawable<Rect>, Drawable<Rect>) {
+        let background = Drawable::from_obj(bounds.clone(), fill(WHITE));
+        let border = Drawable::from_obj(bounds.clone(), stroke(DARK_GRAY));
+        (background, border)
     }
 }
 
@@ -248,14 +255,21 @@ impl TextField {
 }
 
 impl UiElement for TextField {
+    fn set_position(&mut self, top_left: Coord) {
+        self.bounds = self.bounds.move_to(top_left);
+        let (background, border) = Self::layout(&self.bounds);
+        self.background = background;
+        self.border = border;
+    }
+
     #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }
 
-    fn render(&self, graphics: &mut Graphics, xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
         let (error, disabled) = self.state.get_err_dis();
-        let hovered = self.bounds.contains(xy);
+        let hovered = self.bounds.contains(mouse_xy);
         if let Some(color) = self
             .style
             .background_color
