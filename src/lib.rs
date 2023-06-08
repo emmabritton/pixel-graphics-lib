@@ -182,8 +182,8 @@ pub enum MouseButton {
 
 #[allow(unused_variables)]
 pub trait System {
-    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
-        vec![]
+    fn action_keys(&mut self) -> &[VirtualKeyCode] {
+        &[]
     }
     #[cfg(feature = "window_prefs")]
     fn window_prefs(&mut self) -> Option<WindowPreferences> {
@@ -444,16 +444,16 @@ pub fn run(
 
             let mut held_buttons = vec![];
             for button in system.action_keys() {
-                if input.key_held(button) {
-                    held_buttons.push(button);
+                if input.key_held(*button) {
+                    held_buttons.push(*button);
                 }
             }
             system.on_key_down(held_buttons);
 
             let mut released_buttons = vec![];
             for button in system.action_keys() {
-                if input.key_released(button) {
-                    released_buttons.push(button);
+                if input.key_released(*button) {
+                    released_buttons.push(*button);
                 }
             }
             system.on_key_up(released_buttons);

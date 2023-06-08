@@ -48,8 +48,8 @@ impl WindowPrefsScene {
 }
 
 impl System for WindowPrefsScene {
-    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
-        vec![VirtualKeyCode::Escape]
+    fn action_keys(&mut self) -> &[VirtualKeyCode] {
+        &[VirtualKeyCode::Escape]
     }
 
     fn window_prefs(&mut self) -> Option<WindowPreferences> {

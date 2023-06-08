@@ -27,8 +27,8 @@ impl Basic {
 }
 
 impl System for Basic {
-    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
-        vec![VirtualKeyCode::Escape]
+    fn action_keys(&mut self) -> &[VirtualKeyCode] {
+        &[VirtualKeyCode::Escape]
     }
 
     fn update(&mut self, _delta: &Timing) {

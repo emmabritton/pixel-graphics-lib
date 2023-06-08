@@ -214,8 +214,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for SceneHost<SR, SN> {
-    fn action_keys(&mut self) -> Vec<VirtualKeyCode> {
-        self.keys.clone()
+    fn action_keys(&mut self) -> &[VirtualKeyCode] {
+        &self.keys
     }
 
     fn window_prefs(&mut self) -> Option<WindowPreferences> {

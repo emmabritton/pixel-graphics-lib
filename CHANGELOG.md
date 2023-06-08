@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.11.5
+- Change `action_keys` to return a reference
+
 ### Version 0.11.4
 - Add `set_position` to `UiElement` and all views
 - Add `ColumnLayout` and `RowLayout` which can position a collection of views into columns or rows
