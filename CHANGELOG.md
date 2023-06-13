@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.11.6
+- Add `Timer`
+
 ### Version 0.11.5
 - Change `action_keys` to return a reference
 
