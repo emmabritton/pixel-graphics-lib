@@ -261,7 +261,7 @@ impl Timer {
 
 impl Timer {
     /// Update timer, returns true if the
-    fn update(&mut self, timing: &Timing) -> bool {
+    pub fn update(&mut self, timing: &Timing) -> bool {
         self.remaining -= timing.fixed_time_step;
         let triggered = self.remaining <= 0.0;
         if triggered && self.looping {
@@ -270,12 +270,12 @@ impl Timer {
         triggered
     }
 
-    fn reset(&mut self) {
+    pub fn reset(&mut self) {
         self.remaining = self.reset;
     }
 
     /// If the timer has reached 0, this will always be false for looping timers (unless reset is <= 0.0)
-    fn has_triggered(&self) -> bool {
+    pub fn has_triggered(&self) -> bool {
         self.remaining <= 0.0
     }
 }
