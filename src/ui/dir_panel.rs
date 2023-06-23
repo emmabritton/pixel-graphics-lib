@@ -7,10 +7,18 @@ use std::cmp::Ordering;
 use std::fs::{read_dir, ReadDir};
 use std::path::PathBuf;
 
-const ENTRY_FORMAT: TextFormat =
-    TextFormat::new(WrappingStrategy::Ellipsis(35), Small, BLACK, LeftTop);
-const ERROR_FORMAT: TextFormat =
-    TextFormat::new(WrappingStrategy::SpaceBeforeCol(20), Normal, RED, Center);
+const ENTRY_FORMAT: TextFormat = TextFormat::new(
+    WrappingStrategy::Ellipsis(35),
+    TextSize::Small,
+    BLACK,
+    LeftTop,
+);
+const ERROR_FORMAT: TextFormat = TextFormat::new(
+    WrappingStrategy::SpaceBeforeCol(20),
+    TextSize::Normal,
+    RED,
+    Center,
+);
 
 #[derive(Debug, PartialEq, Clone, Eq)]
 enum FileEntry {
@@ -111,7 +119,8 @@ impl DirPanel {
         let mut background = ShapeCollection::new();
         InsertShape::insert_above(&mut background, bounds.clone(), fill(WHITE));
         InsertShape::insert_above(&mut background, bounds.clone(), stroke(DARK_GRAY));
-        let entry_visible_count = bounds.height() / (Small.get_size().1 + Small.get_spacing());
+        let entry_visible_count =
+            bounds.height() / (TextSize::Small.get_size().1 + TextSize::Small.get_spacing());
         (background, entry_visible_count)
     }
 }
@@ -231,13 +240,14 @@ impl DirPanel {
         let xy = self.bounds.top_left()
             + (
                 2,
-                row * (Small.get_spacing() + Small.get_size().1) + Small.get_spacing() * 2,
+                row * (TextSize::Small.get_spacing() + TextSize::Small.get_size().1)
+                    + TextSize::Small.get_spacing() * 2,
             );
         Rect::new(
             xy,
             (
                 self.bounds.right() - 2,
-                xy.y + (Small.get_size().1) as isize,
+                xy.y + (TextSize::Small.get_size().1) as isize,
             ),
         )
     }

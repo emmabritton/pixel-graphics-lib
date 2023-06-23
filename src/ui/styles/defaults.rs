@@ -18,8 +18,8 @@ impl Default for UiStyle {
                 b: 140,
                 a: 255,
             },
-            title_text: TextFormat::new(WrappingStrategy::None, Large, WHITE, LeftTop),
-            body_text: TextFormat::new(WrappingStrategy::None, Normal, WHITE, LeftTop),
+            title_text: TextFormat::new(WrappingStrategy::None, TextSize::Large, WHITE, LeftTop),
+            body_text: TextFormat::new(WrappingStrategy::None, TextSize::Normal, WHITE, LeftTop),
             tooltip: Default::default(),
             icon_button: Default::default(),
             toggle_icon_button: Default::default(),
@@ -31,7 +31,7 @@ impl Default for ButtonStyle {
     fn default() -> Self {
         Self {
             text: ColorSet::new_values(WHITE, WHITE, WHITE, LIGHT_GRAY),
-            text_size: Normal,
+            text_size: TextSize::Normal,
             border: ColorSet::new_values(LIGHT_GRAY, CYAN, RED, DARK_GRAY),
             shadow: ColorSet::new_same(DARK_GRAY),
             rounding: 2,
@@ -43,7 +43,7 @@ impl Default for ToggleButtonStyle {
     fn default() -> Self {
         Self {
             text: ToggleColorSet::new_same(WHITE),
-            text_size: Normal,
+            text_size: TextSize::Normal,
             border: ToggleColorSet::new_values(LIGHT_GRAY, CYAN, WHITE, CYAN, RED, DARK_GRAY),
             shadow: ToggleColorSet::new_values(
                 DARK_GRAY, DARK_GRAY, WHITE, WHITE, DARK_GRAY, DARK_GRAY,
@@ -75,7 +75,7 @@ impl Default for AlertStyle {
             }),
             text: WHITE,
             warning_text: RED,
-            text_size: Normal,
+            text_size: TextSize::Normal,
             button: ButtonStyle::default(),
             border: Some(LIGHT_GRAY),
             shadow: Some(DARK_GRAY),
@@ -147,7 +147,7 @@ impl Default for TooltipStyle {
             background: ColorSet::new_same(BLACK),
             border: ColorSet::new_same(LIGHT_GRAY),
             shadow: ColorSet::new_same(DARK_GRAY),
-            size: Small,
+            size: TextSize::Small,
             padding: 2,
         }
     }

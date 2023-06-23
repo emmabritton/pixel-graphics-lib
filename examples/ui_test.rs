@@ -60,7 +60,7 @@ impl Menu {
             IndexedImage::from_file_contents(include_bytes!("resources/icon.ici")).unwrap();
         let (large_icon, _) =
             IndexedImage::from_file_contents(include_bytes!("resources/large_icon.ici")).unwrap();
-        let title = Text::new("UI Tester", Px(8, 8), style.title_text.clone());
+        let title = Text::new("UI Tester", TextPos::Px(8, 8), style.title_text.clone());
         let tooltip_rect = Drawable::from_obj(Rect::new_with_size((8, 40), 10, 10), Stroke(WHITE));
         let tooltip = Tooltip::new((8, 40), "This is a test tooltip", LeftTop, &style.tooltip);
         let button1 = Button::new((8, 60), "Test Button", None, &style.button);
@@ -78,7 +78,7 @@ impl Menu {
         let field1 = TextField::new(
             (8, 100),
             6,
-            Normal,
+            TextSize::Normal,
             (None, Some(30)),
             "",
             &[All],
@@ -87,7 +87,7 @@ impl Menu {
         let field2 = TextField::new(
             (8, 120),
             6,
-            Normal,
+            TextSize::Normal,
             (None, None),
             "",
             &[All],
@@ -96,7 +96,7 @@ impl Menu {
         let field3 = TextField::new(
             (8, 140),
             6,
-            Normal,
+            TextSize::Normal,
             (Some(100), None),
             "",
             &[All],

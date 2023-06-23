@@ -78,7 +78,7 @@ impl LayoutTest {
         let text_field = TextField::new(
             (50, 50),
             10,
-            Normal,
+            TextSize::Normal,
             (None, None),
             "",
             &[All],
@@ -87,7 +87,7 @@ impl LayoutTest {
         let mut spacing = TextField::new(
             (0, 0),
             4,
-            Normal,
+            TextSize::Normal,
             (None, None),
             "0",
             &[Numbers],
@@ -96,7 +96,7 @@ impl LayoutTest {
         let mut padding = TextField::new(
             (0, 0),
             4,
-            Normal,
+            TextSize::Normal,
             (None, None),
             "0",
             &[Numbers],
@@ -157,10 +157,10 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         self.rightbottom.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, _: &Vec<&VirtualKeyCode>) {
-        self.text_field.on_key_press(key);
-        self.padding.on_key_press(key);
-        self.spacing.on_key_press(key);
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held: &Vec<&VirtualKeyCode>) {
+        self.text_field.on_key_press(key, held);
+        self.padding.on_key_press(key, held);
+        self.spacing.on_key_press(key, held);
     }
 
     fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {

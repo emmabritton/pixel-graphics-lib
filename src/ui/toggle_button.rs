@@ -28,7 +28,7 @@ impl ToggleButton {
         style: &ToggleButtonStyle,
     ) -> Self {
         let min_width = min_width.unwrap_or_default();
-        let (w, h) = Normal.measure(text, WrappingStrategy::None);
+        let (w, h) = TextSize::Normal.measure(text, WrappingStrategy::None);
         let bounds = Rect::new_with_size(
             xy,
             ((w as f32 * 1.2) as usize).max(min_width),

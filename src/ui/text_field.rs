@@ -298,7 +298,7 @@ impl UiElement for TextField {
                     .chars()
                     .skip(self.first_visible)
                     .collect::<String>(),
-                Px(
+                TextPos::Px(
                     self.bounds.left() + self.text_size.get_spacing() as isize,
                     self.bounds.top()
                         + (self.bounds.height() as isize / 2)
