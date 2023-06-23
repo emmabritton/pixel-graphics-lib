@@ -165,10 +165,10 @@ impl Scene<SceneResult, SceneName> for Menu {
         self.dir_panel.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, _: &Vec<&VirtualKeyCode>) {
-        self.field1.on_key_press(key);
-        self.field2.on_key_press(key);
-        self.field3.on_key_press(key);
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held: &Vec<&VirtualKeyCode>) {
+        self.field1.on_key_press(key, held);
+        self.field2.on_key_press(key, held);
+        self.field3.on_key_press(key, held);
     }
 
     fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {

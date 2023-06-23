@@ -135,7 +135,7 @@ where
                 if held_keys.contains(&&VirtualKeyCode::RControl) {}
             } else if key == VirtualKeyCode::Return {
             } else {
-                self.current_dir_field.on_key_press(key);
+                self.current_dir_field.on_key_press(key, held_keys);
             }
         }
     }

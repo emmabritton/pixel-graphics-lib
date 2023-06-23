@@ -181,7 +181,7 @@ impl TextField {
         false
     }
 
-    pub fn on_key_press(&mut self, key: VirtualKeyCode) {
+    pub fn on_key_press(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {
         if !self.focused || self.state == ElementState::Disabled {
             return;
         }
@@ -233,11 +233,14 @@ impl TextField {
                 }
             }
             _ => {
-                if let Some((lower, _)) = key_code_to_char(key) {
+                if let Some((lower, upper)) = key_code_to_char(key) {
+                    let shift_pressed = held_keys.contains(&&VirtualKeyCode::LShift)
+                        || held_keys.contains(&&VirtualKeyCode::RShift);
                     for filter in &self.filters {
-                        if filter.is_char_allowed(lower) {
+                        let char = if shift_pressed { upper } else { lower };
+                        if filter.is_char_allowed(char) {
                             if !self.is_full() {
-                                self.content.insert(self.cursor_pos, lower);
+                                self.content.insert(self.cursor_pos, char);
                                 if self.cursor_pos == self.content.chars().count() - 1 {
                                     self.cursor_pos += 1;
                                 }

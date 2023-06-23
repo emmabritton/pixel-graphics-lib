@@ -205,7 +205,7 @@ pub trait System {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Stats {
     /// The number of frames shown in the last second
     pub fps: usize,
@@ -215,7 +215,7 @@ pub struct Stats {
     pub(crate) last_frame_check: Instant,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Timer {
     /// amount of time remaining
     pub remaining: f64,

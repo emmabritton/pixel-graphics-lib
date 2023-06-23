@@ -151,9 +151,9 @@ where
         self.cancel.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, _: &Vec<&VirtualKeyCode>) {
-        self.name_field.on_key_press(key);
-        self.current_dir_field.on_key_press(key);
+    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held_keys: &Vec<&VirtualKeyCode>) {
+        self.name_field.on_key_press(key, held_keys);
+        self.current_dir_field.on_key_press(key, held_keys);
     }
 
     fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
