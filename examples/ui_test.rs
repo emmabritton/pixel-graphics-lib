@@ -185,6 +185,12 @@ impl Scene<SceneResult, SceneName> for Menu {
                 self.dir_panel.set_dir(&path);
             }
         }
+        if self.button1.on_mouse_click(xy) {
+            unfocus!(self.field1, self.field2, self.field3);
+        }
+        if self.button2.on_mouse_click(xy) {
+            swap_focus!(self.field1, self.field2, self.field3);
+        }
     }
 
     fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&VirtualKeyCode>) {

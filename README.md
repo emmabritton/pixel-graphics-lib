@@ -11,7 +11,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.11.7"
+pixels-graphics-lib = "0.11.8"
 winit_input_helper_temp = "0.14.2" #only needed if you're not using `run()`
 ```
 

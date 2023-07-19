@@ -9,6 +9,19 @@ use buffer_graphics_lib::prelude::*;
 
 const CURSOR_BLINK_RATE: f64 = 0.5;
 
+#[macro_export]
+macro_rules! swap_focus {
+    ($focus:expr, $( $unfocus:expr ),* ) => {{
+        $focus.focus();
+        $($unfocus.unfocus();)*
+    }};
+}
+
+#[macro_export]
+macro_rules! unfocus {
+    ( $( $unfocus:expr ),* ) => {$($unfocus.unfocus();)*};
+}
+
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum TextFilter {
     /// a-z
