@@ -2,6 +2,7 @@
 
 ### Version 0.11.8
 - Add `unfocus` and `swap_focus` macros for text fields
+- Add `Sentence` and `Raw` filters for text fields
 
 ### Version 0.11.7
 - Fix issue where shift was ignored for text fields

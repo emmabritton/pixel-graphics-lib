@@ -5,6 +5,7 @@ use buffer_graphics_lib::prelude::*;
 use pixels_graphics_lib::prefs::WindowPreferences;
 use pixels_graphics_lib::prelude::SceneUpdateResult::*;
 use pixels_graphics_lib::prelude::*;
+use pixels_graphics_lib::ui::prelude::TextFilter::{Raw, Sentence};
 use pixels_graphics_lib::ui::prelude::*;
 use pixels_graphics_lib::ui::text_field::TextFilter::All;
 
@@ -90,7 +91,7 @@ impl Menu {
             TextSize::Normal,
             (None, None),
             "",
-            &[All],
+            &[Sentence],
             &style.text_field,
         );
         let field3 = TextField::new(
@@ -99,7 +100,7 @@ impl Menu {
             TextSize::Normal,
             (Some(100), None),
             "",
-            &[All],
+            &[Raw(vec!['a', 'B', '%'])],
             &style.text_field,
         );
         let toggle_buttons = ToggleButtonGroup::new(vec![(0, toggle_button1), (1, toggle_button2)]);

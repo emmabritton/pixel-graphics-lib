@@ -22,7 +22,7 @@ macro_rules! unfocus {
     ( $( $unfocus:expr ),* ) => {$($unfocus.unfocus();)*};
 }
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TextFilter {
     /// a-z
     Letters,
@@ -38,8 +38,12 @@ pub enum TextFilter {
     Symbols,
     /// Space
     Whitespace,
+    /// Letters, numbers, some punctuations (!,.?')
+    Sentence,
     /// Letters and _-().
     Filename,
+    /// Whatever you need
+    Raw(Vec<char>),
     /// Any char
     All,
 }
@@ -58,6 +62,12 @@ impl TextFilter {
                 chr.is_ascii_lowercase()
                     || chr.is_ascii_digit()
                     || ['(', ')', '-', '.', '_'].contains(&chr)
+            }
+            TextFilter::Raw(valid) => valid.contains(&chr),
+            TextFilter::Sentence => {
+                chr.is_ascii_lowercase()
+                    || chr.is_ascii_digit()
+                    || ['.', ',', '\'', '?', '!'].contains(&chr)
             }
             TextFilter::All => true,
         }
