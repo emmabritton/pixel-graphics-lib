@@ -64,10 +64,11 @@ impl Menu {
         let title = Text::new("UI Tester", TextPos::Px(8, 8), style.title_text.clone());
         let tooltip_rect = Drawable::from_obj(Rect::new_with_size((8, 40), 10, 10), Stroke(WHITE));
         let tooltip = Tooltip::new((8, 40), "This is a test tooltip", LeftTop, &style.tooltip);
-        let button1 = Button::new((8, 60), "Test Button", None, &style.button);
-        let button2 = Button::new((8, 80), "Test Button", Some(100), &style.button);
+        let mut button1 = Button::new((0, 0), "Test Button", None, &style.button);
+        let mut button2 = Button::new((0, 0), "Test Button", Some(100), &style.button);
         let toggle_button1 = ToggleButton::new((160, 40), "TB 1", None, &style.toggle_button);
         let toggle_button2 = ToggleButton::new((160, 60), "TB 2", Some(60), &style.toggle_button);
+        column_layout!(bounds!((8,60), 100,100), ColumnGravity::Left, spacing: 4, views: button1, button2);
         let icon_button1 = IconButton::new(
             (160, 8),
             "Test",
@@ -190,7 +191,7 @@ impl Scene<SceneResult, SceneName> for Menu {
             unfocus!(self.field1, self.field2, self.field3);
         }
         if self.button2.on_mouse_click(xy) {
-            swap_focus!(self.field1, self.field2, self.field3);
+            swap_focus!(self.field1, self.field2, self.field3,);
         }
     }
 

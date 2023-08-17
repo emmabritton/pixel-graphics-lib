@@ -62,8 +62,12 @@ impl RowLayout {
         for view in views {
             let y = match self.gravity {
                 RowGravity::Top => self.padding,
-                RowGravity::Center => self.bounds.height() / 2 - view.bounds().height() / 2,
-                RowGravity::Bottom => self.bounds.height() - view.bounds().height() - self.padding,
+                RowGravity::Center => {
+                    (self.bounds.height() / 2).saturating_sub(view.bounds().height() / 2)
+                }
+                RowGravity::Bottom => (self.bounds.height())
+                    .saturating_sub(view.bounds().height())
+                    .saturating_sub(self.padding),
             };
             view.set_position(self.bounds.top_left() + (x, y));
             x += view.bounds().width();

@@ -62,8 +62,14 @@ impl ColumnLayout {
         for view in views {
             let x = match self.gravity {
                 ColumnGravity::Left => self.padding,
-                ColumnGravity::Center => self.bounds.width() / 2 - view.bounds().width() / 2,
-                ColumnGravity::Right => self.bounds.width() - view.bounds().width() - self.padding,
+                ColumnGravity::Center => {
+                    (self.bounds.width() / 2).saturating_sub(view.bounds().width() / 2)
+                }
+                ColumnGravity::Right => self
+                    .bounds
+                    .width()
+                    .saturating_sub(view.bounds().width())
+                    .saturating_sub(self.padding),
             };
             view.set_position(self.bounds.top_left() + (x, y));
             y += view.bounds().height();

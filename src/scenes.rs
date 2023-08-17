@@ -1,6 +1,8 @@
 use crate::prelude::*;
 use crate::ui::styles::UiStyle;
-use crate::utilities::virtual_key_codes::{ARROWS, LETTERS, MODIFIERS, NUMBERS, SYMBOLS, TYPING};
+use crate::utilities::virtual_key_codes::{
+    ARROWS, LETTERS, MODIFIERS, NAVIGATION, NUMBERS, SYMBOLS, TYPING,
+};
 use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
 use std::collections::HashSet;
@@ -200,6 +202,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
         keys.extend_from_slice(&ARROWS);
         keys.extend_from_slice(&SYMBOLS);
         keys.extend_from_slice(&TYPING);
+        keys.extend_from_slice(&NAVIGATION);
         Self {
             keys,
             should_exit: false,

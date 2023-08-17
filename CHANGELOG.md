@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 0.12.0
+- Add `column_layout` and `row_layout` macros
+- Add `NAVIGATION` key set
+- Add navigation to scenes keys
+
 ### Version 0.11.8
 - Add `unfocus` and `swap_focus` macros for text fields
 - Add `Sentence` and `Raw` filters for text fields

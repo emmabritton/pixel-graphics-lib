@@ -66,6 +66,13 @@ pub mod virtual_key_codes {
         VirtualKeyCode::Back,
         VirtualKeyCode::Delete,
     ];
+    pub const NAVIGATION: [VirtualKeyCode; 5] = [
+        VirtualKeyCode::Escape,
+        VirtualKeyCode::Home,
+        VirtualKeyCode::End,
+        VirtualKeyCode::PageUp,
+        VirtualKeyCode::PageDown,
+    ];
     pub const SYMBOLS: [VirtualKeyCode; 12] = [
         VirtualKeyCode::Minus,
         VirtualKeyCode::Plus,
