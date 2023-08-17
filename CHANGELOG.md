@@ -4,6 +4,7 @@
 - Add `column_layout` and `row_layout` macros
 - Add `NAVIGATION` key set
 - Add navigation to scenes keys
+- Update pixels (and wgpu)
 
 ### Version 0.11.8
 - Add `unfocus` and `swap_focus` macros for text fields

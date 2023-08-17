@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.11.8"
+version = "0.12.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
@@ -15,7 +15,7 @@ default = ["window_prefs"]
 window_prefs = ["directories", "serde_json", "serde"]
 
 [dependencies]
-pixels = "0.12.1"
+pixels = "0.13.0"
 winit = "0.28.2"
 winit_input_helper_temp = "0.14.2"
 thiserror = "1.0"
@@ -27,5 +27,5 @@ buffer-graphics-lib = { version = "0.11.4", features = ["image_loading", "ici", 
 rustc-hash = "1.1.0"
 
 [dev-dependencies]
-fastrand = "1.6"
+fastrand = "2.0.0"
 anyhow = "1.0"
