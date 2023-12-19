@@ -151,12 +151,12 @@ where
         self.cancel.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held_keys: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, held_keys: &Vec<&KeyCode>) {
         self.name_field.on_key_press(key, held_keys);
         self.current_dir_field.on_key_press(key, held_keys);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -217,7 +217,7 @@ where
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&VirtualKeyCode>) {
+    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&KeyCode>) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 
@@ -225,7 +225,7 @@ where
         &mut self,
         timing: &Timing,
         _: Coord,
-        _: &Vec<&VirtualKeyCode>,
+        _: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SR, SN> {
         self.name_field.update(timing);
         self.current_dir_field.update(timing);

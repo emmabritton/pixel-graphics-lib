@@ -5,6 +5,7 @@ use pixels_graphics_lib::prelude::*;
 use pixels_graphics_lib::ui::prelude::TextFilter::Numbers;
 use pixels_graphics_lib::ui::prelude::*;
 use pixels_graphics_lib::ui::text_field::TextFilter::All;
+use winit::keyboard::KeyCode;
 
 const WIDTH: usize = 280;
 const HEIGHT: usize = 240;
@@ -157,13 +158,13 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         self.rightbottom.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &Vec<&KeyCode>) {
         self.text_field.on_key_press(key, held);
         self.padding.on_key_press(key, held);
         self.spacing.on_key_press(key, held);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -212,7 +213,7 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         &mut self,
         timing: &Timing,
         _: Coord,
-        _: &Vec<&VirtualKeyCode>,
+        _: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.text_field.update(timing);
         self.spacing.update(timing);

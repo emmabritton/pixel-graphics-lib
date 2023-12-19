@@ -2,7 +2,6 @@ use crate::dialogs::{dialog_background, FileDialogResults};
 use crate::scenes::*;
 use crate::ui::prelude::TextFilter::*;
 use crate::ui::prelude::*;
-use crate::VirtualKeyCode;
 use crate::*;
 use buffer_graphics_lib::prelude::*;
 use directories::UserDirs;
@@ -129,18 +128,18 @@ where
         self.home.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, held_keys: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, held_keys: &Vec<&KeyCode>) {
         if self.current_dir_field.is_focused() {
-            if key == VirtualKeyCode::V {
-                if held_keys.contains(&&VirtualKeyCode::RControl) {}
-            } else if key == VirtualKeyCode::Return {
+            if key == KeyCode::KeyV {
+                if held_keys.contains(&&KeyCode::ControlRight) {}
+            } else if key == KeyCode::Enter {
             } else {
                 self.current_dir_field.on_key_press(key, held_keys);
             }
         }
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -191,7 +190,7 @@ where
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&VirtualKeyCode>) {
+    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&KeyCode>) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 
@@ -199,7 +198,7 @@ where
         &mut self,
         timing: &Timing,
         _: Coord,
-        _: &Vec<&VirtualKeyCode>,
+        _: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SR, SN> {
         self.current_dir_field.update(timing);
         self.result.clone()

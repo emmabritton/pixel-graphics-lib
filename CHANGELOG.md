@@ -1,5 +1,12 @@
 # Changelog
 
+### Version 0.13.0
+- Update winit to 0.29.4
+  - They have redesigned the keyboard handling
+    - Please see their changelog for more info
+    - Most relevant is that `VirtualKeyCode` is now `KeyCode` and some of the keys have names (such as `Return` to `Enter`)
+- Renamed `action_keys` to `keys_used` and set to all by default
+
 ### Version 0.12.1
 - Update buffer lib to 0.12.0
 

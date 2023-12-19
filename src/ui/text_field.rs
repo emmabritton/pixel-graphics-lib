@@ -204,12 +204,12 @@ impl TextField {
         false
     }
 
-    pub fn on_key_press(&mut self, key: VirtualKeyCode, held_keys: &Vec<&VirtualKeyCode>) {
+    pub fn on_key_press(&mut self, key: KeyCode, held_keys: &Vec<&KeyCode>) {
         if !self.focused || self.state == ElementState::Disabled {
             return;
         }
         match key {
-            VirtualKeyCode::Left => {
+            KeyCode::ArrowLeft => {
                 if self.cursor_pos > 0 {
                     if self.cursor_pos > self.first_visible {
                         self.cursor_pos -= 1;
@@ -219,7 +219,7 @@ impl TextField {
                     }
                 }
             }
-            VirtualKeyCode::Right => {
+            KeyCode::ArrowRight => {
                 if self.cursor_pos < self.content.chars().count() {
                     self.cursor_pos += 1;
                     if self.cursor_pos > self.first_visible + self.visible_count {
@@ -227,7 +227,7 @@ impl TextField {
                     }
                 }
             }
-            VirtualKeyCode::Back => {
+            KeyCode::Backspace => {
                 if !self.content.is_empty() && self.cursor_pos > 0 {
                     self.cursor_pos -= 1;
                     self.content.remove(self.cursor_pos);
@@ -241,7 +241,7 @@ impl TextField {
                     }
                 }
             }
-            VirtualKeyCode::Delete => {
+            KeyCode::Delete => {
                 let len = self.content.chars().count();
                 if !self.content.is_empty() && self.cursor_pos < len {
                     self.content.remove(self.cursor_pos);
@@ -257,8 +257,8 @@ impl TextField {
             }
             _ => {
                 if let Some((lower, upper)) = key_code_to_char(key) {
-                    let shift_pressed = held_keys.contains(&&VirtualKeyCode::LShift)
-                        || held_keys.contains(&&VirtualKeyCode::RShift);
+                    let shift_pressed = held_keys.contains(&&KeyCode::ShiftLeft)
+                        || held_keys.contains(&&KeyCode::ShiftRight);
                     for filter in &self.filters {
                         let char = if shift_pressed { upper } else { lower };
                         if filter.is_char_allowed(char) {

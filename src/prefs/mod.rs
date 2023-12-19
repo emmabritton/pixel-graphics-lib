@@ -67,7 +67,7 @@ impl WindowPreferences {
         if let Some(prefs) = self.preferences.get(PREF_WINDOW) {
             window.set_outer_position(PhysicalPosition::new(prefs.x, prefs.y));
 
-            window.set_inner_size(PhysicalSize::new(prefs.w, prefs.h));
+            let _ = window.request_inner_size(PhysicalSize::new(prefs.w, prefs.h));
         } else if let Some(monitor) = window.current_monitor() {
             let mid_x = monitor.size().width / 2;
             let mid_y = monitor.size().height / 2;

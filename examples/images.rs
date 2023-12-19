@@ -1,12 +1,12 @@
 use anyhow::Result;
-use buffer_graphics_lib::color::{BLACK, BLUE, GREEN, PURPLE, RED, YELLOW};
+use buffer_graphics_lib::color::BLACK;
 use buffer_graphics_lib::image::Image;
 use buffer_graphics_lib::prelude::open_image;
 use buffer_graphics_lib::scaling::Scaling;
 use buffer_graphics_lib::{Graphics, Tint};
 use pixels_graphics_lib::prelude::*;
 use std::rc::Rc;
-use winit::event::VirtualKeyCode;
+use winit::keyboard::KeyCode;
 
 /// This example shows how to load, display and alter an image
 /// It also shows an example of how to do delta
@@ -65,7 +65,7 @@ impl ImageScene {
 
         let image = Rc::new(image);
         let red = Rc::new(red);
-        let mut blue = Rc::new(double_blue);
+        let blue = Rc::new(double_blue);
 
         let mut sprites = vec![];
 
@@ -85,10 +85,6 @@ impl ImageScene {
 }
 
 impl System for ImageScene {
-    fn action_keys(&mut self) -> &[VirtualKeyCode] {
-        &[VirtualKeyCode::Escape]
-    }
-
     fn update(&mut self, timing: &Timing) {
         let sw = self.width;
         let sh = self.height;
@@ -116,8 +112,8 @@ impl System for ImageScene {
         }
     }
 
-    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {
-        if keys.contains(&VirtualKeyCode::Escape) {
+    fn on_key_down(&mut self, keys: Vec<KeyCode>) {
+        if keys.contains(&KeyCode::Escape) {
             self.should_exit = true;
         }
     }

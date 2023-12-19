@@ -4,7 +4,7 @@ use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prefs::WindowPreferences;
 use pixels_graphics_lib::prelude::*;
-use winit::event::VirtualKeyCode;
+use winit::keyboard::KeyCode;
 
 /// Running this example will create preference directories and files on your computer!
 ///
@@ -48,10 +48,6 @@ impl WindowPrefsScene {
 }
 
 impl System for WindowPrefsScene {
-    fn action_keys(&mut self) -> &[VirtualKeyCode] {
-        &[VirtualKeyCode::Escape]
-    }
-
     fn window_prefs(&mut self) -> Option<WindowPreferences> {
         Some(WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2").unwrap())
     }
@@ -84,8 +80,8 @@ impl System for WindowPrefsScene {
         }
     }
 
-    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {
-        if keys.contains(&VirtualKeyCode::Escape) {
+    fn on_key_down(&mut self, keys: Vec<KeyCode>) {
+        if keys.contains(&KeyCode::Escape) {
             self.should_exit = true;
         }
     }

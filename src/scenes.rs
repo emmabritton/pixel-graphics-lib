@@ -1,8 +1,5 @@
 use crate::prelude::*;
 use crate::ui::styles::UiStyle;
-use crate::utilities::virtual_key_codes::{
-    ARROWS, LETTERS, MODIFIERS, NAVIGATION, NUMBERS, SYMBOLS, TYPING,
-};
 use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
 use std::collections::HashSet;
@@ -93,26 +90,14 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_down(
-        &mut self,
-        key: VirtualKeyCode,
-        mouse_xy: Coord,
-        held_keys: &Vec<&VirtualKeyCode>,
-    ) {
-    }
+    fn on_key_down(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &Vec<&KeyCode>) {}
     /// Called when a keyboard key has been released
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_up(
-        &mut self,
-        key: VirtualKeyCode,
-        mouse_xy: Coord,
-        held_keys: &Vec<&VirtualKeyCode>,
-    ) {
-    }
+    fn on_key_up(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &Vec<&KeyCode>) {}
     /// Called when a mouse button has been pressed down
     ///
     /// # Arguments
@@ -120,7 +105,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `button` - The pressed mouse button
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_down(&mut self, xy: Coord, button: MouseButton, held_keys: &Vec<&VirtualKeyCode>) {}
+    fn on_mouse_down(&mut self, xy: Coord, button: MouseButton, held_keys: &Vec<&KeyCode>) {}
     /// Called when a mouse button has been released
     ///
     /// # Arguments
@@ -128,7 +113,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `button` - The pressed mouse button
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, held_keys: &Vec<&VirtualKeyCode>) {}
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, held_keys: &Vec<&KeyCode>) {}
     /// Called when the mouse scroll function has been used
     ///
     /// # Arguments
@@ -137,14 +122,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `x_diff` - The distance scrolled horizontally
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_scroll(
-        &mut self,
-        xy: Coord,
-        x_diff: isize,
-        y_diff: isize,
-        held_keys: &Vec<&VirtualKeyCode>,
-    ) {
-    }
+    fn on_scroll(&mut self, xy: Coord, x_diff: isize, y_diff: isize, held_keys: &Vec<&KeyCode>) {}
     /// During this method the scene should update animations and anything else that relies on time
     /// or on held keys
     ///
@@ -163,7 +141,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &mut self,
         timing: &Timing,
         mouse_xy: Coord,
-        held_keys: &Vec<&VirtualKeyCode>,
+        held_keys: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SR, SN>;
     /// Called when a child scene is closing
     ///
@@ -179,9 +157,8 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
 
 struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     should_exit: bool,
-    held_keys: HashSet<VirtualKeyCode>,
+    held_keys: HashSet<KeyCode>,
     mouse_coord: Coord,
-    keys: Vec<VirtualKeyCode>,
     scenes: Vec<Box<dyn Scene<SR, SN>>>,
     window_prefs: Option<WindowPreferences>,
     scene_switcher: SceneSwitcher<SR, SN>,
@@ -195,16 +172,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
         scene_switcher: SceneSwitcher<SR, SN>,
         style: UiStyle,
     ) -> Self {
-        let mut keys = vec![];
-        keys.extend_from_slice(&LETTERS);
-        keys.extend_from_slice(&NUMBERS);
-        keys.extend_from_slice(&MODIFIERS);
-        keys.extend_from_slice(&ARROWS);
-        keys.extend_from_slice(&SYMBOLS);
-        keys.extend_from_slice(&TYPING);
-        keys.extend_from_slice(&NAVIGATION);
         Self {
-            keys,
             should_exit: false,
             held_keys: HashSet::new(),
             mouse_coord: Coord::new(100, 100),
@@ -217,10 +185,6 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for SceneHost<SR, SN> {
-    fn action_keys(&mut self) -> &[VirtualKeyCode] {
-        &self.keys
-    }
-
     fn window_prefs(&mut self) -> Option<WindowPreferences> {
         self.window_prefs.clone()
     }
@@ -293,7 +257,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {
+    fn on_key_down(&mut self, keys: Vec<KeyCode>) {
         for key in keys {
             self.held_keys.insert(key);
             if let Some(active) = self.scenes.last_mut() {
@@ -302,7 +266,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_key_up(&mut self, keys: Vec<VirtualKeyCode>) {
+    fn on_key_up(&mut self, keys: Vec<KeyCode>) {
         for key in keys {
             self.held_keys.remove(&key);
             if let Some(active) = self.scenes.last_mut() {

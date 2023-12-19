@@ -4,7 +4,7 @@ use anyhow::Result;
 use buffer_graphics_lib::prelude::*;
 use pixels_graphics_lib::prelude::SceneUpdateResult::*;
 use pixels_graphics_lib::prelude::*;
-use winit::event::VirtualKeyCode;
+use winit::keyboard::KeyCode;
 
 fn main() -> Result<()> {
     let switcher: SceneSwitcher<SceneResult, SceneName> = |_, scenes, name| match name {
@@ -50,16 +50,18 @@ enum SceneName {
 
 #[derive(Clone, Debug, PartialEq)]
 enum SceneResult {
-    FromKey(VirtualKeyCode),
+    FromKey(KeyCode),
     FromMouse(Coord),
 }
 
 impl Scene<SceneResult, SceneName> for Scene1 {
     fn render(&self, graphics: &mut Graphics, _: Coord) {
         graphics.clear(BLUE);
+        graphics.set_pixel(0, 0, RED);
+        graphics.set_pixel(1, 1, RED);
     }
 
-    fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -70,7 +72,7 @@ impl Scene<SceneResult, SceneName> for Scene1 {
         &mut self,
         _: &Timing,
         _: Coord,
-        _: &Vec<&VirtualKeyCode>,
+        _: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -91,11 +93,11 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         graphics.clear(RED);
     }
 
-    fn on_key_up(&mut self, key: VirtualKeyCode, _: Coord, _: &Vec<&VirtualKeyCode>) {
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, _: &Vec<&KeyCode>) {
         self.result = Pop(Some(FromKey(key)))
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -110,7 +112,7 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         &mut self,
         _: &Timing,
         _: Coord,
-        _: &Vec<&VirtualKeyCode>,
+        _: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -125,7 +127,7 @@ impl Scene<SceneResult, SceneName> for Scene3 {
         graphics.draw_rect(Rect::new((90, 90), (190, 150)), fill(self.back));
     }
 
-    fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&VirtualKeyCode>) {
+    fn on_mouse_up(&mut self, _: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -136,7 +138,7 @@ impl Scene<SceneResult, SceneName> for Scene3 {
         &mut self,
         _: &Timing,
         _: Coord,
-        _: &Vec<&VirtualKeyCode>,
+        _: &Vec<&KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }

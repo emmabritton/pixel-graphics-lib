@@ -2,7 +2,7 @@ use anyhow::Result;
 use buffer_graphics_lib::color::Color;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prelude::*;
-use winit::event::VirtualKeyCode;
+use winit::keyboard::KeyCode;
 
 /// This example shows the minimum code needed to use the library
 
@@ -27,10 +27,6 @@ impl Basic {
 }
 
 impl System for Basic {
-    fn action_keys(&mut self) -> &[VirtualKeyCode] {
-        &[VirtualKeyCode::Escape]
-    }
-
     fn update(&mut self, _delta: &Timing) {
         if self.greyscale < 255 {
             self.greyscale += 1;
@@ -43,8 +39,8 @@ impl System for Basic {
         graphics.clear(Color::gray(self.greyscale))
     }
 
-    fn on_key_down(&mut self, keys: Vec<VirtualKeyCode>) {
-        if keys.contains(&VirtualKeyCode::Escape) {
+    fn on_key_down(&mut self, keys: Vec<KeyCode>) {
+        if keys.contains(&KeyCode::Escape) {
             self.should_exit = true;
         }
     }
