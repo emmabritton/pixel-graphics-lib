@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.13.1
+- Expose `KeyCode` from winit
+
 ### Version 0.13.0
 - Update winit to 0.29.4
   - They have redesigned the keyboard handling

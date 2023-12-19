@@ -62,6 +62,7 @@ pub mod prelude {
     pub use crate::scenes::*;
     pub use crate::utilities::virtual_key_codes::*;
     pub use crate::*;
+    pub use winit::keyboard::KeyCode;
 }
 
 #[derive(Error, Debug)]
