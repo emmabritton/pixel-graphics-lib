@@ -49,15 +49,15 @@ impl DirResult {
     }
 }
 
-impl Ord for FileEntry {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
+impl PartialOrd for FileEntry {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
-impl PartialOrd for FileEntry {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        let result = if let ParentDir(_) = self {
+impl Ord for FileEntry {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if let ParentDir(_) = self {
             Ordering::Less
         } else if let ParentDir(_) = other {
             Ordering::Greater
@@ -69,8 +69,7 @@ impl PartialOrd for FileEntry {
                 (File(lhs), File(rhs)) => lhs.filename.cmp(&rhs.filename),
                 (_, _) => Ordering::Equal,
             }
-        };
-        Some(result)
+        }
     }
 }
 

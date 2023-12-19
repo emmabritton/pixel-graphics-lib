@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.12.1
+- Update buffer lib to 0.12.0
+
 ### Version 0.12.0
 - Add `column_layout` and `row_layout` macros
 - Add `NAVIGATION` key set
