@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.13.4
+- Update buffer lib
+
 ### Version 0.13.3
 - Update game utils lib
 
