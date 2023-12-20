@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+      - name: Install linux libs
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends pkg-config build-essential gcc-multilib libudev-dev libjack-jackd2-dev libjack-jackd2-0 libasound2-dev alsa
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
