@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.13.3
+- Update game utils lib
+
 ### Version 0.13.2
 - Extract `Timing` and `Timer` to `simple-game-utils`
 
