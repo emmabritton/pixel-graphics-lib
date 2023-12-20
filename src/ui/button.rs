@@ -6,7 +6,7 @@ use crate::buffer_graphics_lib::text::wrapping::WrappingStrategy;
 use crate::buffer_graphics_lib::text::Text;
 use crate::ui::styles::ButtonStyle;
 use crate::ui::{ElementState, UiElement};
-use crate::Timing;
+use simple_game_utils::prelude::Timing;
 
 #[derive(Debug)]
 pub struct Button {

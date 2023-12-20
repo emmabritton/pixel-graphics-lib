@@ -8,6 +8,7 @@
 //! # use std::error::Error;
 //! # use pixels_graphics_lib::prelude::*;
 //! # use buffer_graphics_lib::Graphics;
+//! # use simple_game_utils::prelude::Timing;
 //!
 //! struct Example {
 //! }
@@ -47,7 +48,7 @@ pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
 pub use graphics_shapes;
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture};
-use std::time::Instant;
+use simple_game_utils::prelude::*;
 use thiserror::Error;
 use winit::dpi::LogicalSize;
 use winit::event::{Event, WindowEvent};
@@ -62,6 +63,7 @@ pub mod prelude {
     pub use crate::scenes::*;
     pub use crate::utilities::virtual_key_codes::*;
     pub use crate::*;
+    pub use simple_game_utils::prelude::*;
     pub use winit::keyboard::KeyCode;
 }
 
@@ -206,148 +208,6 @@ pub trait System {
     fn on_focus_changed(&mut self, focused: bool) {}
     fn should_exit(&mut self) -> bool {
         false
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Stats {
-    /// The number of frames shown in the last second
-    pub fps: usize,
-    /// Used to calculate fps
-    pub(crate) last_frame_count: usize,
-    /// Used to calculate fps
-    pub(crate) last_frame_check: Instant,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Timer {
-    /// amount of time remaining
-    pub remaining: f64,
-    /// amount of time to reset to once `remaining` <= 0
-    pub reset: f64,
-    /// if the timer should automatically reset
-    pub looping: bool,
-}
-
-impl Timer {
-    pub fn new_with_delay(remaining: f64, reset: f64) -> Self {
-        Self {
-            remaining,
-            reset,
-            looping: true,
-        }
-    }
-
-    pub fn new(reset: f64) -> Self {
-        Self {
-            remaining: 0.0,
-            reset,
-            looping: true,
-        }
-    }
-
-    pub fn new_once(reset: f64) -> Self {
-        Self {
-            remaining: 0.0,
-            reset,
-            looping: false,
-        }
-    }
-
-    pub fn new_once_with_delay(remaining: f64, reset: f64) -> Self {
-        Self {
-            remaining,
-            reset,
-            looping: false,
-        }
-    }
-}
-
-impl Timer {
-    /// Update timer, returns true if the
-    pub fn update(&mut self, timing: &Timing) -> bool {
-        self.remaining -= timing.fixed_time_step;
-        let triggered = self.remaining <= 0.0;
-        if triggered && self.looping {
-            self.remaining = self.reset;
-        }
-        triggered
-    }
-
-    pub fn reset(&mut self) {
-        self.remaining = self.reset;
-    }
-
-    /// If the timer has reached 0, this will always be false for looping timers (unless reset is <= 0.0)
-    pub fn has_triggered(&self) -> bool {
-        self.remaining <= 0.0
-    }
-}
-
-#[derive(Debug)]
-pub struct Timing {
-    /// amount of time that has passed since last
-    pub delta: f64,
-    /// when execution started
-    pub started_at: Instant,
-    /// time at start of frame
-    pub now: Instant,
-    /// time at start of last frame
-    pub last: Instant,
-    /// number of updates so far
-    pub updates: usize,
-    /// number of renders so far
-    pub renders: usize,
-    accumulated_time: f64,
-    max_render_time: f64,
-    /// an fps independent value used to update animations, etc
-    pub fixed_time_step: f64,
-    /// an fps independent value used to update animations, etc
-    pub fixed_time_step_f32: f32,
-    /// FPS
-    pub stats: Stats,
-}
-
-impl Timing {
-    pub(crate) fn new(speed: usize) -> Timing {
-        Timing {
-            delta: 0.0,
-            started_at: Instant::now(),
-            now: Instant::now(),
-            last: Instant::now(),
-            updates: 0,
-            renders: 0,
-            accumulated_time: 0.0,
-            max_render_time: 0.1,
-            fixed_time_step: 1.0 / (speed as f64),
-            fixed_time_step_f32: 1.0 / (speed as f32),
-            stats: Stats {
-                fps: 0,
-                last_frame_count: 0,
-                last_frame_check: Instant::now(),
-            },
-        }
-    }
-
-    pub(crate) fn update_fps(&mut self) {
-        if self
-            .now
-            .duration_since(self.stats.last_frame_check)
-            .as_secs_f32()
-            >= 1.0
-        {
-            self.stats.fps = self.renders - self.stats.last_frame_count;
-            self.stats.last_frame_check = self.now;
-            self.stats.last_frame_count = self.renders;
-        }
-    }
-
-    pub(crate) fn update(&mut self) {
-        self.now = Instant::now();
-        self.delta = self.now.duration_since(self.last).as_secs_f64();
-        if self.delta > self.max_render_time {
-            self.delta = self.max_render_time;
-        }
     }
 }
 
