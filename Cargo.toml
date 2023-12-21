@@ -12,9 +12,10 @@ categories = ["graphics", "game-development"]
 
 [features]
 default = ["window_prefs", "sound", "controller"]
-window_prefs = ["directories", "serde_json", "serde"]
+window_prefs = ["simple-game-utils/prefs"]
 controller = ["serde", "simple-game-utils/controller"]
 sound = ["simple-game-utils/sound"]
+file_dialogs = ["directories"]
 
 [dependencies]
 pixels = "0.13.0"
@@ -23,11 +24,10 @@ winit_input_helper = "0.15.1"
 thiserror = "1.0.51"
 serde = { version = "1.0.193", features = ["derive"], optional = true }
 directories = { version = "5.0.1", optional = true }
-serde_json = { version = "1.0.108", optional = true }
 graphics-shapes = "0.2.4"
 buffer-graphics-lib = { version = "0.12.3", features = ["image_loading", "ici", "serde_derive"] }
 rustc-hash = "1.1.0"
-simple-game-utils = { version = "0.3.1" }
+simple-game-utils = { version = "0.3.2", features= [] }
 
 [dev-dependencies]
 fastrand = "2.0.0"

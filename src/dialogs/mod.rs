@@ -3,7 +3,9 @@ use buffer_graphics_lib::prelude::*;
 use graphics_shapes::coord;
 use std::fmt::Debug;
 
+#[cfg(feature = "directories")]
 pub mod load_file_dialog;
+#[cfg(feature = "directories")]
 pub mod save_file_dialog;
 
 pub const MIN_FILE_DIALOG_SIZE: (usize, usize) = (196, 168);

@@ -1,28 +1,9 @@
-pub mod preferences;
-
-use crate::prefs::preferences::{get_pref_dir, Preferences};
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
+use simple_game_utils::prelude::*;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 use winit::window::Window;
 
 const PREF_WINDOW: &str = "window.pref";
-
-#[derive(Error, Debug)]
-pub enum PrefError {
-    #[error("Unable to get app pref dir")]
-    AppPrefDir,
-    #[error("Saving prefs: {0} to {1}")]
-    Saving(String, String),
-    #[error("Serializing data: {0}")]
-    Serializing(String),
-    #[error("Loading prefs: {0} from {1}")]
-    Loading(String, String),
-    #[error("Deserializing data: {0}")]
-    Deserializing(String),
-    #[error("Creating pref dir: {0} at {1}")]
-    MakingDirs(String, String),
-}
 
 #[derive(Clone, Debug)]
 pub struct WindowPreferences {
@@ -30,18 +11,26 @@ pub struct WindowPreferences {
 }
 
 impl WindowPreferences {
-    pub fn new(qualifier: &str, org: &str, name: &str) -> Result<Self, PrefError> {
-        let preferences = Preferences::new(get_pref_dir(qualifier, org, name)?, PREF_WINDOW);
+    pub fn new(
+        qualifier: &str,
+        org: &str,
+        name: &str,
+        version: usize,
+    ) -> Result<Self, GameUtilError> {
+        let preferences = Preferences::new(
+            get_pref_dir(qualifier, org, name)?,
+            &format!("{PREF_WINDOW}{version}"),
+        );
         Ok(WindowPreferences { preferences })
     }
 }
 
 impl WindowPreferences {
-    pub fn load(&mut self) -> Result<(), PrefError> {
+    pub fn load(&mut self) -> Result<(), GameUtilError> {
         self.preferences.load()
     }
 
-    pub fn save(&self) -> Result<(), PrefError> {
+    pub fn save(&self) -> Result<(), GameUtilError> {
         self.preferences.save()
     }
 

@@ -4,7 +4,6 @@ use crate::ui::prelude::TextFilter::*;
 use crate::ui::prelude::*;
 use crate::*;
 use buffer_graphics_lib::prelude::*;
-use directories::UserDirs;
 use std::fmt::Debug;
 
 /// You should use something like `rfd` instead of this

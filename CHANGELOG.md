@@ -1,5 +1,11 @@
 # Changelog
 
+### Version 0.13.7
+- Extract prefs to `simple-game-utils`
+- Add function keys to `ALL`
+- Make file dialogs optional
+- Add version to `WindowPreferences`
+
 ### Version 0.13.6
 - Update buffer and shapes lib
 

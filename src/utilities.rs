@@ -3,7 +3,7 @@ use winit::keyboard::KeyCode;
 pub mod virtual_key_codes {
     use winit::keyboard::KeyCode;
 
-    pub const ALL_KEYS: [KeyCode; 84] = [
+    pub const ALL_KEYS: [KeyCode; 96] = [
         KeyCode::KeyA,
         KeyCode::KeyB,
         KeyCode::KeyC,
@@ -88,6 +88,33 @@ pub mod virtual_key_codes {
         KeyCode::Slash,
         KeyCode::Quote,
         KeyCode::Backslash,
+        KeyCode::F1,
+        KeyCode::F2,
+        KeyCode::F3,
+        KeyCode::F4,
+        KeyCode::F5,
+        KeyCode::F6,
+        KeyCode::F7,
+        KeyCode::F8,
+        KeyCode::F9,
+        KeyCode::F10,
+        KeyCode::F11,
+        KeyCode::F12,
+    ];
+
+    pub const FUNCTION: [KeyCode; 12] = [
+        KeyCode::F1,
+        KeyCode::F2,
+        KeyCode::F3,
+        KeyCode::F4,
+        KeyCode::F5,
+        KeyCode::F6,
+        KeyCode::F7,
+        KeyCode::F8,
+        KeyCode::F9,
+        KeyCode::F10,
+        KeyCode::F11,
+        KeyCode::F12,
     ];
 
     pub const LETTERS: [KeyCode; 26] = [

@@ -2,12 +2,12 @@ use anyhow::Result;
 use buffer_graphics_lib::prelude::DrawType::Stroke;
 use buffer_graphics_lib::prelude::Positioning::*;
 use buffer_graphics_lib::prelude::*;
-use pixels_graphics_lib::prefs::WindowPreferences;
 use pixels_graphics_lib::prelude::SceneUpdateResult::*;
 use pixels_graphics_lib::prelude::*;
 use pixels_graphics_lib::ui::prelude::TextFilter::{Raw, Sentence};
 use pixels_graphics_lib::ui::prelude::*;
 use pixels_graphics_lib::ui::text_field::TextFilter::All;
+use pixels_graphics_lib::window_prefs::WindowPreferences;
 use winit::keyboard::KeyCode;
 
 #[allow(clippy::upper_case_acronyms)]
@@ -24,7 +24,7 @@ fn main() -> Result<()> {
         WIDTH,
         HEIGHT,
         "UI Tester",
-        Some(WindowPreferences::new("app", "emmabritton", "pixels_ui_tester").unwrap()),
+        Some(WindowPreferences::new("app", "emmabritton", "pixels_ui_tester", 1).unwrap()),
         switcher,
         menu,
         options,

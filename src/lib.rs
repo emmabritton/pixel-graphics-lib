@@ -34,15 +34,15 @@
 #![allow(clippy::ptr_arg)]
 
 pub mod dialogs;
-#[cfg(feature = "window_prefs")]
-pub mod prefs;
 pub mod scenes;
 pub mod ui;
 pub mod utilities;
+#[cfg(feature = "window_prefs")]
+pub mod window_prefs;
 
-use crate::prefs::WindowPreferences;
 use crate::prelude::ALL_KEYS;
 use crate::ui::styles::UiStyle;
+use crate::window_prefs::WindowPreferences;
 use crate::GraphicsError::LoadingWindowPref;
 pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
@@ -59,9 +59,9 @@ use winit_input_helper::WinitInputHelper;
 
 pub mod prelude {
     pub use crate::dialogs::*;
-    pub use crate::prefs::*;
     pub use crate::scenes::*;
     pub use crate::utilities::virtual_key_codes::*;
+    pub use crate::window_prefs::*;
     pub use crate::*;
     pub use simple_game_utils::prelude::*;
     pub use winit::keyboard::KeyCode;

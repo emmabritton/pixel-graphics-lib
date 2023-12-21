@@ -2,8 +2,8 @@ use anyhow::Result;
 use buffer_graphics_lib::color::*;
 use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
-use pixels_graphics_lib::prefs::WindowPreferences;
 use pixels_graphics_lib::prelude::*;
+use pixels_graphics_lib::window_prefs::WindowPreferences;
 use winit::keyboard::KeyCode;
 
 /// Running this example will create preference directories and files on your computer!
@@ -49,7 +49,9 @@ impl WindowPrefsScene {
 
 impl System for WindowPrefsScene {
     fn window_prefs(&mut self) -> Option<WindowPreferences> {
-        Some(WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2").unwrap())
+        Some(
+            WindowPreferences::new("app", "pixels-graphics-lib-example", "window-pos2", 1).unwrap(),
+        )
     }
 
     fn update(&mut self, _delta: &Timing) {
