@@ -149,7 +149,7 @@ impl Menu {
 }
 
 impl Scene<SceneResult, SceneName> for Menu {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode], _: &GameController) {
         graphics.clear(self.background);
         self.title.render(graphics);
         self.tooltip_rect.render(graphics);
@@ -168,13 +168,13 @@ impl Scene<SceneResult, SceneName> for Menu {
         self.dir_panel.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &Vec<&KeyCode>) {
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &[KeyCode]) {
         self.field1.on_key_press(key, held);
         self.field2.on_key_press(key, held);
         self.field3.on_key_press(key, held);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &[KeyCode]) {
         if button != MouseButton::Left {
             return;
         }
@@ -196,7 +196,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&KeyCode>) {
+    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &[KeyCode]) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 
@@ -204,7 +204,8 @@ impl Scene<SceneResult, SceneName> for Menu {
         &mut self,
         timing: &Timing,
         _: Coord,
-        _: &Vec<&KeyCode>,
+        _: &[KeyCode],
+        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.field1.update(timing);
         self.field2.update(timing);

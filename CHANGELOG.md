@@ -3,6 +3,7 @@
 ### Version 0.13.9
 - Update game_util libs
 - Add controller to `Scene::update` and `Scene::render` when `controller` feature is enabled
+- Change `held_keys` to `&[KeyCode]`
 
 ### Version 0.13.8
 - Update buffer and game_util libs

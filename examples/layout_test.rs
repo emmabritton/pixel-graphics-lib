@@ -142,7 +142,7 @@ impl LayoutTest {
 }
 
 impl Scene<SceneResult, SceneName> for LayoutTest {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode], _: &GameController) {
         graphics.clear(BLUE);
         self.button.render(graphics, mouse_xy);
         self.toggle_button.render(graphics, mouse_xy);
@@ -158,13 +158,13 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         self.rightbottom.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &Vec<&KeyCode>) {
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &[KeyCode]) {
         self.text_field.on_key_press(key, held);
         self.padding.on_key_press(key, held);
         self.spacing.on_key_press(key, held);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &[KeyCode]) {
         if button != MouseButton::Left {
             return;
         }
@@ -213,7 +213,8 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         &mut self,
         timing: &Timing,
         _: Coord,
-        _: &Vec<&KeyCode>,
+        _: &[KeyCode],
+        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.text_field.update(timing);
         self.spacing.update(timing);

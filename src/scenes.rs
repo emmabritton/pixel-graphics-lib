@@ -88,25 +88,25 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &self,
         graphics: &mut Graphics,
         mouse_xy: Coord,
-        held_keys: &Vec<&KeyCode>,
+        held_keys: &[KeyCode],
         controller: &GameController,
     );
     #[cfg(not(feature = "controller"))]
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, held_keys: &Vec<&KeyCode>) {}
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, held_keys: &[KeyCode]) {}
     /// Called when a keyboard key is being pressed down
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_down(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &Vec<&KeyCode>);
+    fn on_key_down(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &[KeyCode]) {}
     /// Called when a keyboard key has been released
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_up(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &Vec<&KeyCode>) {}
+    fn on_key_up(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &[KeyCode]) {}
     /// Called when a mouse button has been pressed down
     ///
     /// # Arguments
@@ -114,7 +114,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `button` - The pressed mouse button
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_down(&mut self, xy: Coord, button: MouseButton, held_keys: &Vec<&KeyCode>) {}
+    fn on_mouse_down(&mut self, xy: Coord, button: MouseButton, held_keys: &[KeyCode]) {}
     /// Called when a mouse button has been released
     ///
     /// # Arguments
@@ -122,7 +122,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `button` - The pressed mouse button
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, held_keys: &Vec<&KeyCode>) {}
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, held_keys: &[KeyCode]) {}
     /// Called when the mouse scroll function has been used
     ///
     /// # Arguments
@@ -131,7 +131,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `x_diff` - The distance scrolled horizontally
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_scroll(&mut self, xy: Coord, x_diff: isize, y_diff: isize, held_keys: &Vec<&KeyCode>) {}
+    fn on_scroll(&mut self, xy: Coord, x_diff: isize, y_diff: isize, held_keys: &[KeyCode]) {}
     /// During this method the scene should update animations and anything else that relies on time
     /// or on held keys
     ///
@@ -151,7 +151,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &mut self,
         timing: &Timing,
         mouse_xy: Coord,
-        held_keys: &Vec<&KeyCode>,
+        held_keys: &[KeyCode],
         controller: &GameController,
     ) -> SceneUpdateResult<SR, SN>;
     #[cfg(not(feature = "controller"))]
@@ -159,7 +159,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &mut self,
         timing: &Timing,
         mouse_xy: Coord,
-        held_keys: &Vec<&KeyCode>,
+        held_keys: &[KeyCode],
     ) -> SceneUpdateResult<SR, SN>;
     /// Called when a child scene is closing
     ///
@@ -219,7 +219,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             let result = scene.update(
                 timing,
                 self.mouse_coord,
-                &self.held_keys.iter().collect(),
+                self.held_keys
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .as_slice(),
                 &self.controller,
             );
             #[cfg(not(feature = "controller"))]
@@ -255,7 +259,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         self.scenes[i].render(
                             graphics,
                             Coord::new(-1, -1),
-                            &self.held_keys.iter().collect(),
+                            self.held_keys
+                                .iter()
+                                .cloned()
+                                .collect::<Vec<_>>()
+                                .as_slice(),
                             &self.controller,
                         );
                         #[cfg(not(feature = "controller"))]
@@ -270,7 +278,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 active.render(
                     graphics,
                     self.mouse_coord,
-                    &self.held_keys.iter().collect(),
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
                     &self.controller,
                 );
                 #[cfg(not(feature = "controller"))]
@@ -280,7 +292,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 active.render(
                     graphics,
                     self.mouse_coord,
-                    &self.held_keys.iter().collect(),
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
                     &self.controller,
                 );
                 #[cfg(not(feature = "controller"))]
@@ -296,14 +312,30 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {
         self.mouse_coord = Coord::from((x, y));
         if let Some(active) = self.scenes.last_mut() {
-            active.on_mouse_down(self.mouse_coord, button, &self.held_keys.iter().collect());
+            active.on_mouse_down(
+                self.mouse_coord,
+                button,
+                self.held_keys
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .as_slice(),
+            );
         }
     }
 
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {
         self.mouse_coord = Coord::from((x, y));
         if let Some(active) = self.scenes.last_mut() {
-            active.on_mouse_up(self.mouse_coord, button, &self.held_keys.iter().collect());
+            active.on_mouse_up(
+                self.mouse_coord,
+                button,
+                self.held_keys
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .as_slice(),
+            );
         }
     }
 
@@ -314,7 +346,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 self.mouse_coord,
                 x_diff,
                 y_diff,
-                &self.held_keys.iter().collect(),
+                self.held_keys
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .as_slice(),
             );
         }
     }
@@ -323,7 +359,15 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         for key in keys {
             self.held_keys.insert(key);
             if let Some(active) = self.scenes.last_mut() {
-                active.on_key_down(key, self.mouse_coord, &self.held_keys.iter().collect());
+                active.on_key_down(
+                    key,
+                    self.mouse_coord,
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
             }
         }
     }
@@ -332,7 +376,15 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         for key in keys {
             self.held_keys.remove(&key);
             if let Some(active) = self.scenes.last_mut() {
-                active.on_key_up(key, self.mouse_coord, &self.held_keys.iter().collect());
+                active.on_key_up(
+                    key,
+                    self.mouse_coord,
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
             }
         }
     }

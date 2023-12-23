@@ -204,7 +204,7 @@ impl TextField {
         false
     }
 
-    pub fn on_key_press(&mut self, key: KeyCode, held_keys: &Vec<&KeyCode>) {
+    pub fn on_key_press(&mut self, key: KeyCode, held_keys: &[KeyCode]) {
         if !self.focused || self.state == ElementState::Disabled {
             return;
         }
@@ -257,8 +257,8 @@ impl TextField {
             }
             _ => {
                 if let Some((lower, upper)) = key_code_to_char(key) {
-                    let shift_pressed = held_keys.contains(&&KeyCode::ShiftLeft)
-                        || held_keys.contains(&&KeyCode::ShiftRight);
+                    let shift_pressed = held_keys.contains(&KeyCode::ShiftLeft)
+                        || held_keys.contains(&KeyCode::ShiftRight);
                     for filter in &self.filters {
                         let char = if shift_pressed { upper } else { lower };
                         if filter.is_char_allowed(char) {
