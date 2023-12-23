@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.13.11
+- Fix bug where `on_key_down` and `on_key_up` were called every loop
+
 ### Version 0.13.10
 - Fix controller support
 

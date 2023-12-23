@@ -385,7 +385,9 @@ pub fn run(
                         held_buttons.push(*button);
                     }
                 }
-                system.on_key_down(held_buttons);
+                if !held_buttons.is_empty() {
+                    system.on_key_down(held_buttons);
+                }
 
                 let mut released_buttons = vec![];
                 for button in system.keys_used() {
@@ -393,7 +395,9 @@ pub fn run(
                         released_buttons.push(*button);
                     }
                 }
-                system.on_key_up(released_buttons);
+                if !released_buttons.is_empty() {
+                    system.on_key_up(released_buttons);
+                }
 
                 if input.mouse_held(0) {
                     system.on_mouse_down(mouse_x, mouse_y, MouseButton::Left);
