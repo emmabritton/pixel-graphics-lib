@@ -81,6 +81,9 @@ pub enum GraphicsError {
     ImageInitSize(usize, usize),
     #[error("Both images must be the same size, expected: {0}x{1}, found: {2}x{3}")]
     ImageBlendSize(usize, usize, usize, usize),
+    #[cfg(feature = "controller")]
+    #[error("Unable to init controller: {0}")]
+    ControllerInit(String),
 }
 
 /// Creates the window and pixels wrapper

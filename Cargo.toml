@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.13.8"
+version = "0.13.9"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
@@ -27,7 +27,8 @@ directories = { version = "5.0.1", optional = true }
 graphics-shapes = "0.2.4"
 buffer-graphics-lib = { version = "0.12.4", features = ["image_loading", "ici", "serde_derive"] }
 rustc-hash = "1.1.0"
-simple-game-utils = { version = "0.3.3", features= [] }
+simple-game-utils = { version = "0.3.4", features= [] }
+fnv = "1.0.7"
 
 [dev-dependencies]
 fastrand = "2.0.0"

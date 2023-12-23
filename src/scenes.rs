@@ -2,7 +2,7 @@ use crate::prelude::*;
 use crate::ui::styles::UiStyle;
 use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
-use std::collections::HashSet;
+use fnv::FnvHashSet;
 use std::fmt::Debug;
 
 /// Convenience method for programs built using [Scene]s
@@ -34,7 +34,7 @@ pub fn run_scenes<
         window_prefs,
         scene_switcher,
         options.style.clone(),
-    ));
+    )?);
     run(width, height, title, system, options)?;
     Ok(())
 }
@@ -83,14 +83,23 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// you may see rendering issues (use `graphics.clear(Color)`).
     /// # Note
     /// mouse_xy will be -1,-1 if this screen is in the background and a non full screen scene is active
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord);
+    #[cfg(feature = "controller")]
+    fn render(
+        &self,
+        graphics: &mut Graphics,
+        mouse_xy: Coord,
+        held_keys: &Vec<&KeyCode>,
+        controller: &GameController,
+    );
+    #[cfg(not(feature = "controller"))]
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, held_keys: &Vec<&KeyCode>) {}
     /// Called when a keyboard key is being pressed down
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_down(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &Vec<&KeyCode>) {}
+    fn on_key_down(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &Vec<&KeyCode>);
     /// Called when a keyboard key has been released
     ///
     /// # Arguments
@@ -137,6 +146,15 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * In normal function this is will be [Nothing][SceneUpdateResult::Nothing]
     /// * To close this scene return [Pop][SceneUpdateResult::Pop]
     /// * To open a child scene return [Push][SceneUpdateResult::Push]
+    #[cfg(feature = "controller")]
+    fn update(
+        &mut self,
+        timing: &Timing,
+        mouse_xy: Coord,
+        held_keys: &Vec<&KeyCode>,
+        controller: &GameController,
+    ) -> SceneUpdateResult<SR, SN>;
+    #[cfg(not(feature = "controller"))]
     fn update(
         &mut self,
         timing: &Timing,
@@ -147,7 +165,8 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     ///
     /// # Arguments
     /// * `result` - Optional data from child scene
-    fn resuming(&mut self, result: Option<SR>);
+    #[allow(unused_variables)]
+    fn resuming(&mut self, result: Option<SR>) {}
     /// Return true if this scene doesn't fill the screen or is transparent
     /// If this returns false the previous fullscreen scene will render as well
     fn is_dialog(&self) -> bool {
@@ -157,12 +176,14 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
 
 struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     should_exit: bool,
-    held_keys: HashSet<KeyCode>,
+    held_keys: FnvHashSet<KeyCode>,
     mouse_coord: Coord,
     scenes: Vec<Box<dyn Scene<SR, SN>>>,
     window_prefs: Option<WindowPreferences>,
     scene_switcher: SceneSwitcher<SR, SN>,
     style: UiStyle,
+    #[cfg(feature = "controller")]
+    controller: GameController,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR, SN> {
@@ -171,16 +192,19 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
         window_prefs: Option<WindowPreferences>,
         scene_switcher: SceneSwitcher<SR, SN>,
         style: UiStyle,
-    ) -> Self {
-        Self {
+    ) -> Result<Self, GraphicsError> {
+        Ok(Self {
             should_exit: false,
-            held_keys: HashSet::new(),
+            held_keys: FnvHashSet::default(),
             mouse_coord: Coord::new(100, 100),
             scenes: vec![init_scene],
             window_prefs,
             scene_switcher,
             style,
-        }
+            #[cfg(feature = "controller")]
+            controller: GameController::new()
+                .map_err(|e| GraphicsError::ControllerInit(e.to_string()))?,
+        })
     }
 }
 
@@ -191,6 +215,14 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
 
     fn update(&mut self, timing: &Timing) {
         if let Some(scene) = self.scenes.last_mut() {
+            #[cfg(feature = "controller")]
+            let result = scene.update(
+                timing,
+                self.mouse_coord,
+                &self.held_keys.iter().collect(),
+                &self.controller,
+            );
+            #[cfg(not(feature = "controller"))]
             let result = scene.update(timing, self.mouse_coord, &self.held_keys.iter().collect());
             match result {
                 SceneUpdateResult::Nothing => {}
@@ -218,11 +250,41 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             if active.is_dialog() {
                 match self.scenes.iter().rposition(|scn| !scn.is_dialog()) {
                     None => graphics.clear(BLACK),
-                    Some(i) => self.scenes[i].render(graphics, Coord::new(-1, -1)),
+                    Some(i) => {
+                        #[cfg(feature = "controller")]
+                        self.scenes[i].render(
+                            graphics,
+                            Coord::new(-1, -1),
+                            &self.held_keys.iter().collect(),
+                            &self.controller,
+                        );
+                        #[cfg(not(feature = "controller"))]
+                        active.render(
+                            graphics,
+                            Coord::new(-1, -1),
+                            &self.held_keys.iter().collect(),
+                        );
+                    }
                 }
-                active.render(graphics, self.mouse_coord);
+                #[cfg(feature = "controller")]
+                active.render(
+                    graphics,
+                    self.mouse_coord,
+                    &self.held_keys.iter().collect(),
+                    &self.controller,
+                );
+                #[cfg(not(feature = "controller"))]
+                active.render(graphics, self.mouse_coord, &self.held_keys.iter().collect());
             } else {
-                active.render(graphics, self.mouse_coord);
+                #[cfg(feature = "controller")]
+                active.render(
+                    graphics,
+                    self.mouse_coord,
+                    &self.held_keys.iter().collect(),
+                    &self.controller,
+                );
+                #[cfg(not(feature = "controller"))]
+                active.render(graphics, self.mouse_coord, &self.held_keys.iter().collect());
             }
         }
     }
