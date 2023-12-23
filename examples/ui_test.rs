@@ -149,7 +149,7 @@ impl Menu {
 }
 
 impl Scene<SceneResult, SceneName> for Menu {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode], _: &GameController) {
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode]) {
         graphics.clear(self.background);
         self.title.render(graphics);
         self.tooltip_rect.render(graphics);
@@ -205,7 +205,6 @@ impl Scene<SceneResult, SceneName> for Menu {
         timing: &Timing,
         _: Coord,
         _: &[KeyCode],
-        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.field1.update(timing);
         self.field2.update(timing);

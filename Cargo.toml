@@ -12,7 +12,7 @@ categories = ["graphics", "game-development"]
 
 [features]
 default = ["window_prefs", "sound"]
-window_prefs = ["simple-game-utils/prefs"]
+window_prefs = ["serde", "simple-game-utils/prefs"]
 controller = ["serde", "simple-game-utils/controller"]
 sound = ["simple-game-utils/sound"]
 file_dialogs = ["directories"]

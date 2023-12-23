@@ -55,7 +55,7 @@ enum SceneResult {
 }
 
 impl Scene<SceneResult, SceneName> for Scene1 {
-    fn render(&self, graphics: &mut Graphics, _: Coord, _: &[KeyCode], _: &GameController) {
+    fn render(&self, graphics: &mut Graphics, _: Coord, _: &[KeyCode]) {
         graphics.clear(BLUE);
         graphics.set_pixel(0, 0, RED);
         graphics.set_pixel(1, 1, RED);
@@ -73,7 +73,6 @@ impl Scene<SceneResult, SceneName> for Scene1 {
         _: &Timing,
         _: Coord,
         _: &[KeyCode],
-        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -90,7 +89,7 @@ impl Scene<SceneResult, SceneName> for Scene1 {
 }
 
 impl Scene<SceneResult, SceneName> for Scene2 {
-    fn render(&self, graphics: &mut Graphics, _: Coord, _: &[KeyCode], _: &GameController) {
+    fn render(&self, graphics: &mut Graphics, _: Coord, _: &[KeyCode]) {
         graphics.clear(RED);
     }
 
@@ -114,7 +113,6 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         _: &Timing,
         _: Coord,
         _: &[KeyCode],
-        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -125,7 +123,7 @@ impl Scene<SceneResult, SceneName> for Scene2 {
 }
 
 impl Scene<SceneResult, SceneName> for Scene3 {
-    fn render(&self, graphics: &mut Graphics, _: Coord, _: &[KeyCode], _: &GameController) {
+    fn render(&self, graphics: &mut Graphics, _: Coord, _: &[KeyCode]) {
         graphics.draw_rect(Rect::new((90, 90), (190, 150)), fill(self.back));
     }
 
@@ -141,7 +139,6 @@ impl Scene<SceneResult, SceneName> for Scene3 {
         _: &Timing,
         _: Coord,
         _: &[KeyCode],
-        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }

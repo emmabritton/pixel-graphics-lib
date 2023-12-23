@@ -142,7 +142,7 @@ impl LayoutTest {
 }
 
 impl Scene<SceneResult, SceneName> for LayoutTest {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode], _: &GameController) {
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode]) {
         graphics.clear(BLUE);
         self.button.render(graphics, mouse_xy);
         self.toggle_button.render(graphics, mouse_xy);
@@ -214,7 +214,6 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         timing: &Timing,
         _: Coord,
         _: &[KeyCode],
-        _: &GameController,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.text_field.update(timing);
         self.spacing.update(timing);

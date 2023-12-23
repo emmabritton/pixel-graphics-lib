@@ -83,7 +83,8 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// you may see rendering issues (use `graphics.clear(Color)`).
     /// # Note
     /// mouse_xy will be -1,-1 if this screen is in the background and a non full screen scene is active
-    #[cfg(feature = "controller")]
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+    #[allow(unused_variables)]
     fn render(
         &self,
         graphics: &mut Graphics,
@@ -91,7 +92,8 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         held_keys: &[KeyCode],
         controller: &GameController,
     );
-    #[cfg(not(feature = "controller"))]
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    #[allow(unused_variables)]
     fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, held_keys: &[KeyCode]) {}
     /// Called when a keyboard key is being pressed down
     ///
@@ -146,7 +148,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * In normal function this is will be [Nothing][SceneUpdateResult::Nothing]
     /// * To close this scene return [Pop][SceneUpdateResult::Pop]
     /// * To open a child scene return [Push][SceneUpdateResult::Push]
-    #[cfg(feature = "controller")]
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     fn update(
         &mut self,
         timing: &Timing,
@@ -154,7 +156,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         held_keys: &[KeyCode],
         controller: &GameController,
     ) -> SceneUpdateResult<SR, SN>;
-    #[cfg(not(feature = "controller"))]
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
     fn update(
         &mut self,
         timing: &Timing,
@@ -182,7 +184,7 @@ struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     window_prefs: Option<WindowPreferences>,
     scene_switcher: SceneSwitcher<SR, SN>,
     style: UiStyle,
-    #[cfg(feature = "controller")]
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     controller: GameController,
 }
 
@@ -201,7 +203,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
             window_prefs,
             scene_switcher,
             style,
-            #[cfg(feature = "controller")]
+            #[cfg(any(feature = "controller", feature = "controller_xinput"))]
             controller: GameController::new()
                 .map_err(|e| GraphicsError::ControllerInit(e.to_string()))?,
         })
@@ -214,10 +216,10 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn update(&mut self, timing: &Timing) {
-        #[cfg(feature = "controller")]
+        #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.controller.update();
         if let Some(scene) = self.scenes.last_mut() {
-            #[cfg(feature = "controller")]
+            #[cfg(any(feature = "controller", feature = "controller_xinput"))]
             let result = scene.update(
                 timing,
                 self.mouse_coord,
@@ -228,8 +230,16 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                     .as_slice(),
                 &self.controller,
             );
-            #[cfg(not(feature = "controller"))]
-            let result = scene.update(timing, self.mouse_coord, &self.held_keys.iter().collect());
+            #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+            let result = scene.update(
+                timing,
+                self.mouse_coord,
+                self.held_keys
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .as_slice(),
+            );
             match result {
                 SceneUpdateResult::Nothing => {}
                 SceneUpdateResult::Push(pop_current, name) => {
@@ -257,7 +267,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 match self.scenes.iter().rposition(|scn| !scn.is_dialog()) {
                     None => graphics.clear(BLACK),
                     Some(i) => {
-                        #[cfg(feature = "controller")]
+                        #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                         self.scenes[i].render(
                             graphics,
                             Coord::new(-1, -1),
@@ -268,15 +278,19 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                                 .as_slice(),
                             &self.controller,
                         );
-                        #[cfg(not(feature = "controller"))]
-                        active.render(
+                        #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+                        self.scenes[i].render(
                             graphics,
                             Coord::new(-1, -1),
-                            &self.held_keys.iter().collect(),
+                            self.held_keys
+                                .iter()
+                                .cloned()
+                                .collect::<Vec<_>>()
+                                .as_slice(),
                         );
                     }
                 }
-                #[cfg(feature = "controller")]
+                #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                 active.render(
                     graphics,
                     self.mouse_coord,
@@ -287,10 +301,18 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         .as_slice(),
                     &self.controller,
                 );
-                #[cfg(not(feature = "controller"))]
-                active.render(graphics, self.mouse_coord, &self.held_keys.iter().collect());
+                #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+                active.render(
+                    graphics,
+                    self.mouse_coord,
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
             } else {
-                #[cfg(feature = "controller")]
+                #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                 active.render(
                     graphics,
                     self.mouse_coord,
@@ -301,8 +323,16 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         .as_slice(),
                     &self.controller,
                 );
-                #[cfg(not(feature = "controller"))]
-                active.render(graphics, self.mouse_coord, &self.held_keys.iter().collect());
+                #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+                active.render(
+                    graphics,
+                    self.mouse_coord,
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
             }
         }
     }
