@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.13.11"
+version = "0.14.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
@@ -11,15 +11,16 @@ keywords = ["graphics", "gamedev", "pixels", "simple"]
 categories = ["graphics", "game-development"]
 
 [features]
-default = ["window_prefs", "sound", "controller"]
+default = ["window_prefs", "sound"]
 window_prefs = ["simple-game-utils/prefs"]
 controller = ["serde", "simple-game-utils/controller"]
 sound = ["simple-game-utils/sound"]
 file_dialogs = ["directories"]
+controller_xinput = ["serde", "simple-game-utils/controller_xinput"]
 
 [dependencies]
 pixels = "0.13.0"
-winit = { version = "0.29.4", features = ["rwh_05"] }
+winit = { version = "0.29.5", features = ["rwh_05"] }
 winit_input_helper = "0.15.1"
 thiserror = "1.0.51"
 serde = { version = "1.0.193", features = ["derive"], optional = true }
@@ -27,7 +28,7 @@ directories = { version = "5.0.1", optional = true }
 graphics-shapes = "0.2.4"
 buffer-graphics-lib = { version = "0.12.4", features = ["image_loading", "ici", "serde_derive"] }
 rustc-hash = "1.1.0"
-simple-game-utils = { version = "0.3.4", features= [] }
+simple-game-utils = { version = "0.4.0", default-features = false }
 fnv = "1.0.7"
 
 [dev-dependencies]
