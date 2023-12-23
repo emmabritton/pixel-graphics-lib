@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.13.8
+- Update buffer and game_util libs
+
 ### Version 0.13.7
 - Extract prefs to `simple-game-utils`
 - Add function keys to `ALL`
@@ -7,10 +10,10 @@
 - Add version to `WindowPreferences`
 
 ### Version 0.13.6
-- Update buffer and shapes lib
+- Update buffer and shapes libs
 
 ### Version 0.13.5
-- Update buffer and shapes lib
+- Update buffer and shapes libs
 
 ### Version 0.13.4
 - Update buffer lib
