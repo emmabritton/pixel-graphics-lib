@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.13.10
+- Fix controller support
+
 ### Version 0.13.9
 - Update game_util libs
 - Add controller to `Scene::update` and `Scene::render` when `controller` feature is enabled

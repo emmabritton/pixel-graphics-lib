@@ -214,6 +214,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn update(&mut self, timing: &Timing) {
+        #[cfg(feature = "controller")]
+        self.controller.update();
         if let Some(scene) = self.scenes.last_mut() {
             #[cfg(feature = "controller")]
             let result = scene.update(
