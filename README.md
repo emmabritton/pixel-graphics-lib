@@ -21,7 +21,7 @@ You can use scenes using `run_scenes`:
 ```rust
 fn main() -> Result<()> {
     // Window prefs allow the size and position of the window to be saved and restored
-    let window_prefs = WindowPreferences::new("com", "example", "app")?;
+    let window_prefs = WindowPreferences::new("com", "example", "app", 1)?;
     // Options contains scaling, UPS, etc
     let options = Options::default();
     // The switcher is how new scenes are created
