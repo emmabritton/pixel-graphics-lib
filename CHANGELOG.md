@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.14.3
+- Update buffer lib
+
 ### Version 0.14.2
 - Fix prelude/imports
 
