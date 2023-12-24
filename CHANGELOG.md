@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 0.14.1
+- Add `images` feature
+- Update buffer lib
+- Remove shapes lib dep
+
 ### Version 0.14.0
 - Add `controller_xinput` feature
 - Remove `controller` from default feature

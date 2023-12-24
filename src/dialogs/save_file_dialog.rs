@@ -132,8 +132,7 @@ where
     }
 }
 
-impl<SR: Clone + Debug + PartialEq, SN: Clone + Debug + PartialEq> Scene<SR, SN>
-    for SaveFileDialog<SR, SN>
+impl<SR: Clone + Debug + PartialEq, SN: Clone + Debug + PartialEq> SaveFileDialog<SR, SN>
 where
     SR: FileDialogResults<SR>,
 {
@@ -151,12 +150,34 @@ where
         self.cancel.render(graphics, mouse_xy);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: Coord, held_keys: &Vec<&KeyCode>) {
+    fn update(&mut self, timing: &Timing) -> SceneUpdateResult<SR, SN> {
+        self.name_field.update(timing);
+        self.current_dir_field.update(timing);
+        self.result.clone()
+    }
+}
+
+impl<SR: Clone + Debug + PartialEq, SN: Clone + Debug + PartialEq> Scene<SR, SN>
+    for SaveFileDialog<SR, SN>
+where
+    SR: FileDialogResults<SR>,
+{
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode], _: &GameController) {
+        self.render(graphics, mouse_xy)
+    }
+
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode]) {
+        self.render(graphics, mouse_xy)
+    }
+
+    fn on_key_up(&mut self, key: KeyCode, _: Coord, held_keys: &[KeyCode]) {
         self.name_field.on_key_press(key, held_keys);
         self.current_dir_field.on_key_press(key, held_keys);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &Vec<&KeyCode>) {
+    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &[KeyCode]) {
         if button != MouseButton::Left {
             return;
         }
@@ -217,19 +238,24 @@ where
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &Vec<&KeyCode>) {
+    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &[KeyCode]) {
         self.dir_panel.on_scroll(xy, y_diff);
     }
 
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     fn update(
         &mut self,
         timing: &Timing,
         _: Coord,
-        _: &Vec<&KeyCode>,
+        _: &[KeyCode],
+        _: &GameController,
     ) -> SceneUpdateResult<SR, SN> {
-        self.name_field.update(timing);
-        self.current_dir_field.update(timing);
-        self.result.clone()
+        self.update(timing)
+    }
+
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    fn update(&mut self, timing: &Timing, _: Coord, _: &[KeyCode]) -> SceneUpdateResult<SR, SN> {
+        self.update(timing)
     }
 
     fn resuming(&mut self, _: Option<SR>) {}

@@ -1,14 +1,10 @@
 use anyhow::Result;
-use buffer_graphics_lib::prelude::DrawType::Stroke;
 use buffer_graphics_lib::prelude::Positioning::*;
-use buffer_graphics_lib::prelude::*;
-use pixels_graphics_lib::prelude::SceneUpdateResult::*;
+use pixels_graphics_lib::prelude::SceneUpdateResult::Nothing;
 use pixels_graphics_lib::prelude::*;
-use pixels_graphics_lib::ui::prelude::TextFilter::{Raw, Sentence};
+use pixels_graphics_lib::ui::prelude::TextFilter::*;
 use pixels_graphics_lib::ui::prelude::*;
-use pixels_graphics_lib::ui::text_field::TextFilter::All;
-use pixels_graphics_lib::window_prefs::WindowPreferences;
-use winit::keyboard::KeyCode;
+use pixels_graphics_lib::*;
 
 #[allow(clippy::upper_case_acronyms)]
 type SUR = SceneUpdateResult<SceneResult, SceneName>;
@@ -63,7 +59,7 @@ impl Menu {
         let (large_icon, _) =
             IndexedImage::from_file_contents(include_bytes!("resources/large_icon.ici")).unwrap();
         let title = Text::new("UI Tester", TextPos::Px(8, 8), style.title_text.clone());
-        let tooltip_rect = Drawable::from_obj(Rect::new_with_size((8, 40), 10, 10), Stroke(WHITE));
+        let tooltip_rect = Drawable::from_obj(Rect::new_with_size((8, 40), 10, 10), stroke(WHITE));
         let tooltip = Tooltip::new((8, 40), "This is a test tooltip", LeftTop, &style.tooltip);
         let mut button1 = Button::new((0, 0), "Test Button", None, &style.button);
         let mut button2 = Button::new((0, 0), "Test Button", Some(100), &style.button);

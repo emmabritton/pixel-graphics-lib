@@ -11,7 +11,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.14.0"
+pixels-graphics-lib = "0.14.1"
 winit_input_helper = "0.15.1" #only needed if you're not using `run()`
 ```
 
@@ -61,7 +61,11 @@ impl ExampleScene {
 }
 
 impl Scene<SceneResult, SceneName> for ExampleScene {
-    fn render(&mut self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(
+        &mut self, 
+        graphics: &mut Graphics, 
+        mouse_xy: Coord, 
+        held_keys: &[VirtualKeyCode]) {
         todo!()
     }
 
@@ -69,12 +73,8 @@ impl Scene<SceneResult, SceneName> for ExampleScene {
         &mut self,
         timing: &Timing,
         mouse_xy: Coord,
-        held_keys: &Vec<&VirtualKeyCode>,
+        held_keys: &[VirtualKeyCode],
     ) -> SceneUpdateResult<SceneResult, SceneName> {
-        todo!()
-    }
-
-    fn resuming(&mut self, result: Option<SceneResult>) {
         todo!()
     }
 }
@@ -104,6 +104,27 @@ impl System for Example {
 Save and restore window position and size
 
 To use this the `impl System` must override `System::window_prefs()`
+
+### `controller`
+
+* Adds gamepad support
+* Adds gamepad state to `Scene::update`, `Scene::render` 
+
+### `controller_xinput`
+
+As above but using xinput, windows only
+
+### `sound`
+
+Play music or sound effects
+
+### `images`
+
+Loading and displaying of PNGs, JPEGs, BMPs
+
+### `file_dialogs`
+
+Built in file selection dialogs, not recommended, use `rfd`
 
 ## Projects
 

@@ -1,6 +1,4 @@
-use crate::prelude::*;
 use crate::ui::prelude::*;
-use graphics_shapes::prelude::{Coord, Rect};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ColumnGravity {
@@ -80,9 +78,7 @@ impl ColumnLayout {
 
 #[cfg(test)]
 mod test {
-    use crate::prelude::*;
     use crate::ui::prelude::*;
-    use graphics_shapes::coord;
 
     #[test]
     fn column_defaults() {

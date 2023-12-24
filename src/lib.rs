@@ -46,7 +46,6 @@ use crate::window_prefs::WindowPreferences;
 use crate::GraphicsError::LoadingWindowPref;
 pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
-pub use graphics_shapes;
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture};
 use simple_game_utils::prelude::*;
 use thiserror::Error;
@@ -59,10 +58,17 @@ use winit_input_helper::WinitInputHelper;
 
 pub mod prelude {
     pub use crate::dialogs::*;
+    pub use crate::run;
     pub use crate::scenes::*;
+    pub use crate::setup;
     pub use crate::utilities::virtual_key_codes::*;
     pub use crate::window_prefs::*;
-    pub use crate::*;
+    pub use crate::GraphicsError;
+    pub use crate::MouseButton;
+    pub use crate::Options;
+    pub use crate::System;
+    pub use crate::WindowScaling;
+    pub use buffer_graphics_lib::prelude::*;
     pub use simple_game_utils::prelude::*;
     pub use winit::keyboard::KeyCode;
 }

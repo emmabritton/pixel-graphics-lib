@@ -11,7 +11,7 @@ pub mod toggle_icon_button;
 pub mod tooltip;
 
 use crate::prelude::*;
-use graphics_shapes::prelude::*;
+use buffer_graphics_lib::prelude::*;
 use std::fmt::Debug;
 
 pub mod prelude {
@@ -22,6 +22,7 @@ pub mod prelude {
     pub use crate::ui::icon_button::*;
     pub use crate::ui::layout::column::*;
     pub use crate::ui::layout::row::*;
+    pub use crate::ui::layout::*;
     pub use crate::ui::styles::*;
     pub use crate::ui::text_field::*;
     pub use crate::ui::toggle_button::*;

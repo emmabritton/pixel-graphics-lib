@@ -15,13 +15,13 @@ macro_rules! or_else {
 macro_rules! bounds {
     ($top_left:expr, $bottom_right:expr) => {
         Rect::new(
-            $crate::graphics_shapes::coord!($top_left),
-            $crate::graphics_shapes::coord!($bottom_right),
+            $crate::prelude::coord!($top_left),
+            $crate::prelude::coord!($bottom_right),
         )
     };
     ($top_left:expr, $width: expr, $height: expr) => {
         Rect::new_with_size(
-            $crate::graphics_shapes::coord!($top_left),
+            $crate::prelude::coord!($top_left),
             $width as usize,
             $height as usize,
         )
@@ -44,13 +44,9 @@ macro_rules! row_layout {
 
 #[cfg(test)]
 mod test {
-    use crate::prelude::UiStyle;
     use crate::ui::button::Button;
     use crate::ui::prelude::*;
     use crate::ui::UiElement;
-    use graphics_shapes::coord;
-    use graphics_shapes::coord::Coord;
-    use graphics_shapes::rect::Rect;
 
     #[test]
     fn syntax_check() {

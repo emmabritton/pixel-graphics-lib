@@ -1,4 +1,3 @@
-use crate::buffer_graphics_lib::prelude::*;
 use crate::buffer_graphics_lib::shapes::polyline::Polyline;
 use crate::buffer_graphics_lib::text::format::Positioning::Center;
 use crate::buffer_graphics_lib::text::pos::TextPos;

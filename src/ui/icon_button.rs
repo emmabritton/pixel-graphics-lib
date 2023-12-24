@@ -1,6 +1,4 @@
-use crate::buffer_graphics_lib::prelude::*;
 use crate::buffer_graphics_lib::shapes::polyline::Polyline;
-use crate::prelude::*;
 use crate::ui::prelude::*;
 use crate::ui::tooltip::Tooltip;
 use crate::ui::{ElementState, UiElement};

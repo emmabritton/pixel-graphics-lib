@@ -3,7 +3,6 @@ use crate::ui::prelude::*;
 use crate::ui::styles::AlertStyle;
 use buffer_graphics_lib::prelude::Positioning::Center;
 use buffer_graphics_lib::prelude::*;
-use graphics_shapes::coord;
 
 const BUTTON_Y: isize = 28;
 const ALERT_SIZE: (usize, usize) = (200, 50);
