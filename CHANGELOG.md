@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.14.2
+- Fix prelude/imports
+
 ### Version 0.14.1
 - Add `images` feature
 - Update buffer lib
