@@ -47,6 +47,8 @@ use crate::GraphicsError::LoadingWindowPref;
 pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture};
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use simple_game_utils::prelude::*;
 use thiserror::Error;
 use winit::dpi::LogicalSize;
@@ -134,7 +136,8 @@ pub fn setup(
     Ok((win, pixels))
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum WindowScaling {
     /// Make the canvas and window be the same of numbers, this ignores DPI
     None,
@@ -188,10 +191,12 @@ fn create_window(
     Ok(window)
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum MouseButton {
     Left,
     Right,
+    Middle,
 }
 
 #[allow(unused_variables)]
@@ -221,7 +226,8 @@ pub trait System {
 }
 
 /// Options for programs
-#[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Eq, PartialEq)]
 pub struct Options {
     /// Target and max number of times [Scene::update] can be called per second
     /// Default is 240
@@ -405,11 +411,14 @@ pub fn run(
                     system.on_key_up(released_buttons);
                 }
 
-                if input.mouse_held(0) {
+                if input.mouse_pressed(0) {
                     system.on_mouse_down(mouse_x, mouse_y, MouseButton::Left);
                 }
-                if input.mouse_held(1) {
+                if input.mouse_pressed(1) {
                     system.on_mouse_down(mouse_x, mouse_y, MouseButton::Right);
+                }
+                if input.mouse_pressed(2) {
+                    system.on_mouse_down(mouse_x, mouse_y, MouseButton::Middle);
                 }
 
                 if input.mouse_released(0) {
@@ -418,6 +427,10 @@ pub fn run(
                 if input.mouse_released(1) {
                     system.on_mouse_up(mouse_x, mouse_y, MouseButton::Right);
                 }
+                if input.mouse_released(2) {
+                    system.on_mouse_up(mouse_x, mouse_y, MouseButton::Middle);
+                }
+
                 let scroll = input.scroll_diff();
                 if scroll.0 != 0.0 || scroll.1 != 0.0 {
                     system.on_scroll(

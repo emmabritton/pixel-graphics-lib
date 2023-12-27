@@ -11,7 +11,7 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.14.3"
+pixels-graphics-lib = "0.15.0"
 winit_input_helper = "0.15.1" #only needed if you're not using `run()`
 ```
 
@@ -99,6 +99,8 @@ impl System for Example {
 
 ## Features
 
+> Default features: `window_prefs`, `sound`, `serde`
+
 ### `window_prefs`
 
 Save and restore window position and size
@@ -118,6 +120,10 @@ As above but using xinput, windows only
 
 Play music or sound effects
 
+### `serde`
+
+Adds `Serialize` and `Deserialize` to most structs and enums
+
 ### `images`
 
 Loading and displaying of PNGs, JPEGs, BMPs
@@ -125,6 +131,10 @@ Loading and displaying of PNGs, JPEGs, BMPs
 ### `file_dialogs`
 
 Built in file selection dialogs, not recommended, use `rfd`
+
+### `mint`
+
+Enables `graphic-shapes/mint`
 
 ## Projects
 
