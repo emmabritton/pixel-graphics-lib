@@ -102,7 +102,7 @@ impl UiElement for Tooltip {
         self.background.obj()
     }
 
-    fn render(&self, graphics: &mut Graphics, _: Coord) {
+    fn render(&self, graphics: &mut Graphics, _: &MouseData) {
         if let Some(color) = self.style.shadow.get(false, false, false) {
             self.shadow.with_color(color).render(graphics);
         }

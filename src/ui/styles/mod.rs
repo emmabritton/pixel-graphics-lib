@@ -1,8 +1,11 @@
 use buffer_graphics_lib::prelude::*;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 pub mod defaults;
 pub mod impls;
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct UiStyle {
     pub button: ButtonStyle,
@@ -18,6 +21,7 @@ pub struct UiStyle {
     pub toggle_icon_button: ToggleIconButtonStyle,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ColorSet {
     pub normal: Option<Color>,
@@ -26,6 +30,7 @@ pub struct ColorSet {
     pub disabled: Option<Color>,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ToggleColorSet {
     pub normal: Option<Color>,
@@ -36,6 +41,7 @@ pub struct ToggleColorSet {
     pub disabled: Option<Color>,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct FocusColorSet {
     pub normal: Option<Color>,
@@ -45,6 +51,7 @@ pub struct FocusColorSet {
     pub disabled: Option<Color>,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TextFieldStyle {
     pub text_color: FocusColorSet,
@@ -53,6 +60,7 @@ pub struct TextFieldStyle {
     pub cursor: FocusColorSet,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ButtonStyle {
     pub text: ColorSet,
@@ -62,6 +70,7 @@ pub struct ButtonStyle {
     pub rounding: usize,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct IconButtonStyle {
     pub tooltip: TooltipStyle,
@@ -71,6 +80,7 @@ pub struct IconButtonStyle {
     pub padding: usize,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TooltipStyle {
     pub text: ColorSet,
@@ -81,6 +91,7 @@ pub struct TooltipStyle {
     pub padding: usize,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ToggleButtonStyle {
     pub text: ToggleColorSet,
@@ -90,6 +101,7 @@ pub struct ToggleButtonStyle {
     pub rounding: usize,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ToggleIconButtonStyle {
     pub tooltip: TooltipStyle,
@@ -99,6 +111,7 @@ pub struct ToggleIconButtonStyle {
     pub padding: usize,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct AlertStyle {
     pub background: Option<Color>,
@@ -111,6 +124,7 @@ pub struct AlertStyle {
     pub shade: Option<Color>,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct DialogStyle {
     pub bounds: Rect,

@@ -2,7 +2,9 @@ use crate::prelude::*;
 use crate::ui::styles::UiStyle;
 use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
-use fnv::FnvHashSet;
+use rustc_hash::{FxHashMap, FxHashSet};
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 /// Convenience method for programs built using [Scene]s
@@ -82,49 +84,91 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// If this is a fullscreen scene it should draw a color over the whole screen otherwise
     /// you may see rendering issues (use `graphics.clear(Color)`).
     /// # Note
-    /// mouse_xy will be -1,-1 if this screen is in the background and a non full screen scene is active
+    /// mouse will be empty if this screen is in the background and a non full screen scene is active
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     #[allow(unused_variables)]
     fn render(
         &self,
         graphics: &mut Graphics,
-        mouse_xy: Coord,
+        mouse: &MouseData,
         held_keys: &[KeyCode],
         controller: &GameController,
     );
+    /// Render scene contents using `graphics`
+    ///
+    /// If this is a fullscreen scene it should draw a color over the whole screen otherwise
+    /// you may see rendering issues (use `graphics.clear(Color)`).
+    /// # Note
+    /// mouse will be empty if this screen is in the background and a non full screen scene is active
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
     #[allow(unused_variables)]
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, held_keys: &[KeyCode]) {}
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, held_keys: &[KeyCode]) {}
     /// Called when a keyboard key is being pressed down
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
+    /// * `mouse` - position, held state of mouse
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_down(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &[KeyCode]) {}
+    fn on_key_down(&mut self, key: KeyCode, mouse: &MouseData, held_keys: &[KeyCode]) {}
     /// Called when a keyboard key has been released
     ///
     /// # Arguments
     /// * `key` - The latest pressed key
+    /// * `mouse` - position, held state of mouse
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_up(&mut self, key: KeyCode, mouse_xy: Coord, held_keys: &[KeyCode]) {}
+    fn on_key_up(&mut self, key: KeyCode, mouse: &MouseData, held_keys: &[KeyCode]) {}
     /// Called when a mouse button has been pressed down
     ///
     /// # Arguments
-    /// * `xy` - The on screen coord of the cursor
-    /// * `button` - The pressed mouse button
+    /// * `mouse` - position, held state of mouse
+    /// * `mouse_button` = which button was pressed
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_down(&mut self, xy: Coord, button: MouseButton, held_keys: &[KeyCode]) {}
+    fn on_mouse_down(
+        &mut self,
+        mouse: &MouseData,
+        mouse_button: MouseButton,
+        held_keys: &[KeyCode],
+    ) {
+    }
     /// Called when a mouse button has been released
     ///
+    /// [on_mouse_click] will also be called after
+    ///
     /// # Arguments
-    /// * `xy` - The on screen coord of the cursor
-    /// * `button` - The pressed mouse button
+    /// * `mouse` - position, held state of mouse
+    /// * `mouse_button` = which button was released
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, held_keys: &[KeyCode]) {}
+    fn on_mouse_up(&mut self, mouse: &MouseData, mouse_button: MouseButton, held_keys: &[KeyCode]) {
+    }
+    /// Called when a mouse button has been pressed and released
+    ///
+    /// [on_mouse_up] will also be called before
+    ///
+    /// # Arguments
+    /// * `down_at` - position where mouse button was clicked
+    /// * `mouse` - position, held state of mouse
+    /// * `mouse_button` = which button was clicked
+    /// * `held_keys` - Any keyboards keys that are being pressed down
+    #[allow(unused_variables)]
+    fn on_mouse_click(
+        &mut self,
+        down_at: Coord,
+        mouse: &MouseData,
+        mouse_button: MouseButton,
+        held_keys: &[KeyCode],
+    ) {
+    }
+    /// Called when the mouse moved while any button is held down
+    ///
+    /// # Arguments
+    /// * `mouse` - position, held state of mouse
+    /// * `held_keys` - Any keyboards keys that are being pressed down
+    #[allow(unused_variables)]
+    fn on_mouse_drag(&mut self, mouse: &MouseData, held_keys: &[KeyCode]) {}
     /// Called when the mouse scroll function has been used
     ///
     /// # Arguments
@@ -133,7 +177,14 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `x_diff` - The distance scrolled horizontally
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_scroll(&mut self, xy: Coord, x_diff: isize, y_diff: isize, held_keys: &[KeyCode]) {}
+    fn on_scroll(
+        &mut self,
+        mouse: &MouseData,
+        x_diff: isize,
+        y_diff: isize,
+        held_keys: &[KeyCode],
+    ) {
+    }
     /// During this method the scene should update animations and anything else that relies on time
     /// or on held keys
     ///
@@ -152,15 +203,29 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     fn update(
         &mut self,
         timing: &Timing,
-        mouse_xy: Coord,
+        mouse: &MouseData,
         held_keys: &[KeyCode],
         controller: &GameController,
     ) -> SceneUpdateResult<SR, SN>;
+    /// During this method the scene should update animations and anything else that relies on time
+    /// or on held keys
+    ///
+    /// # Arguments
+    /// * `timing` - Deltas and other timing info, generally you should use the `fixed_time_step` field
+    /// * `xy` - The on screen coord of the mouse cursor
+    /// * `held_keys` - Any keyboards keys that are being pressed down
+    ///
+    /// # Returns
+    ///
+    /// [SceneUpdateResult]
+    /// * In normal function this is will be [Nothing][SceneUpdateResult::Nothing]
+    /// * To close this scene return [Pop][SceneUpdateResult::Pop]
+    /// * To open a child scene return [Push][SceneUpdateResult::Push]
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
     fn update(
         &mut self,
         timing: &Timing,
-        mouse_xy: Coord,
+        mouse: &MouseData,
         held_keys: &[KeyCode],
     ) -> SceneUpdateResult<SR, SN>;
     /// Called when a child scene is closing
@@ -178,14 +243,15 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
 
 struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     should_exit: bool,
-    held_keys: FnvHashSet<KeyCode>,
-    mouse_coord: Coord,
+    held_keys: FxHashSet<KeyCode>,
     scenes: Vec<Box<dyn Scene<SR, SN>>>,
     window_prefs: Option<WindowPreferences>,
     scene_switcher: SceneSwitcher<SR, SN>,
     style: UiStyle,
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     controller: GameController,
+    mouse: MouseData,
+    mouse_down_at: FxHashMap<MouseButton, Coord>,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR, SN> {
@@ -197,12 +263,13 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
     ) -> Result<Self, GraphicsError> {
         Ok(Self {
             should_exit: false,
-            held_keys: FnvHashSet::default(),
-            mouse_coord: Coord::new(100, 100),
+            held_keys: FxHashSet::default(),
             scenes: vec![init_scene],
             window_prefs,
             scene_switcher,
             style,
+            mouse: MouseData::default(),
+            mouse_down_at: FxHashMap::default(),
             #[cfg(any(feature = "controller", feature = "controller_xinput"))]
             controller: GameController::new()
                 .map_err(|e| GraphicsError::ControllerInit(e.to_string()))?,
@@ -222,7 +289,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             #[cfg(any(feature = "controller", feature = "controller_xinput"))]
             let result = scene.update(
                 timing,
-                self.mouse_coord,
+                &self.mouse,
                 self.held_keys
                     .iter()
                     .cloned()
@@ -233,7 +300,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
             let result = scene.update(
                 timing,
-                self.mouse_coord,
+                &self.mouse,
                 self.held_keys
                     .iter()
                     .cloned()
@@ -270,7 +337,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                         self.scenes[i].render(
                             graphics,
-                            Coord::new(-1, -1),
+                            &MouseData::default(),
                             self.held_keys
                                 .iter()
                                 .cloned()
@@ -281,7 +348,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
                         self.scenes[i].render(
                             graphics,
-                            Coord::new(-1, -1),
+                            &MouseData::default(),
                             self.held_keys
                                 .iter()
                                 .cloned()
@@ -293,7 +360,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                 active.render(
                     graphics,
-                    self.mouse_coord,
+                    &self.mouse,
                     self.held_keys
                         .iter()
                         .cloned()
@@ -304,7 +371,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
                 active.render(
                     graphics,
-                    self.mouse_coord,
+                    &self.mouse,
                     self.held_keys
                         .iter()
                         .cloned()
@@ -315,7 +382,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                 active.render(
                     graphics,
-                    self.mouse_coord,
+                    &self.mouse,
                     self.held_keys
                         .iter()
                         .cloned()
@@ -326,7 +393,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
                 active.render(
                     graphics,
-                    self.mouse_coord,
+                    &self.mouse,
                     self.held_keys
                         .iter()
                         .cloned()
@@ -338,14 +405,28 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn on_mouse_move(&mut self, x: usize, y: usize) {
-        self.mouse_coord = Coord::from((x, y));
+        self.mouse.xy = Coord::from((x, y));
+        if self.mouse.any_held() {
+            if let Some(active) = self.scenes.last_mut() {
+                active.on_mouse_drag(
+                    &self.mouse,
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                )
+            }
+        }
     }
 
     fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {
-        self.mouse_coord = Coord::from((x, y));
+        self.mouse.xy = Coord::from((x, y));
+        self.mouse.add_down(self.mouse.xy, button);
+        self.mouse_down_at.insert(button, self.mouse.xy);
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_down(
-                self.mouse_coord,
+                &self.mouse,
                 button,
                 self.held_keys
                     .iter()
@@ -357,10 +438,11 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {
-        self.mouse_coord = Coord::from((x, y));
+        self.mouse.xy = Coord::from((x, y));
+        self.mouse.add_up(button);
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_up(
-                self.mouse_coord,
+                &self.mouse,
                 button,
                 self.held_keys
                     .iter()
@@ -368,14 +450,27 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                     .collect::<Vec<_>>()
                     .as_slice(),
             );
+            if let Some(down) = self.mouse_down_at.get(&button) {
+                active.on_mouse_click(
+                    *down,
+                    &self.mouse,
+                    button,
+                    self.held_keys
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .as_slice(),
+                );
+            }
+            self.mouse_down_at.remove(&button);
         }
     }
 
     fn on_scroll(&mut self, x: usize, y: usize, x_diff: isize, y_diff: isize) {
-        self.mouse_coord = Coord::from((x, y));
+        self.mouse.xy = Coord::from((x, y));
         if let Some(active) = self.scenes.last_mut() {
             active.on_scroll(
-                self.mouse_coord,
+                &self.mouse,
                 x_diff,
                 y_diff,
                 self.held_keys
@@ -393,7 +488,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             if let Some(active) = self.scenes.last_mut() {
                 active.on_key_down(
                     key,
-                    self.mouse_coord,
+                    &self.mouse,
                     self.held_keys
                         .iter()
                         .cloned()
@@ -410,7 +505,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             if let Some(active) = self.scenes.last_mut() {
                 active.on_key_up(
                     key,
-                    self.mouse_coord,
+                    &self.mouse,
                     self.held_keys
                         .iter()
                         .cloned()
@@ -423,5 +518,33 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
 
     fn should_exit(&mut self) -> bool {
         self.should_exit
+    }
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq, Default)]
+pub struct MouseData {
+    pub xy: Coord,
+    buttons: FxHashMap<MouseButton, Coord>,
+}
+
+impl MouseData {
+    pub fn any_held(&self) -> bool {
+        self.buttons.contains_key(&MouseButton::Left)
+            || self.buttons.contains_key(&MouseButton::Right)
+            || self.buttons.contains_key(&MouseButton::Middle)
+    }
+
+    /// Returns the press location if the mouse button is currently held down
+    pub fn is_down(&self, button: MouseButton) -> Option<Coord> {
+        self.buttons.get(&button).cloned()
+    }
+
+    pub(crate) fn add_up(&mut self, button: MouseButton) {
+        self.buttons.remove(&button);
+    }
+
+    pub(crate) fn add_down(&mut self, xy: Coord, button: MouseButton) {
+        self.buttons.insert(button, xy);
     }
 }

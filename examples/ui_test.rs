@@ -145,61 +145,68 @@ impl Menu {
 }
 
 impl Scene<SceneResult, SceneName> for Menu {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
         graphics.clear(self.background);
         self.title.render(graphics);
         self.tooltip_rect.render(graphics);
-        if self.tooltip_rect.obj().contains(mouse_xy) {
-            self.tooltip.render(graphics, mouse_xy);
+        if self.tooltip_rect.obj().contains(mouse.xy) {
+            self.tooltip.render(graphics, mouse);
         }
-        self.button1.render(graphics, mouse_xy);
-        self.button2.render(graphics, mouse_xy);
-        self.toggle_buttons.render(graphics, mouse_xy);
-        self.icon_group.render(graphics, mouse_xy);
-        self.icon_button1.render(graphics, mouse_xy);
-        self.icon_button2.render(graphics, mouse_xy);
-        self.field1.render(graphics, mouse_xy);
-        self.field2.render(graphics, mouse_xy);
-        self.field3.render(graphics, mouse_xy);
-        self.dir_panel.render(graphics, mouse_xy);
+        self.button1.render(graphics, mouse);
+        self.button2.render(graphics, mouse);
+        self.toggle_buttons.render(graphics, mouse);
+        self.icon_group.render(graphics, mouse);
+        self.icon_button1.render(graphics, mouse);
+        self.icon_button2.render(graphics, mouse);
+        self.field1.render(graphics, mouse);
+        self.field2.render(graphics, mouse);
+        self.field3.render(graphics, mouse);
+        self.dir_panel.render(graphics, mouse);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &[KeyCode]) {
         self.field1.on_key_press(key, held);
         self.field2.on_key_press(key, held);
         self.field3.on_key_press(key, held);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_click(
+        &mut self,
+        down_at: Coord,
+        mouse: &MouseData,
+        button: MouseButton,
+        _: &[KeyCode],
+    ) {
         if button != MouseButton::Left {
             return;
         }
-        self.field1.on_mouse_click(xy);
-        self.field2.on_mouse_click(xy);
-        self.field3.on_mouse_click(xy);
-        self.toggle_buttons.on_mouse_click(xy);
-        self.icon_group.on_mouse_click(xy);
-        if let Some(DirResult { path, is_file }) = self.dir_panel.on_mouse_click(xy) {
+        self.field1.on_mouse_click(down_at, mouse.xy);
+        self.field2.on_mouse_click(down_at, mouse.xy);
+        self.field3.on_mouse_click(down_at, mouse.xy);
+        self.toggle_buttons.on_mouse_click(down_at, mouse.xy);
+        self.icon_group.on_mouse_click(down_at, mouse.xy);
+        if let Some(DirResult { path, is_file }) = self.dir_panel.on_mouse_click(down_at, mouse.xy)
+        {
             if !is_file {
                 self.dir_panel.set_dir(&path);
             }
         }
-        if self.button1.on_mouse_click(xy) {
+        if self.button1.on_mouse_click(down_at, mouse.xy) {
             unfocus!(self.field1, self.field2, self.field3);
         }
-        if self.button2.on_mouse_click(xy) {
+        if self.button2.on_mouse_click(down_at, mouse.xy) {
             swap_focus!(self.field1, self.field2, self.field3,);
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &[KeyCode]) {
-        self.dir_panel.on_scroll(xy, y_diff);
+    fn on_scroll(&mut self, mouse: &MouseData, _: isize, y_diff: isize, _: &[KeyCode]) {
+        self.dir_panel.on_scroll(mouse.xy, y_diff);
     }
 
     fn update(
         &mut self,
         timing: &Timing,
-        _: Coord,
+        _: &MouseData,
         _: &[KeyCode],
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.field1.update(timing);

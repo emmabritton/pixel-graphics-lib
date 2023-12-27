@@ -1,6 +1,9 @@
 use crate::ui::prelude::*;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum ColumnGravity {
     Left,
     Center,
@@ -9,7 +12,8 @@ pub enum ColumnGravity {
 
 /// Position a collection of views into a column
 /// This doesn't act as a container or parent and only moves the views and isn't needed after it's been used
-#[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ColumnLayout {
     pub padding: usize,
     pub spacing: usize,

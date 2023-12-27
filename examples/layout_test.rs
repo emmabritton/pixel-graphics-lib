@@ -142,36 +142,33 @@ impl LayoutTest {
 }
 
 impl Scene<SceneResult, SceneName> for LayoutTest {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
         graphics.clear(BLUE);
-        self.button.render(graphics, mouse_xy);
-        self.toggle_button.render(graphics, mouse_xy);
-        self.icon_button.render(graphics, mouse_xy);
-        self.toggle_icon_button.render(graphics, mouse_xy);
-        self.text_field.render(graphics, mouse_xy);
-        self.spacing.render(graphics, mouse_xy);
-        self.padding.render(graphics, mouse_xy);
-        self.row.render(graphics, mouse_xy);
-        self.column.render(graphics, mouse_xy);
-        self.lefttop.render(graphics, mouse_xy);
-        self.center.render(graphics, mouse_xy);
-        self.rightbottom.render(graphics, mouse_xy);
+        self.button.render(graphics, mouse);
+        self.toggle_button.render(graphics, mouse);
+        self.icon_button.render(graphics, mouse);
+        self.toggle_icon_button.render(graphics, mouse);
+        self.text_field.render(graphics, mouse);
+        self.spacing.render(graphics, mouse);
+        self.padding.render(graphics, mouse);
+        self.row.render(graphics, mouse);
+        self.column.render(graphics, mouse);
+        self.lefttop.render(graphics, mouse);
+        self.center.render(graphics, mouse);
+        self.rightbottom.render(graphics, mouse);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: Coord, held: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &[KeyCode]) {
         self.text_field.on_key_press(key, held);
         self.padding.on_key_press(key, held);
         self.spacing.on_key_press(key, held);
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &[KeyCode]) {
-        if button != MouseButton::Left {
-            return;
-        }
-        self.text_field.on_mouse_click(xy);
-        self.spacing.on_mouse_click(xy);
-        self.padding.on_mouse_click(xy);
-        if self.row.on_mouse_click(xy) {
+    fn on_mouse_click(&mut self, down_at: Coord, mouse: &MouseData, _: MouseButton, _: &[KeyCode]) {
+        self.text_field.on_mouse_click(down_at, mouse.xy);
+        self.spacing.on_mouse_click(down_at, mouse.xy);
+        self.padding.on_mouse_click(down_at, mouse.xy);
+        if self.row.on_mouse_click(down_at, mouse.xy) {
             self.row_layout.padding = self.padding.content().parse::<usize>().unwrap_or_default();
             self.row_layout.spacing = self.spacing.content().parse::<usize>().unwrap_or_default();
             self.row_layout.layout(&mut [
@@ -182,7 +179,7 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
                 &mut self.toggle_icon_button,
             ]);
         }
-        if self.column.on_mouse_click(xy) {
+        if self.column.on_mouse_click(down_at, mouse.xy) {
             self.column_layout.padding =
                 self.padding.content().parse::<usize>().unwrap_or_default();
             self.column_layout.spacing =
@@ -195,15 +192,15 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
                 &mut self.toggle_icon_button,
             ]);
         }
-        if self.lefttop.on_mouse_click(xy) {
+        if self.lefttop.on_mouse_click(down_at, mouse.xy) {
             self.column_layout.gravity = ColumnGravity::Left;
             self.row_layout.gravity = RowGravity::Top;
         }
-        if self.center.on_mouse_click(xy) {
+        if self.center.on_mouse_click(down_at, mouse.xy) {
             self.column_layout.gravity = ColumnGravity::Center;
             self.row_layout.gravity = RowGravity::Center;
         }
-        if self.rightbottom.on_mouse_click(xy) {
+        if self.rightbottom.on_mouse_click(down_at, mouse.xy) {
             self.column_layout.gravity = ColumnGravity::Right;
             self.row_layout.gravity = RowGravity::Bottom;
         }
@@ -212,7 +209,7 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
     fn update(
         &mut self,
         timing: &Timing,
-        _: Coord,
+        _: &MouseData,
         _: &[KeyCode],
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.text_field.update(timing);

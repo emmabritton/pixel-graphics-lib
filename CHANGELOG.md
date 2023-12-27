@@ -3,8 +3,10 @@
 ### Version 0.15.0
 - Add `MouseButton::Middle`
 - Fix bug where `Scene::on_mouse_down` and `System::on_mouse_down` were called continuously
+- Add `Scene::on_mouse_drag` and `Scene::on_mouse_click`
 - Fix serde feature
 - Add `mint` feature
+- Change `Scene` and `UiElement` to use `MouseData` to track position and button state
 
 ### Version 0.14.3
 - Update buffer lib

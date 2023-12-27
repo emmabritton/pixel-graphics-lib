@@ -86,8 +86,12 @@ impl ToggleButton {
     }
 
     #[must_use]
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> bool {
-        if self.state != ElementState::Disabled && self.bounds.contains(mouse_xy) {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
+        println!("down: {down:?}, up: {up:?}");
+        if self.state != ElementState::Disabled
+            && self.bounds.contains(down)
+            && self.bounds.contains(up)
+        {
             self.selected = true;
             true
         } else {
@@ -110,8 +114,8 @@ impl UiElement for ToggleButton {
         &self.bounds
     }
 
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
-        let hovering = self.bounds.contains(mouse_xy);
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
+        let hovering = self.bounds.contains(mouse.xy);
         let (error, disabled) = self.state.get_err_dis();
         if let Some(color) = self
             .style

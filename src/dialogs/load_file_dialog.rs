@@ -115,16 +115,16 @@ impl<SR: Clone + Debug + PartialEq, SN: Clone + Debug + PartialEq> LoadFileDialo
 where
     SR: FileDialogResults<SR>,
 {
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         graphics.draw(&self.background);
-        self.current_dir_field.render(graphics, mouse_xy);
-        self.dir_panel.render(graphics, mouse_xy);
-        self.open.render(graphics, mouse_xy);
-        self.cancel.render(graphics, mouse_xy);
-        self.docs.render(graphics, mouse_xy);
-        self.downloads.render(graphics, mouse_xy);
-        self.load.render(graphics, mouse_xy);
-        self.home.render(graphics, mouse_xy);
+        self.current_dir_field.render(graphics, mouse);
+        self.dir_panel.render(graphics, mouse);
+        self.open.render(graphics, mouse);
+        self.cancel.render(graphics, mouse);
+        self.docs.render(graphics, mouse);
+        self.downloads.render(graphics, mouse);
+        self.load.render(graphics, mouse);
+        self.home.render(graphics, mouse);
     }
 
     fn update(&mut self, timing: &Timing) -> SceneUpdateResult<SR, SN> {
@@ -139,16 +139,22 @@ where
     SR: FileDialogResults<SR>,
 {
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode], _: &GameController) {
-        self.render(graphics, mouse_xy)
+    fn render(
+        &self,
+        graphics: &mut Graphics,
+        mouse: &MouseData,
+        _: &[KeyCode],
+        _: &GameController,
+    ) {
+        self.render(graphics, mouse)
     }
 
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord, _: &[KeyCode]) {
-        self.render(graphics, mouse_xy)
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
+        self.render(graphics, mouse)
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: Coord, held_keys: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held_keys: &[KeyCode]) {
         if self.current_dir_field.is_focused() {
             if key == KeyCode::KeyV {
                 if held_keys.contains(&&KeyCode::ControlRight) {}
@@ -159,11 +165,17 @@ where
         }
     }
 
-    fn on_mouse_up(&mut self, xy: Coord, button: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_click(
+        &mut self,
+        down_at: Coord,
+        mouse: &MouseData,
+        button: MouseButton,
+        _: &[KeyCode],
+    ) {
         if button != MouseButton::Left {
             return;
         }
-        if self.downloads.on_mouse_click(xy) {
+        if self.downloads.on_mouse_click(down_at, mouse.xy) {
             self.current_dir_field.set_content(
                 &UserDirs::new()
                     .unwrap()
@@ -173,7 +185,7 @@ where
             );
             self.dir_panel.set_dir(self.current_dir_field.content());
         }
-        if self.docs.on_mouse_click(xy) {
+        if self.docs.on_mouse_click(down_at, mouse.xy) {
             self.current_dir_field.set_content(
                 &UserDirs::new()
                     .unwrap()
@@ -183,19 +195,19 @@ where
             );
             self.dir_panel.set_dir(self.current_dir_field.content());
         }
-        if self.home.on_mouse_click(xy) {
+        if self.home.on_mouse_click(down_at, mouse.xy) {
             self.current_dir_field
                 .set_content(&UserDirs::new().unwrap().home_dir().to_string_lossy());
             self.dir_panel.set_dir(self.current_dir_field.content());
         }
-        if self.cancel.on_mouse_click(xy) {
+        if self.cancel.on_mouse_click(down_at, mouse.xy) {
             self.result = SceneUpdateResult::Pop(None);
         }
-        if self.load.on_mouse_click(xy) {
+        if self.load.on_mouse_click(down_at, mouse.xy) {
             self.dir_panel.set_dir(self.current_dir_field.content());
         }
-        self.current_dir_field.on_mouse_click(xy);
-        if let Some(result) = self.dir_panel.on_mouse_click(xy) {
+        self.current_dir_field.on_mouse_click(down_at, mouse.xy);
+        if let Some(result) = self.dir_panel.on_mouse_click(down_at, mouse.xy) {
             if result.is_file {
                 self.dir_panel.set_highlight(&result.path);
             } else {
@@ -203,22 +215,22 @@ where
                 self.dir_panel.set_dir(self.current_dir_field.content());
             }
         }
-        if self.open.on_mouse_click(xy) {
+        if self.open.on_mouse_click(down_at, mouse.xy) {
             if let Some(entry) = self.dir_panel.highlighted() {
                 self.result = SceneUpdateResult::Pop(Some(SR::load_file_result(entry.path)))
             }
         }
     }
 
-    fn on_scroll(&mut self, xy: Coord, _: isize, y_diff: isize, _: &[KeyCode]) {
-        self.dir_panel.on_scroll(xy, y_diff);
+    fn on_scroll(&mut self, mouse: &MouseData, _: isize, y_diff: isize, _: &[KeyCode]) {
+        self.dir_panel.on_scroll(mouse.xy, y_diff);
     }
 
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     fn update(
         &mut self,
         timing: &Timing,
-        _: Coord,
+        _: &MouseData,
         _: &[KeyCode],
         _: &GameController,
     ) -> SceneUpdateResult<SR, SN> {
@@ -226,7 +238,12 @@ where
     }
 
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-    fn update(&mut self, timing: &Timing, _: Coord, _: &[KeyCode]) -> SceneUpdateResult<SR, SN> {
+    fn update(
+        &mut self,
+        timing: &Timing,
+        _: &MouseData,
+        _: &[KeyCode],
+    ) -> SceneUpdateResult<SR, SN> {
         self.update(timing)
     }
 

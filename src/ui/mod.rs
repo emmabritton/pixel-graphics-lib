@@ -36,7 +36,7 @@ pub trait UiElement {
 
     fn bounds(&self) -> &Rect;
 
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord);
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData);
 
     fn update(&mut self, timing: &Timing);
 

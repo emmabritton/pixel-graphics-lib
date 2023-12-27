@@ -1,5 +1,8 @@
 use crate::ui::prelude::*;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum RowGravity {
     Top,
@@ -9,7 +12,8 @@ pub enum RowGravity {
 
 /// Position a collection of views into a row
 /// This doesn't act as a container or parent and only moves the views and isn't needed after it's been used
-#[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct RowLayout {
     pub padding: usize,
     pub spacing: usize,

@@ -146,19 +146,19 @@ impl Alert {
     }
 
     #[must_use]
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<AlertResult> {
-        if self.positive.on_mouse_click(mouse_xy) {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> Option<AlertResult> {
+        if self.positive.on_mouse_click(down, up) {
             return Some(Positive);
         }
         if let Some(neg) = &mut self.negative {
-            if neg.on_mouse_click(mouse_xy) {
+            if neg.on_mouse_click(down, up) {
                 return Some(Negative);
             }
         }
         None
     }
 
-    pub fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    pub fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         if let Some(color) = self.style.shade {
             graphics.draw_rect(
                 Rect::new_with_size((0, 0), graphics.width(), graphics.height()),
@@ -166,9 +166,9 @@ impl Alert {
             );
         }
         self.background.render(graphics);
-        self.positive.render(graphics, mouse_xy);
+        self.positive.render(graphics, mouse);
         if let Some(neg) = &self.negative {
-            neg.render(graphics, mouse_xy);
+            neg.render(graphics, mouse);
         }
         for line in &self.message {
             line.render(graphics);

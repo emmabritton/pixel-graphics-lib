@@ -196,9 +196,9 @@ impl TextField {
         self.content.len() == self.max_char_count
     }
 
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> bool {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
         if self.state != ElementState::Disabled {
-            self.focused = self.bounds.contains(mouse_xy);
+            self.focused = self.bounds.contains(down) && self.bounds.contains(up);
             return self.focused;
         }
         false
@@ -293,9 +293,9 @@ impl UiElement for TextField {
         &self.bounds
     }
 
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         let (error, disabled) = self.state.get_err_dis();
-        let hovered = self.bounds.contains(mouse_xy);
+        let hovered = self.bounds.contains(mouse.xy);
         if let Some(color) = self
             .style
             .background_color

@@ -251,13 +251,13 @@ impl DirPanel {
         )
     }
 
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<DirResult> {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> Option<DirResult> {
         if self.state == ElementState::Disabled {
             return None;
         }
-        if self.bounds.contains(mouse_xy) {
+        if self.bounds.contains(down) && self.bounds.contains(up) {
             for i in 0..self.entry_visible_count {
-                if self.bounds_for_row(i).contains(mouse_xy) {
+                if self.bounds_for_row(i).contains(up) {
                     return self
                         .files
                         .get(i + self.first_visible_file_index)
@@ -282,7 +282,7 @@ impl UiElement for DirPanel {
         &self.bounds
     }
 
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         graphics.draw(&self.background);
 
         if let Some(txt) = &self.error {
@@ -295,7 +295,7 @@ impl UiElement for DirPanel {
                 let highlighted = self.highlight.map(|r| r == i).unwrap_or_default();
                 if i < self.files.len() {
                     let back = self.bounds_for_row(row);
-                    if back.contains(mouse_xy) || highlighted {
+                    if back.contains(mouse.xy) || highlighted {
                         graphics.draw_rect(
                             back.clone(),
                             fill(if highlighted { CYAN } else { LIGHT_GRAY }),

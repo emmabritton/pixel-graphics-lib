@@ -25,10 +25,10 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleButtonGroup<Key> {
 }
 
 impl<Key: Hash + Clone + PartialEq + Eq> ToggleButtonGroup<Key> {
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<Key> {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> Option<Key> {
         let mut tmp = None;
         for (idx, button) in &mut self.buttons {
-            if button.on_mouse_click(mouse_xy) {
+            if button.on_mouse_click(down, up) {
                 tmp = Some(idx.clone());
             }
         }
@@ -40,9 +40,9 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleButtonGroup<Key> {
         tmp
     }
 
-    pub fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    pub fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         for button in self.buttons.values() {
-            button.render(graphics, mouse_xy);
+            button.render(graphics, mouse);
         }
     }
 
@@ -80,10 +80,10 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleIconButtonGroup<Key> {
 }
 
 impl<Key: Hash + Clone + PartialEq + Eq> ToggleIconButtonGroup<Key> {
-    pub fn on_mouse_click(&mut self, mouse_xy: Coord) -> Option<Key> {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> Option<Key> {
         let mut tmp = None;
         for (idx, button) in &mut self.buttons {
-            if button.on_mouse_click(mouse_xy) {
+            if button.on_mouse_click(down, up) {
                 tmp = Some(idx.clone());
             }
         }
@@ -95,9 +95,9 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleIconButtonGroup<Key> {
         tmp
     }
 
-    pub fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    pub fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         for button in self.buttons.values() {
-            button.render(graphics, mouse_xy);
+            button.render(graphics, mouse);
         }
     }
 

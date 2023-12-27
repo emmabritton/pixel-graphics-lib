@@ -1,5 +1,6 @@
 use crate::buffer_graphics_lib::prelude::*;
 use crate::buffer_graphics_lib::shapes::polyline::Polyline;
+use crate::prelude::MouseData;
 use crate::ui::styles::ToggleIconButtonStyle;
 use crate::ui::tooltip::Tooltip;
 use crate::ui::{ElementState, UiElement};
@@ -103,9 +104,9 @@ impl ToggleIconButton {
     }
 
     #[must_use]
-    pub fn on_mouse_click(&mut self, xy: Coord) -> bool {
+    pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
         if self.state != ElementState::Disabled {
-            self.bounds.contains(xy)
+            self.bounds.contains(down) && self.bounds.contains(up)
         } else {
             false
         }
@@ -133,9 +134,9 @@ impl UiElement for ToggleIconButton {
         &self.bounds
     }
 
-    fn render(&self, graphics: &mut Graphics, mouse_xy: Coord) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         let (error, disabled) = self.state.get_err_dis();
-        let hovering = self.bounds.contains(mouse_xy);
+        let hovering = self.bounds.contains(mouse.xy);
         if let Some(color) = self
             .style
             .shadow
@@ -152,7 +153,7 @@ impl UiElement for ToggleIconButton {
         }
         graphics.draw_indexed_image(self.icon_xy, &self.icon);
         if !disabled && hovering {
-            self.tooltip.render(graphics, mouse_xy);
+            self.tooltip.render(graphics, mouse);
         }
     }
 
