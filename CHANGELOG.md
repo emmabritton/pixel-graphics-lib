@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.15.1
+- Update buffer lib
+
 ### Version 0.15.0
 - Add `MouseButton::Middle`
 - Fix bug where `Scene::on_mouse_down` and `System::on_mouse_down` were called continuously

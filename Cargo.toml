@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.15.0"
+version = "0.15.1"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
@@ -23,18 +23,18 @@ mint = ["buffer-graphics-lib/mint"]
 
 [dependencies]
 pixels = "0.13.0"
-winit = { version = "0.29.7", features = ["rwh_05"] }
+winit = { version = "0.29.8", features = ["rwh_05"] }
 winit_input_helper = "0.15.1"
 thiserror = "1.0.52"
 serde = { version = "1.0.193", features = ["derive"], optional = true }
 directories = { version = "5.0.1", optional = true }
-buffer-graphics-lib = { version = "0.13.0", default-features = false, features = ["ici"] }
+buffer-graphics-lib = { version = "0.14.0", default-features = false, features = ["ici"] }
 rustc-hash = "1.1.0"
 simple-game-utils = { version = "0.4.1", default-features = false }
 
 [dev-dependencies]
 fastrand = "2.0.0"
-anyhow = "1.0.77"
+anyhow = "1.0.79"
 
 [[example]]
 name = "test_dialogs"
