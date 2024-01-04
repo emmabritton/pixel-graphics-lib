@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 0.15.2
+- Change `System` to use `MouseData`
+- Update buffer lib
+- Add `scenes` feature
+
 ### Version 0.15.1
 - Update buffer lib
 

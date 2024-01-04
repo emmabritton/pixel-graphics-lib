@@ -1,10 +1,7 @@
-use crate::buffer_graphics_lib::prelude::*;
-use crate::buffer_graphics_lib::shapes::polyline::Polyline;
-use crate::prelude::MouseData;
+use crate::prelude::*;
 use crate::ui::styles::ToggleIconButtonStyle;
 use crate::ui::tooltip::Tooltip;
 use crate::ui::{ElementState, UiElement};
-use crate::Timing;
 
 #[derive(Debug)]
 pub struct ToggleIconButton {

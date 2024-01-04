@@ -115,7 +115,7 @@ impl DirPanel {
     }
 
     fn layout(bounds: &Rect) -> (ShapeCollection, usize) {
-        let mut background = ShapeCollection::new();
+        let mut background = ShapeCollection::default();
         InsertShape::insert_above(&mut background, bounds.clone(), fill(WHITE));
         InsertShape::insert_above(&mut background, bounds.clone(), stroke(DARK_GRAY));
         let entry_visible_count =

@@ -16,7 +16,7 @@ pub trait FileDialogResults<SR: Clone + Debug + PartialEq> {
 
 /// Creates a shade and outline for dialogs
 pub fn dialog_background(width: usize, height: usize, style: &DialogStyle) -> ShapeCollection {
-    let mut background = ShapeCollection::new();
+    let mut background = ShapeCollection::default();
     if let Some(color) = style.shade {
         InsertShape::insert_above(
             &mut background,

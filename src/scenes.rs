@@ -3,8 +3,6 @@ use crate::ui::styles::UiStyle;
 use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
 use rustc_hash::{FxHashMap, FxHashSet};
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 /// Convenience method for programs built using [Scene]s
@@ -404,8 +402,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_mouse_move(&mut self, x: usize, y: usize) {
-        self.mouse.xy = Coord::from((x, y));
+    fn on_mouse_move(&mut self, mouse_data: &MouseData) {
+        self.mouse = mouse_data.clone();
         if self.mouse.any_held() {
             if let Some(active) = self.scenes.last_mut() {
                 active.on_mouse_drag(
@@ -420,9 +418,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {
-        self.mouse.xy = Coord::from((x, y));
-        self.mouse.add_down(self.mouse.xy, button);
+    fn on_mouse_down(&mut self, mouse: &MouseData, button: MouseButton) {
+        self.mouse = mouse.clone();
         self.mouse_down_at.insert(button, self.mouse.xy);
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_down(
@@ -437,9 +434,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {
-        self.mouse.xy = Coord::from((x, y));
-        self.mouse.add_up(button);
+    fn on_mouse_up(&mut self, mouse: &MouseData, button: MouseButton) {
+        self.mouse = mouse.clone();
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_up(
                 &self.mouse,
@@ -466,8 +462,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         }
     }
 
-    fn on_scroll(&mut self, x: usize, y: usize, x_diff: isize, y_diff: isize) {
-        self.mouse.xy = Coord::from((x, y));
+    fn on_scroll(&mut self, mouse: &MouseData, x_diff: isize, y_diff: isize) {
+        self.mouse = mouse.clone();
         if let Some(active) = self.scenes.last_mut() {
             active.on_scroll(
                 &self.mouse,
@@ -518,33 +514,5 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
 
     fn should_exit(&mut self) -> bool {
         self.should_exit
-    }
-}
-
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, Eq, PartialEq, Default)]
-pub struct MouseData {
-    pub xy: Coord,
-    buttons: FxHashMap<MouseButton, Coord>,
-}
-
-impl MouseData {
-    pub fn any_held(&self) -> bool {
-        self.buttons.contains_key(&MouseButton::Left)
-            || self.buttons.contains_key(&MouseButton::Right)
-            || self.buttons.contains_key(&MouseButton::Middle)
-    }
-
-    /// Returns the press location if the mouse button is currently held down
-    pub fn is_down(&self, button: MouseButton) -> Option<Coord> {
-        self.buttons.get(&button).cloned()
-    }
-
-    pub(crate) fn add_up(&mut self, button: MouseButton) {
-        self.buttons.remove(&button);
-    }
-
-    pub(crate) fn add_down(&mut self, xy: Coord, button: MouseButton) {
-        self.buttons.insert(button, xy);
     }
 }

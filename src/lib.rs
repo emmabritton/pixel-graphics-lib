@@ -34,19 +34,23 @@
 #![allow(clippy::ptr_arg)]
 
 pub mod dialogs;
+#[cfg(feature = "scenes")]
 pub mod scenes;
 pub mod ui;
 pub mod utilities;
 #[cfg(feature = "window_prefs")]
 pub mod window_prefs;
 
-use crate::prelude::ALL_KEYS;
+use crate::prelude::{coord, Coord, ALL_KEYS};
 use crate::ui::styles::UiStyle;
+#[cfg(feature = "window_prefs")]
 use crate::window_prefs::WindowPreferences;
+#[cfg(feature = "window_prefs")]
 use crate::GraphicsError::LoadingWindowPref;
 pub use buffer_graphics_lib;
 use buffer_graphics_lib::Graphics;
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture};
+use rustc_hash::FxHashMap;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use simple_game_utils::prelude::*;
@@ -61,12 +65,15 @@ use winit_input_helper::WinitInputHelper;
 pub mod prelude {
     pub use crate::dialogs::*;
     pub use crate::run;
+    #[cfg(feature = "scenes")]
     pub use crate::scenes::*;
     pub use crate::setup;
     pub use crate::utilities::virtual_key_codes::*;
+    #[cfg(feature = "window_prefs")]
     pub use crate::window_prefs::*;
     pub use crate::GraphicsError;
     pub use crate::MouseButton;
+    pub use crate::MouseData;
     pub use crate::Options;
     pub use crate::System;
     pub use crate::WindowScaling;
@@ -83,6 +90,7 @@ pub enum GraphicsError {
     PixelsInit(#[source] pixels::Error),
     #[error("Saving window pref: {0}")]
     SavingWindowPref(String),
+    #[cfg(feature = "window_prefs")]
     #[error("Loading window pref: {0}")]
     LoadingWindowPref(String),
     #[error("Invalid pixel array length, expected: {0}, found: {1}")]
@@ -211,10 +219,10 @@ pub trait System {
     }
     fn update(&mut self, timing: &Timing);
     fn render(&mut self, graphics: &mut Graphics);
-    fn on_mouse_move(&mut self, x: usize, y: usize) {}
-    fn on_mouse_down(&mut self, x: usize, y: usize, button: MouseButton) {}
-    fn on_mouse_up(&mut self, x: usize, y: usize, button: MouseButton) {}
-    fn on_scroll(&mut self, x: usize, y: usize, x_diff: isize, y_diff: isize) {}
+    fn on_mouse_move(&mut self, mouse: &MouseData) {}
+    fn on_mouse_down(&mut self, mouse: &MouseData, button: MouseButton) {}
+    fn on_mouse_up(&mut self, mouse: &MouseData, button: MouseButton) {}
+    fn on_scroll(&mut self, mouse: &MouseData, x_diff: isize, y_diff: isize) {}
     fn on_key_down(&mut self, keys: Vec<KeyCode>) {}
     fn on_key_up(&mut self, keys: Vec<KeyCode>) {}
     fn on_window_closed(&mut self) {}
@@ -321,8 +329,7 @@ pub fn run(
     }
 
     let mut timing = Timing::new(options.ups);
-    let mut mouse_x = 0;
-    let mut mouse_y = 0;
+    let mut mouse = MouseData::default();
 
     event_loop
         .run(move |event, target| {
@@ -386,9 +393,8 @@ pub fn run(
                     let (x, y) = pixels
                         .window_pos_to_pixel(mc)
                         .unwrap_or_else(|pos| pixels.clamp_pixel_pos(pos));
-                    mouse_x = x;
-                    mouse_y = y;
-                    system.on_mouse_move(x, y);
+                    mouse.xy = coord!(x, y);
+                    system.on_mouse_move(&mouse);
                 }
 
                 let mut held_buttons = vec![];
@@ -412,33 +418,34 @@ pub fn run(
                 }
 
                 if input.mouse_pressed(0) {
-                    system.on_mouse_down(mouse_x, mouse_y, MouseButton::Left);
+                    mouse.add_down(mouse.xy, MouseButton::Left);
+                    system.on_mouse_down(&mouse, MouseButton::Left);
                 }
                 if input.mouse_pressed(1) {
-                    system.on_mouse_down(mouse_x, mouse_y, MouseButton::Right);
+                    mouse.add_down(mouse.xy, MouseButton::Right);
+                    system.on_mouse_down(&mouse, MouseButton::Right);
                 }
                 if input.mouse_pressed(2) {
-                    system.on_mouse_down(mouse_x, mouse_y, MouseButton::Middle);
+                    mouse.add_down(mouse.xy, MouseButton::Middle);
+                    system.on_mouse_down(&mouse, MouseButton::Middle);
                 }
 
                 if input.mouse_released(0) {
-                    system.on_mouse_up(mouse_x, mouse_y, MouseButton::Left);
+                    mouse.add_up(MouseButton::Left);
+                    system.on_mouse_up(&mouse, MouseButton::Left);
                 }
                 if input.mouse_released(1) {
-                    system.on_mouse_up(mouse_x, mouse_y, MouseButton::Right);
+                    mouse.add_up(MouseButton::Right);
+                    system.on_mouse_up(&mouse, MouseButton::Right);
                 }
                 if input.mouse_released(2) {
-                    system.on_mouse_up(mouse_x, mouse_y, MouseButton::Middle);
+                    mouse.add_up(MouseButton::Middle);
+                    system.on_mouse_up(&mouse, MouseButton::Middle);
                 }
 
                 let scroll = input.scroll_diff();
                 if scroll.0 != 0.0 || scroll.1 != 0.0 {
-                    system.on_scroll(
-                        mouse_x,
-                        mouse_y,
-                        scroll.0.trunc() as isize,
-                        scroll.1.trunc() as isize,
-                    );
+                    system.on_scroll(&mouse, scroll.0.trunc() as isize, scroll.1.trunc() as isize);
                 }
 
                 window.request_redraw();
@@ -455,4 +462,32 @@ pub fn run(
         .expect("Error when executing event loop");
 
     Ok(())
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq, Default)]
+pub struct MouseData {
+    pub xy: Coord,
+    buttons: FxHashMap<MouseButton, Coord>,
+}
+
+impl MouseData {
+    pub fn any_held(&self) -> bool {
+        self.buttons.contains_key(&MouseButton::Left)
+            || self.buttons.contains_key(&MouseButton::Right)
+            || self.buttons.contains_key(&MouseButton::Middle)
+    }
+
+    /// Returns the press location if the mouse button is currently held down
+    pub fn is_down(&self, button: MouseButton) -> Option<Coord> {
+        self.buttons.get(&button).cloned()
+    }
+
+    pub(crate) fn add_up(&mut self, button: MouseButton) {
+        self.buttons.remove(&button);
+    }
+
+    pub(crate) fn add_down(&mut self, xy: Coord, button: MouseButton) {
+        self.buttons.insert(button, xy);
+    }
 }

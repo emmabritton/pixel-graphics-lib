@@ -113,7 +113,7 @@ impl Alert {
 
     fn background(style: &AlertStyle, start: Coord) -> (Rect, ShapeCollection) {
         let rect = Rect::new_with_size(start, ALERT_SIZE.0, ALERT_SIZE.1);
-        let mut back = ShapeCollection::new();
+        let mut back = ShapeCollection::default();
         if let Some(color) = style.background {
             InsertShape::insert_above(&mut back, rect.clone(), fill(color));
         }

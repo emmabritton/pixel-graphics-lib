@@ -11,13 +11,13 @@ This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), de
 
 In your `Cargo.toml` file add
 ```toml
-pixels-graphics-lib = "0.15.1"
+pixels-graphics-lib = "0.15.2"
 winit_input_helper = "0.15.1" #only needed if you're not using `run()`
 ```
 
 ### Code
 
-You can use scenes using `run_scenes`:
+You can use scenes using `run_scenes` (requires default feature `scenes`):
 ```rust
 fn main() -> Result<()> {
     // Window prefs allow the size and position of the window to be saved and restored
@@ -99,13 +99,19 @@ impl System for Example {
 
 ## Features
 
-> Default features: `window_prefs`, `sound`, `serde`
+> Default features: `window_prefs`, `sound`, `serde`, `scenes`
 
 ### `window_prefs`
 
 Save and restore window position and size
 
 To use this the `impl System` must override `System::window_prefs()`
+
+### `scenes`
+
+Enables `Scene` and `run_scenes`
+
+Includes `window_prefs`
 
 ### `controller`
 

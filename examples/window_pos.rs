@@ -35,7 +35,7 @@ struct WindowPrefsScene {
 
 impl WindowPrefsScene {
     pub fn new(text: &'static str, width: usize, height: usize) -> Self {
-        let (w, h) = Graphics::get_text_size(text, 12, TextSize::Normal);
+        let (w, h) = TextSize::measure(&TextSize::Normal, text, WrappingStrategy::None);
         let pos = (width / 2 - w / 2, height / 2 - h / 2);
         WindowPrefsScene {
             text,

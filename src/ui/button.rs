@@ -1,13 +1,6 @@
-use crate::buffer_graphics_lib::prelude::*;
-use crate::buffer_graphics_lib::shapes::polyline::Polyline;
-use crate::buffer_graphics_lib::text::format::Positioning::Center;
-use crate::buffer_graphics_lib::text::pos::TextPos;
-use crate::buffer_graphics_lib::text::wrapping::WrappingStrategy;
-use crate::buffer_graphics_lib::text::Text;
-use crate::scenes::MouseData;
+use crate::prelude::*;
 use crate::ui::styles::ButtonStyle;
 use crate::ui::{ElementState, UiElement};
-use simple_game_utils::prelude::Timing;
 
 #[derive(Debug)]
 pub struct Button {
@@ -63,7 +56,12 @@ impl Button {
         let text = Text::new(
             text,
             TextPos::px(bounds.center() + (0, 1)),
-            (WHITE, style.text_size, WrappingStrategy::None, Center),
+            (
+                WHITE,
+                style.text_size,
+                WrappingStrategy::None,
+                Positioning::Center,
+            ),
         );
         (text, border, shadow)
     }
