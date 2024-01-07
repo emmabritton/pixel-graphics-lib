@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.15.4
+- Update game utils lib
+
 ### Version 0.15.3
 - Update buffer lib
 
