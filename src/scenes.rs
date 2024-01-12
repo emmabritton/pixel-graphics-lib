@@ -17,6 +17,7 @@ use std::fmt::Debug;
 /// * `scene_switcher` - [SceneSwitcher] Adds new scenes to the stack
 /// * `init_scene` - The initial [Scene] to use
 /// * `options` - [Options] controls how fast the program can update, [UiElement] styling, etc
+#[allow(clippy::too_many_arguments)]
 pub fn run_scenes<
     SR: Clone + PartialEq + Debug + 'static,
     SN: Clone + PartialEq + Debug + 'static,
@@ -28,12 +29,14 @@ pub fn run_scenes<
     scene_switcher: SceneSwitcher<SR, SN>,
     init_scene: Box<dyn Scene<SR, SN>>,
     options: Options,
+    pre_post: Box<dyn PrePost<SR, SN>>,
 ) -> Result<(), GraphicsError> {
     let system = Box::new(SceneHost::new(
         init_scene,
         window_prefs,
         scene_switcher,
         options.style.clone(),
+        pre_post,
     )?);
     run(width, height, title, system, options)?;
     Ok(())
@@ -239,6 +242,165 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     }
 }
 
+pub trait PrePost<SR, SN> {
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    fn pre_render(
+        &mut self,
+        graphics: &mut Graphics,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+    );
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    fn post_render(
+        &mut self,
+        graphics: &mut Graphics,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+    );
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+    fn pre_render(
+        &mut self,
+        graphics: &mut Graphics,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+        controller: &GameController,
+    );
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+    fn post_render(
+        &mut self,
+        graphics: &mut Graphics,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+        controller: &GameController,
+    );
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    fn pre_update(
+        &mut self,
+        timing: &Timing,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+    );
+    #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+    fn post_update(
+        &mut self,
+        timing: &Timing,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+    );
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+    fn pre_update(
+        &mut self,
+        timing: &Timing,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+        controller: &GameController,
+    );
+    #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+    fn post_update(
+        &mut self,
+        timing: &Timing,
+        mouse: &MouseData,
+        held_keys: &[KeyCode],
+        scenes: &mut [Box<dyn Scene<SR, SN>>],
+        controller: &GameController,
+    );
+}
+#[cfg(any(feature = "controller", feature = "controller_xinput"))]
+pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
+    struct Empty {}
+    impl<SR, SN> PrePost<SR, SN> for Empty {
+        fn pre_render(
+            &mut self,
+            _: &mut Graphics,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+            _: &GameController,
+        ) {
+        }
+
+        fn post_render(
+            &mut self,
+            _: &mut Graphics,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+            _: &GameController,
+        ) {
+        }
+
+        fn pre_update(
+            &mut self,
+            _: &Timing,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+            _: &GameController,
+        ) {
+        }
+
+        fn post_update(
+            &mut self,
+            _: &Timing,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+            _: &GameController,
+        ) {
+        }
+    }
+    Box::new(Empty {})
+}
+#[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
+    struct Empty {}
+    impl<SR, SN> PrePost<SR, SN> for Empty {
+        fn pre_render(
+            &mut self,
+            _: &mut Graphics,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+        ) {
+        }
+
+        fn post_render(
+            &mut self,
+            _: &mut Graphics,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+        ) {
+        }
+
+        fn pre_update(
+            &mut self,
+            _: &Timing,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+        ) {
+        }
+
+        fn post_update(
+            &mut self,
+            _: &Timing,
+            _: &MouseData,
+            _: &[KeyCode],
+            _: &mut [Box<dyn Scene<SR, SN>>],
+        ) {
+        }
+    }
+    Box::new(Empty {})
+}
+
 struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     should_exit: bool,
     held_keys: FxHashSet<KeyCode>,
@@ -250,6 +412,7 @@ struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     controller: GameController,
     mouse: MouseData,
     mouse_down_at: FxHashMap<MouseButton, Coord>,
+    pre_post: Box<dyn PrePost<SR, SN>>,
 }
 
 impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR, SN> {
@@ -258,8 +421,10 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
         window_prefs: Option<WindowPreferences>,
         scene_switcher: SceneSwitcher<SR, SN>,
         style: UiStyle,
+        pre_post: Box<dyn PrePost<SR, SN>>,
     ) -> Result<Self, GraphicsError> {
         Ok(Self {
+            pre_post,
             should_exit: false,
             held_keys: FxHashSet::default(),
             scenes: vec![init_scene],
@@ -281,6 +446,29 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn update(&mut self, timing: &Timing) {
+        #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+        self.pre_post.pre_update(
+            timing,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+            &self.controller,
+        );
+        #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+        self.pre_post.pre_update(
+            timing,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+        );
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.controller.update();
         if let Some(scene) = self.scenes.last_mut() {
@@ -321,12 +509,58 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 }
             }
         }
+        #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+        self.pre_post.post_update(
+            timing,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+            &self.controller,
+        );
+        #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+        self.pre_post.post_update(
+            timing,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+        );
         if self.scenes.is_empty() {
             self.should_exit = true;
         }
     }
 
     fn render(&mut self, graphics: &mut Graphics) {
+        #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+        self.pre_post.pre_render(
+            graphics,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+            &self.controller,
+        );
+        #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+        self.pre_post.pre_render(
+            graphics,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+        );
         if let Some(active) = self.scenes.last() {
             if active.is_dialog() {
                 match self.scenes.iter().rposition(|scn| !scn.is_dialog()) {
@@ -400,6 +634,29 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 );
             }
         }
+        #[cfg(any(feature = "controller", feature = "controller_xinput"))]
+        self.pre_post.post_render(
+            graphics,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+            &self.controller,
+        );
+        #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
+        self.pre_post.post_render(
+            graphics,
+            &MouseData::default(),
+            self.held_keys
+                .iter()
+                .cloned()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            &mut self.scenes,
+        );
     }
 
     fn on_mouse_move(&mut self, mouse_data: &MouseData) {

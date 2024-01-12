@@ -24,6 +24,7 @@ fn main() -> Result<()> {
         switcher,
         menu,
         options,
+        empty_pre_post(),
     )?;
     Ok(())
 }

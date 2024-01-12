@@ -22,6 +22,7 @@ fn main() -> Result<()> {
         switcher,
         Box::new(Scene1 { result: Nothing }),
         Options::default(),
+        empty_pre_post(),
     )?;
 
     Ok(())

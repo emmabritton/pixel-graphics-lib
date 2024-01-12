@@ -1,6 +1,6 @@
 [package]
 name = "pixels-graphics-lib"
-version = "0.15.4"
+version = "0.16.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Simple wrapper library around Pixels/Buffer Graphics"
@@ -48,3 +48,7 @@ required-features = ["file_dialogs", "controller"]
 [[example]]
 name = "images"
 required-features = ["images"]
+
+[[example]]
+name = "pre_post_w_controller"
+required-features = ["controller"]

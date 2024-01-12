@@ -30,9 +30,6 @@
 //! }
 //!```
 
-#![deny(clippy::all)]
-#![allow(clippy::ptr_arg)]
-
 pub mod dialogs;
 #[cfg(feature = "scenes")]
 pub mod scenes;

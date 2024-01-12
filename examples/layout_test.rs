@@ -22,6 +22,7 @@ fn main() -> Result<()> {
         switcher,
         test,
         options,
+        empty_pre_post(),
     )?;
     Ok(())
 }

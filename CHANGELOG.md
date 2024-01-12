@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.16.0
+- Add pre and post render and update for scenes
+
 ### Version 0.15.4
 - Update game utils lib
 
