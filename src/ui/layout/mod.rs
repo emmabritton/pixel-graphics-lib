@@ -28,6 +28,24 @@ macro_rules! bounds {
     };
 }
 
+/// Update the position multiple views to be in a column
+/// if `gravity` is
+///  - Left - then only the `top_left` of `bounds` is used
+///  - Center - then only the `center` of `bounds` is used
+///  - Right - then only the `bottom_right` of `bounds` is used
+/// `padding` is used to offset views from the relevant position
+/// `spacing` is space between views
+///
+/// **Usage**
+/// ```ignore
+///  let button1 = Button::new("Button", ...);
+///  let button2 = Button::new("Button", ...);
+///  let button3 = Button::new("Button", ...);
+///  column_layout!(Rect::new(16,16,16,16), ColumnGravity::Left, padding: 2, spacing: 8,  views: button3, button1, button2);
+///  // button3 top left will be (18, 18)
+///  // button1 top left will be (18, 18 + 8 + button3.height)
+///  // button2 top left will be (18, 18 + 8 + button3.height + 8 + button2.height)
+/// ```
 #[macro_export]
 macro_rules! column_layout {
     ($bounds:expr, $gravity:expr, $(padding: $padding:expr,)? $(spacing: $margin:expr,)? views: $($views:expr),+ $(,)?) => {{
@@ -35,6 +53,24 @@ macro_rules! column_layout {
     }};
 }
 
+/// Update the position multiple views to be in a row
+/// if `gravity` is
+///  - Top - then only the `top_left` of `bounds` is used
+///  - Center - then only the `center` of `bounds` is used
+///  - Bottom - then only the `bottom_right` of `bounds` is used
+/// `padding` is used to offset views from the relevant position
+/// `spacing` is space between views
+///
+/// **Usage**
+/// ```ignore
+///  let button1 = Button::new("Button", ...);
+///  let button2 = Button::new("Button", ...);
+///  let button3 = Button::new("Button", ...);
+///  row_layout!(Rect::new(16,16,16,16), RowGravity::Top, spacing: 8,  views: button3, button1, button2);
+///  // button3 top left will be (16,16)
+///  // button1 top left will be (16 + 8 + button3.width, 16)
+///  // button2 top left will be (16 + 8 + 8 + button3.width + button1.width, 16)
+/// ```
 #[macro_export]
 macro_rules! row_layout {
     ($bounds:expr, $gravity:expr, $(padding: $padding:expr,)? $(spacing: $margin:expr,)? views: $($views:expr),+ $(,)?) => {{
