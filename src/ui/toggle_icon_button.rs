@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::ui::prelude::LayoutView;
 use crate::ui::styles::ToggleIconButtonStyle;
 use crate::ui::tooltip::Tooltip;
 use crate::ui::{ElementState, UiElement};
@@ -165,5 +166,12 @@ impl UiElement for ToggleIconButton {
     #[must_use]
     fn get_state(&self) -> ElementState {
         self.state
+    }
+}
+
+impl LayoutView for ToggleIconButton {
+    fn set_bounds(&mut self, bounds: Rect) {
+        self.bounds = bounds.clone();
+        self.set_position(bounds.top_left());
     }
 }

@@ -1,4 +1,3 @@
-use buffer_graphics_lib::text::TextSize::Normal;
 use pixels_graphics_lib::prelude::*;
 use pixels_graphics_lib::scenes::SceneUpdateResult::Nothing;
 use pixels_graphics_lib::ui::prelude::*;
@@ -19,7 +18,7 @@ impl WhiteTextScene {
             text: Text::new(
                 "Test string",
                 TextPos::Px(50, 50),
-                (GB_3, Normal, Positioning::Center),
+                (GB_3, PixelFont::Standard6x7, Positioning::Center),
             ),
         })
     }

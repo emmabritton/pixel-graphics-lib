@@ -1,6 +1,4 @@
 use anyhow::Result;
-use buffer_graphics_lib::color::*;
-use buffer_graphics_lib::text::TextSize;
 use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prelude::*;
 use pixels_graphics_lib::window_prefs::WindowPreferences;
@@ -35,7 +33,7 @@ struct WindowPrefsScene {
 
 impl WindowPrefsScene {
     pub fn new(text: &'static str, width: usize, height: usize) -> Self {
-        let (w, h) = TextSize::measure(&TextSize::Normal, text, WrappingStrategy::None);
+        let (w, h) = PixelFont::Standard6x7.measure(text);
         let pos = (width / 2 - w / 2, height / 2 - h / 2);
         WindowPrefsScene {
             text,
@@ -67,11 +65,11 @@ impl System for WindowPrefsScene {
         let mut color_idx = self.idx;
         for (i, letter) in self.text.chars().enumerate() {
             let mut pos = self.pos;
-            pos.0 += TextSize::Normal.get_size().0 * i + TextSize::Normal.get_spacing() * i;
+            pos.0 += PixelFont::Standard6x7.size().0 * i + PixelFont::Standard6x7.spacing() * i;
             graphics.draw_letter(
                 (pos.0 as isize, pos.1 as isize),
                 letter,
-                TextSize::Normal,
+                PixelFont::Standard6x7,
                 self.colors[color_idx],
             );
 

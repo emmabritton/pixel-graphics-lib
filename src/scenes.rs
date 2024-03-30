@@ -4,6 +4,7 @@ use crate::GraphicsError;
 use buffer_graphics_lib::prelude::*;
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::fmt::Debug;
+use winit::event::MouseButton;
 
 /// Convenience method for programs built using [Scene]s
 ///

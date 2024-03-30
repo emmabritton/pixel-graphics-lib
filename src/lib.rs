@@ -53,7 +53,7 @@ use serde::{Deserialize, Serialize};
 use simple_game_utils::prelude::*;
 use thiserror::Error;
 use winit::dpi::LogicalSize;
-use winit::event::{Event, WindowEvent};
+use winit::event::{Event, MouseButton, WindowEvent};
 use winit::event_loop::EventLoop;
 use winit::keyboard::KeyCode;
 use winit::window::{CursorGrabMode, Window, WindowBuilder};
@@ -69,13 +69,13 @@ pub mod prelude {
     #[cfg(feature = "window_prefs")]
     pub use crate::window_prefs::*;
     pub use crate::GraphicsError;
-    pub use crate::MouseButton;
     pub use crate::MouseData;
     pub use crate::Options;
     pub use crate::System;
     pub use crate::WindowScaling;
     pub use buffer_graphics_lib::prelude::*;
     pub use simple_game_utils::prelude::*;
+    pub use winit::event::MouseButton;
     pub use winit::keyboard::KeyCode;
 }
 
@@ -109,7 +109,7 @@ pub enum GraphicsError {
 /// # Arguments
 ///
 /// * `canvas_size` - Inner width and height of window in logical pixels
-/// * `scale` - Type of scaling the window should use, see [WindowScaling]
+/// * `options` - Scaling, UPS, etc options
 /// * `title` - Title for window
 /// * `event_loop` - Provided by `EventLoop::new()`, this allows the window to receive events from the OS
 ///
@@ -196,14 +196,6 @@ fn create_window(
     Ok(window)
 }
 
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum MouseButton {
-    Left,
-    Right,
-    Middle,
-}
-
 #[allow(unused_variables)]
 pub trait System {
     /// List of keys that your app uses
@@ -230,9 +222,9 @@ pub trait System {
     }
 }
 
-/// Options for programs
+/// Options for program windows
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Options {
     /// Target and max number of times [Scene::update] can be called per second
     /// Default is 240
@@ -244,7 +236,7 @@ pub struct Options {
     /// Default is true
     pub vsync: bool,
     /// If OS mouse cursor should be hidden
-    /// (you'll have to draw your own if this is true, this is often called software cursor in other programs)
+    /// (you'll have to draw your own if this is true, this is often called software cursor in games)
     /// Default is false
     pub hide_cursor: bool,
     /// If the mouse cursor should be locked to within this window while it's in the foreground
@@ -262,6 +254,7 @@ impl Options {
         hide_cursor: bool,
         confine_cursor: bool,
         style: UiStyle,
+        resizable: bool,
     ) -> Self {
         Self {
             ups,
@@ -414,28 +407,28 @@ pub fn run(
                     system.on_key_up(released_buttons);
                 }
 
-                if input.mouse_pressed(0) {
+                if input.mouse_pressed(MouseButton::Left) {
                     mouse.add_down(mouse.xy, MouseButton::Left);
                     system.on_mouse_down(&mouse, MouseButton::Left);
                 }
-                if input.mouse_pressed(1) {
+                if input.mouse_pressed(MouseButton::Right) {
                     mouse.add_down(mouse.xy, MouseButton::Right);
                     system.on_mouse_down(&mouse, MouseButton::Right);
                 }
-                if input.mouse_pressed(2) {
+                if input.mouse_pressed(MouseButton::Middle) {
                     mouse.add_down(mouse.xy, MouseButton::Middle);
                     system.on_mouse_down(&mouse, MouseButton::Middle);
                 }
 
-                if input.mouse_released(0) {
+                if input.mouse_released(MouseButton::Left) {
                     mouse.add_up(MouseButton::Left);
                     system.on_mouse_up(&mouse, MouseButton::Left);
                 }
-                if input.mouse_released(1) {
+                if input.mouse_released(MouseButton::Right) {
                     mouse.add_up(MouseButton::Right);
                     system.on_mouse_up(&mouse, MouseButton::Right);
                 }
-                if input.mouse_released(2) {
+                if input.mouse_released(MouseButton::Middle) {
                     mouse.add_up(MouseButton::Middle);
                     system.on_mouse_up(&mouse, MouseButton::Middle);
                 }

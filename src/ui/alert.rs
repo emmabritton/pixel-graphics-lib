@@ -38,22 +38,12 @@ impl Alert {
         let mut message = message;
         let pos = Coord::from((width / 2, height / 2)) - Coord::from(ALERT_SIZE) / 2;
         let (bounds, background) = Self::background(style, pos);
-        let min = Button::calc_bounds(
-            Coord::default(),
-            positive_text,
-            None,
-            style.button.text_size,
-        )
-        .width()
-        .max(
-            Button::calc_bounds(
-                Coord::default(),
-                negative_text,
-                None,
-                style.button.text_size,
-            )
-            .width(),
-        );
+        let min = Button::calc_bounds(Coord::default(), positive_text, None, style.button.font)
+            .width()
+            .max(
+                Button::calc_bounds(Coord::default(), negative_text, None, style.button.font)
+                    .width(),
+            );
         let positive = Button::new(
             pos + (ALERT_SIZE.0 - min - 6, BUTTON_Y as usize),
             positive_text,
@@ -72,7 +62,7 @@ impl Alert {
         Self {
             negative: Some(negative),
             positive,
-            message: Self::text(message, pos, style.text, style.text_size),
+            message: Self::text(message, pos, style.text, style.font),
             background,
             bounds,
             style: style.clone(),
@@ -86,26 +76,20 @@ impl Alert {
         Self {
             negative: None,
             positive,
-            message: Self::text(message, pos, style.warning_text, style.text_size),
+            message: Self::text(message, pos, style.warning_text, style.font),
             background,
             bounds,
             style: style.clone(),
         }
     }
 
-    fn text(lines: &[&str], pos: Coord, color: Color, text_size: TextSize) -> Vec<Text> {
+    fn text(lines: &[&str], pos: Coord, color: Color, font: PixelFont) -> Vec<Text> {
         let mut output = vec![];
         for (i, line) in lines.iter().enumerate() {
             output.push(Text::new(
                 line,
-                TextPos::px(
-                    pos + TEXT_POS
-                        + (
-                            0,
-                            i * (text_size.get_size().1 + text_size.get_spacing() * 2),
-                        ),
-                ),
-                (color, text_size, WrappingStrategy::Cutoff(30), Center),
+                TextPos::px(pos + TEXT_POS + (0, i * (font.size().1 + font.spacing() * 2))),
+                (color, font, WrappingStrategy::Cutoff(30), Center),
             ));
         }
         output
@@ -132,14 +116,14 @@ impl Alert {
     pub fn change_text(&mut self, text: &[&str]) {
         let pos = self.bounds.top_left();
         let color = self.message[0].formatting().color();
-        let size = self.message[0].formatting().size();
+        let font = self.message[0].formatting().font();
 
         let mut output = vec![];
         for (i, line) in text.iter().enumerate() {
             output.push(Text::new(
                 line,
-                TextPos::px(pos + TEXT_POS + (0, i * (size.get_size().1 + size.get_spacing() * 2))),
-                (color, size, WrappingStrategy::Cutoff(30), Center),
+                TextPos::px(pos + TEXT_POS + (0, i * (font.size().1 + font.spacing() * 2))),
+                (color, font, WrappingStrategy::Cutoff(30), Center),
             ));
         }
         self.message = output

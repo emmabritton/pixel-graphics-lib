@@ -62,7 +62,10 @@ impl WindowPreferences {
             let mid_y = monitor.size().height / 2;
             let mid_w = window.inner_size().width / 2;
             let mid_h = window.inner_size().height / 2;
-            window.set_outer_position(PhysicalPosition::new(mid_x - mid_w, mid_y - mid_h));
+            window.set_outer_position(PhysicalPosition::new(
+                mid_x.saturating_sub(mid_w),
+                mid_y.saturating_sub(mid_h),
+            ));
         } else {
             window.set_outer_position(PhysicalPosition::new(100, 100));
         }

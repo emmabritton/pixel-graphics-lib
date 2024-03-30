@@ -1,6 +1,10 @@
 use crate::prelude::*;
+use crate::ui::layout::LayoutView;
 use crate::ui::styles::ButtonStyle;
 use crate::ui::{ElementState, UiElement};
+use std::cell::{Ref, RefCell, RefMut};
+use std::rc::Rc;
+use std::sync::{Mutex, MutexGuard};
 
 #[derive(Debug)]
 pub struct Button {
@@ -20,7 +24,7 @@ impl Button {
         min_width: Option<usize>,
         style: &ButtonStyle,
     ) -> Self {
-        let bounds = Self::calc_bounds(xy.into(), text, min_width, style.text_size);
+        let bounds = Self::calc_bounds(xy.into(), text, min_width, style.font);
         let label = text.to_string();
         let (text, border, shadow) = Self::layout(&bounds, style, text);
         Self {
@@ -58,22 +62,17 @@ impl Button {
             TextPos::px(bounds.center() + (0, 1)),
             (
                 WHITE,
-                style.text_size,
-                WrappingStrategy::None,
+                style.font,
+                WrappingStrategy::AtCol(style.font.px_to_cols(bounds.width())),
                 Positioning::Center,
             ),
         );
         (text, border, shadow)
     }
 
-    pub fn calc_bounds(
-        xy: Coord,
-        text: &str,
-        min_width: Option<usize>,
-        text_size: TextSize,
-    ) -> Rect {
+    pub fn calc_bounds(xy: Coord, text: &str, min_width: Option<usize>, font: PixelFont) -> Rect {
         let min_width = min_width.unwrap_or_default();
-        let (w, h) = text_size.measure(text, WrappingStrategy::None);
+        let (w, h) = font.measure(text);
         Rect::new_with_size(
             xy,
             ((w as f32 * 1.2) as usize).max(min_width),
@@ -130,5 +129,12 @@ impl UiElement for Button {
     #[must_use]
     fn get_state(&self) -> ElementState {
         self.state
+    }
+}
+
+impl LayoutView for Button {
+    fn set_bounds(&mut self, bounds: Rect) {
+        self.bounds = bounds.clone();
+        self.set_position(bounds.top_left());
     }
 }

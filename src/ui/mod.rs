@@ -3,6 +3,7 @@ pub mod button;
 pub mod dir_panel;
 pub mod helpers;
 pub mod icon_button;
+pub mod label;
 pub mod layout;
 pub mod styles;
 pub mod text_field;
@@ -20,6 +21,7 @@ pub mod prelude {
     pub use crate::ui::dir_panel::*;
     pub use crate::ui::helpers::*;
     pub use crate::ui::icon_button::*;
+    pub use crate::ui::label::*;
     pub use crate::ui::layout::column::*;
     pub use crate::ui::layout::row::*;
     pub use crate::ui::layout::*;
@@ -29,6 +31,15 @@ pub mod prelude {
     pub use crate::ui::toggle_icon_button::*;
     pub use crate::ui::tooltip::*;
     pub use crate::ui::*;
+}
+
+#[macro_export]
+macro_rules! render {
+    ($graphics:tt, $mouse:tt, $($view:expr$(,)?)*) => {
+        $(
+            $view.render($graphics, $mouse);
+        )*
+    };
 }
 
 pub trait UiElement {

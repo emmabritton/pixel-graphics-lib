@@ -1,12 +1,23 @@
+use crate::prelude::{Coord, Rect};
+use crate::ui::UiElement;
+use std::fmt::Debug;
+
 pub mod column;
+pub mod relative;
 pub mod row;
+
+pub type ViewId = usize;
+
+pub trait LayoutView: UiElement + Debug {
+    fn set_bounds(&mut self, bounds: Rect);
+}
 
 #[macro_export]
 macro_rules! or_else {
-    ($value:literal, $other: literal) => {
+    ($value:expr, $other: expr) => {
         $value
     };
-    (, $other: literal) => {
+    (, $other: expr) => {
         $other
     };
 }

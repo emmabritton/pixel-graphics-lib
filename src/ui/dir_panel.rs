@@ -9,13 +9,13 @@ use std::path::PathBuf;
 
 const ENTRY_FORMAT: TextFormat = TextFormat::new(
     WrappingStrategy::Ellipsis(35),
-    TextSize::Small,
+    PixelFont::Standard4x5,
     BLACK,
     LeftTop,
 );
 const ERROR_FORMAT: TextFormat = TextFormat::new(
     WrappingStrategy::SpaceBeforeCol(20),
-    TextSize::Normal,
+    PixelFont::Standard6x7,
     RED,
     Center,
 );
@@ -119,7 +119,7 @@ impl DirPanel {
         InsertShape::insert_above(&mut background, bounds.clone(), fill(WHITE));
         InsertShape::insert_above(&mut background, bounds.clone(), stroke(DARK_GRAY));
         let entry_visible_count =
-            bounds.height() / (TextSize::Small.get_size().1 + TextSize::Small.get_spacing());
+            bounds.height() / (PixelFont::Standard4x5.size().1 + PixelFont::Standard4x5.spacing());
         (background, entry_visible_count)
     }
 }
@@ -239,14 +239,14 @@ impl DirPanel {
         let xy = self.bounds.top_left()
             + (
                 2,
-                row * (TextSize::Small.get_spacing() + TextSize::Small.get_size().1)
-                    + TextSize::Small.get_spacing() * 2,
+                row * (PixelFont::Standard4x5.spacing() + PixelFont::Standard4x5.size().1)
+                    + PixelFont::Standard4x5.spacing() * 2,
             );
         Rect::new(
             xy,
             (
                 self.bounds.right() - 2,
-                xy.y + (TextSize::Small.get_size().1) as isize,
+                xy.y + (PixelFont::Standard4x5.size().1) as isize,
             ),
         )
     }
@@ -330,5 +330,12 @@ impl UiElement for DirPanel {
     #[inline]
     fn get_state(&self) -> ElementState {
         self.state
+    }
+}
+
+impl LayoutView for DirPanel {
+    fn set_bounds(&mut self, bounds: Rect) {
+        self.bounds = bounds.clone();
+        self.set_position(bounds.top_left());
     }
 }

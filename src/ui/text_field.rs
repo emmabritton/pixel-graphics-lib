@@ -85,7 +85,7 @@ pub struct TextField {
     cursor_pos: usize,
     cursor_blink_visible: bool,
     next_cursor_change: f64,
-    text_size: TextSize,
+    font: PixelFont,
     cursor: Drawable<Rect>,
     filters: Vec<TextFilter>,
     style: TextFieldStyle,
@@ -111,7 +111,7 @@ impl TextField {
     pub fn new<P: Into<Coord>>(
         xy: P,
         max_length: usize,
-        text_size: TextSize,
+        font: PixelFont,
         size_limits: (Option<usize>, Option<usize>),
         initial_content: &str,
         filters: &[TextFilter],
@@ -119,16 +119,14 @@ impl TextField {
     ) -> Self {
         let rect = Rect::new_with_size(
             xy,
-            ((text_size.get_size().0 + text_size.get_spacing()) * max_length
-                + text_size.get_spacing())
-            .max(size_limits.0.unwrap_or_default())
-            .min(size_limits.1.unwrap_or(usize::MAX)),
-            ((text_size.get_size().1 + text_size.get_spacing()) as f32 * 1.4) as usize,
+            ((font.size().0 + font.spacing()) * max_length + font.spacing())
+                .max(size_limits.0.unwrap_or_default())
+                .min(size_limits.1.unwrap_or(usize::MAX)),
+            ((font.size().1 + font.spacing()) as f32 * 1.4) as usize,
         );
-        let visible_count = rect.width() / (text_size.get_size().0 + text_size.get_spacing());
+        let visible_count = rect.width() / (font.size().0 + font.spacing());
         let (background, border) = Self::layout(&rect);
-        let cursor =
-            Drawable::from_obj(Rect::new((0, 0), (1, text_size.get_size().1)), fill(BLACK));
+        let cursor = Drawable::from_obj(Rect::new((0, 0), (1, font.size().1)), fill(BLACK));
         let mut filters = filters.to_vec();
         if filters.is_empty() {
             filters.push(TextFilter::All);
@@ -145,7 +143,7 @@ impl TextField {
             border,
             cursor_blink_visible: true,
             next_cursor_change: 0.0,
-            text_size,
+            font,
             cursor,
             filters,
             style: style.clone(),
@@ -322,26 +320,21 @@ impl UiElement for TextField {
                     .skip(self.first_visible)
                     .collect::<String>(),
                 TextPos::Px(
-                    self.bounds.left() + self.text_size.get_spacing() as isize,
+                    self.bounds.left() + self.font.spacing() as isize,
                     self.bounds.top()
                         + (self.bounds.height() as isize / 2)
-                        + self.text_size.get_spacing() as isize,
+                        + self.font.spacing() as isize,
                 ),
-                (
-                    color,
-                    self.text_size,
-                    Cutoff(self.visible_count),
-                    LeftCenter,
-                ),
+                (color, self.font, Cutoff(self.visible_count), LeftCenter),
             );
         }
         if self.focused && self.cursor_blink_visible {
             let xy = self.bounds.top_left()
                 + (
-                    (self.text_size.get_size().0 + self.text_size.get_spacing())
+                    (self.font.size().0 + self.font.spacing())
                         * (self.cursor_pos - self.first_visible)
                         + 1,
-                    self.text_size.get_spacing() + 1,
+                    self.font.spacing() + 1,
                 );
             if let Some(color) = self
                 .style
@@ -375,5 +368,12 @@ impl UiElement for TextField {
     #[inline]
     fn get_state(&self) -> ElementState {
         self.state
+    }
+}
+
+impl LayoutView for TextField {
+    fn set_bounds(&mut self, bounds: Rect) {
+        self.bounds = bounds.clone();
+        self.set_position(bounds.top_left());
     }
 }

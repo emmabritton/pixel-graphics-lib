@@ -17,8 +17,18 @@ impl Default for UiStyle {
                 b: 140,
                 a: 255,
             },
-            title_text: TextFormat::new(WrappingStrategy::None, TextSize::Large, WHITE, LeftTop),
-            body_text: TextFormat::new(WrappingStrategy::None, TextSize::Normal, WHITE, LeftTop),
+            title_text: TextFormat::new(
+                WrappingStrategy::None,
+                PixelFont::Standard8x10,
+                WHITE,
+                LeftTop,
+            ),
+            body_text: TextFormat::new(
+                WrappingStrategy::None,
+                PixelFont::Standard6x7,
+                WHITE,
+                LeftTop,
+            ),
             tooltip: Default::default(),
             icon_button: Default::default(),
             toggle_icon_button: Default::default(),
@@ -30,7 +40,7 @@ impl Default for ButtonStyle {
     fn default() -> Self {
         Self {
             text: ColorSet::new_values(WHITE, WHITE, WHITE, LIGHT_GRAY),
-            text_size: TextSize::Normal,
+            font: PixelFont::Standard6x7,
             border: ColorSet::new_values(LIGHT_GRAY, CYAN, RED, DARK_GRAY),
             shadow: ColorSet::new_same(DARK_GRAY),
             rounding: 2,
@@ -42,7 +52,7 @@ impl Default for ToggleButtonStyle {
     fn default() -> Self {
         Self {
             text: ToggleColorSet::new_same(WHITE),
-            text_size: TextSize::Normal,
+            font: PixelFont::Standard6x7,
             border: ToggleColorSet::new_values(LIGHT_GRAY, CYAN, WHITE, CYAN, RED, DARK_GRAY),
             shadow: ToggleColorSet::new_values(
                 DARK_GRAY, DARK_GRAY, WHITE, WHITE, DARK_GRAY, DARK_GRAY,
@@ -74,11 +84,11 @@ impl Default for AlertStyle {
             }),
             text: WHITE,
             warning_text: RED,
-            text_size: TextSize::Normal,
+            font: PixelFont::Standard6x7,
             button: ButtonStyle::default(),
             border: Some(LIGHT_GRAY),
             shadow: Some(DARK_GRAY),
-            shade: Some(Color::new(0., 0., 0., 0.5)),
+            shade: Some(Color::new(0, 0, 0, 127)),
         }
     }
 }
@@ -146,7 +156,7 @@ impl Default for TooltipStyle {
             background: ColorSet::new_same(BLACK),
             border: ColorSet::new_same(LIGHT_GRAY),
             shadow: ColorSet::new_same(DARK_GRAY),
-            size: TextSize::Small,
+            font: PixelFont::Standard4x5,
             padding: 2,
         }
     }

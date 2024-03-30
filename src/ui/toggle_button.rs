@@ -27,7 +27,7 @@ impl ToggleButton {
         style: &ToggleButtonStyle,
     ) -> Self {
         let min_width = min_width.unwrap_or_default();
-        let (w, h) = TextSize::Normal.measure(text, WrappingStrategy::None);
+        let (w, h) = PixelFont::Standard6x7.measure(text);
         let bounds = Rect::new_with_size(
             xy,
             ((w as f32 * 1.2) as usize).max(min_width),
@@ -69,7 +69,12 @@ impl ToggleButton {
         let text = Text::new(
             text,
             TextPos::px(bounds.center() + (0, 1)),
-            (WHITE, style.text_size, WrappingStrategy::None, Center),
+            (
+                WHITE,
+                style.font,
+                WrappingStrategy::AtCol(style.font.px_to_cols(bounds.width())),
+                Center,
+            ),
         );
         (text, border, shadow)
     }
@@ -150,5 +155,12 @@ impl UiElement for ToggleButton {
     #[inline]
     fn get_state(&self) -> ElementState {
         self.state
+    }
+}
+
+impl LayoutView for ToggleButton {
+    fn set_bounds(&mut self, bounds: Rect) {
+        self.bounds = bounds.clone();
+        self.set_position(bounds.top_left());
     }
 }

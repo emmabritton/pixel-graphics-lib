@@ -3,21 +3,24 @@
 
 # Graphics Lib
 
-This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
+This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used
+with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
 
 ## Usage
 
 ### Cargo
 
 In your `Cargo.toml` file add
+
 ```toml
 pixels-graphics-lib = "0.16.0"
-winit_input_helper = "0.15.1" #only needed if you're not using `run()`
+winit_input_helper = "0.16.0" #only needed if you're not using `run()`
 ```
 
 ### Code
 
 You can use scenes using `run_scenes` (requires default feature `scenes`):
+
 ```rust
 fn main() -> Result<()> {
     // Window prefs allow the size and position of the window to be saved and restored
@@ -63,10 +66,10 @@ impl ExampleScene {
 
 impl Scene<SceneResult, SceneName> for ExampleScene {
     fn render(
-        &mut self, 
-        graphics: &mut Graphics, 
-        mouse_xy: Coord, 
-        held_keys: &[VirtualKeyCode]) {
+        &mut self,
+        graphics: &mut Graphics,
+        mouse_xy: Coord,
+        held_keys: &[KeyCode]) {
         todo!()
     }
 
@@ -74,7 +77,7 @@ impl Scene<SceneResult, SceneName> for ExampleScene {
         &mut self,
         timing: &Timing,
         mouse_xy: Coord,
-        held_keys: &[VirtualKeyCode],
+        held_keys: &[KeyCode],
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         todo!()
     }
@@ -82,6 +85,7 @@ impl Scene<SceneResult, SceneName> for ExampleScene {
 ```
 
 or a more low level with `run`
+
 ```rust
 struct Example {}
 
@@ -117,7 +121,7 @@ Includes `window_prefs`
 ### `controller`
 
 * Adds gamepad support
-* Adds gamepad state to `Scene::update`, `Scene::render` 
+* Adds gamepad state to `Scene::update`, `Scene::render`
 
 ### `controller_xinput`
 

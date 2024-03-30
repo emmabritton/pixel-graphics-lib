@@ -6,7 +6,7 @@ pub mod defaults;
 pub mod impls;
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct UiStyle {
     pub button: ButtonStyle,
     pub text_field: TextFieldStyle,
@@ -64,7 +64,7 @@ pub struct TextFieldStyle {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ButtonStyle {
     pub text: ColorSet,
-    pub text_size: TextSize,
+    pub font: PixelFont,
     pub border: ColorSet,
     pub shadow: ColorSet,
     pub rounding: usize,
@@ -87,7 +87,7 @@ pub struct TooltipStyle {
     pub background: ColorSet,
     pub border: ColorSet,
     pub shadow: ColorSet,
-    pub size: TextSize,
+    pub font: PixelFont,
     pub padding: usize,
 }
 
@@ -97,7 +97,7 @@ pub struct ToggleButtonStyle {
     pub text: ToggleColorSet,
     pub border: ToggleColorSet,
     pub shadow: ToggleColorSet,
-    pub text_size: TextSize,
+    pub font: PixelFont,
     pub rounding: usize,
 }
 
@@ -117,7 +117,7 @@ pub struct AlertStyle {
     pub background: Option<Color>,
     pub text: Color,
     pub warning_text: Color,
-    pub text_size: TextSize,
+    pub font: PixelFont,
     pub button: ButtonStyle,
     pub border: Option<Color>,
     pub shadow: Option<Color>,

@@ -149,3 +149,10 @@ impl UiElement for IconButton {
         self.state
     }
 }
+
+impl LayoutView for IconButton {
+    fn set_bounds(&mut self, bounds: Rect) {
+        self.bounds = bounds.clone();
+        self.set_position(bounds.top_left());
+    }
+}

@@ -21,7 +21,7 @@ impl Tooltip {
         positioning: Positioning,
         style: &TooltipStyle,
     ) -> Self {
-        let bounds = Self::calc_bounds(anchor.into(), positioning, text, style.size);
+        let bounds = Self::calc_bounds(anchor.into(), positioning, text, style.font);
         let bounds = Rect::new_with_size(
             bounds.top_left(),
             bounds.width() + (style.padding),
@@ -69,20 +69,15 @@ impl Tooltip {
         let text = Text::new(
             label,
             TextPos::px(bounds.top_left() + (style.padding, style.padding)),
-            (WHITE, style.size, WrappingStrategy::SpaceBeforeCol(20)),
+            (WHITE, style.font, WrappingStrategy::SpaceBeforeCol(20)),
         );
         (border, shadow, background, text)
     }
 }
 
 impl Tooltip {
-    pub fn calc_bounds(
-        xy: Coord,
-        positioning: Positioning,
-        text: &str,
-        text_size: TextSize,
-    ) -> Rect {
-        let (w, h) = text_size.measure(text, WrappingStrategy::SpaceBeforeCol(20));
+    pub fn calc_bounds(xy: Coord, positioning: Positioning, text: &str, font: PixelFont) -> Rect {
+        let (w, h) = font.measure(&WrappingStrategy::SpaceBeforeCol(20).wrap(text).join("\n"));
         let anchor = positioning.calc((xy.x, xy.y), w, h);
         Rect::new_with_size(Coord::new(anchor.0, anchor.1), w, h)
     }
