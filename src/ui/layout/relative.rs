@@ -1,7 +1,7 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::prelude::{coord, Coord, Rect, Shape};
+use crate::prelude::{coord, Rect, Shape};
 use crate::ui::layout::LayoutView;
 use crate::ui::UiElement;
 

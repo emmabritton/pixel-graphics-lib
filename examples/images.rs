@@ -1,9 +1,4 @@
 use anyhow::Result;
-use buffer_graphics_lib::color::BLACK;
-use buffer_graphics_lib::image::Image;
-use buffer_graphics_lib::prelude::open_image;
-use buffer_graphics_lib::scaling::Scaling;
-use buffer_graphics_lib::{Graphics, Tint};
 use pixels_graphics_lib::prelude::*;
 use std::rc::Rc;
 use winit::keyboard::KeyCode;

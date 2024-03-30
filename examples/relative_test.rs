@@ -11,16 +11,9 @@ use pixels_graphics_lib::{layout, parent, px, render};
 const WIDTH: usize = 280;
 const HEIGHT: usize = 240;
 
-const ID_TL_BUTTON: ViewId = 1;
-const ID_BELOW_TL_BUTTON: ViewId = 3;
-const ID_NEXT_BELOW_BUTTON: ViewId = 4;
-const ID_BR_BUTTON: ViewId = 2;
-const ID_SPAN: ViewId = 5;
-const ID_STRETCH: ViewId = 6;
-
 fn main() -> Result<()> {
     let switcher: SceneSwitcher<SceneResult, SceneName> = |_, _, _| {};
-    let mut options = Options::default();
+    let options = Options::default();
     let test = LayoutTest::new(&options.style);
     run_scenes(
         WIDTH,
@@ -81,7 +74,7 @@ impl LayoutTest {
             10,
             PixelFont::Standard4x5,
             (None, None),
-            ("FW"),
+            "FW",
             &[],
             &style.text_field,
         );
@@ -99,73 +92,73 @@ impl LayoutTest {
 
         let context = LayoutContext::new(Rect::new_with_size((0, 0), WIDTH, HEIGHT));
 
-        layout!(context, mid align_left, parent!(0.4));
-        layout!(context, mid align_top, parent!(0.4));
+        layout!(context, mid, align_left, parent!(0.4));
+        layout!(context, mid, align_top, parent!(0.4));
 
-        layout!(context, above left_to_left_of mid);
-        layout!(context, above bottom_to_top_of mid, px!(40));
+        layout!(context, above, left_to_left_of mid);
+        layout!(context, above, bottom_to_top_of mid, px!(40));
 
-        layout!(context, below left_to_left_of mid);
-        layout!(context, below top_to_bottom_of mid, px!(40));
+        layout!(context, below, left_to_left_of mid);
+        layout!(context, below, top_to_bottom_of mid, px!(40));
 
-        layout!(context, left right_to_left_of  mid, px!(40));
-        layout!(context, left top_to_top_of  mid);
+        layout!(context, left, right_to_left_of  mid, px!(40));
+        layout!(context, left, top_to_top_of  mid);
 
-        layout!(context, right left_to_right_of   mid, px!(40));
-        layout!(context, right top_to_top_of  mid);
+        layout!(context, right, left_to_right_of   mid, px!(40));
+        layout!(context, right, top_to_top_of  mid);
 
-        layout!(context, tl left_to_left_of mid);
-        layout!(context, tl bottom_to_top_of mid);
+        layout!(context, tl, left_to_left_of mid);
+        layout!(context, tl, bottom_to_top_of mid);
 
-        layout!(context, bl left_to_left_of mid);
-        layout!(context, bl top_to_bottom_of  mid);
+        layout!(context, bl, left_to_left_of mid);
+        layout!(context, bl, top_to_bottom_of  mid);
 
-        layout!(context, br right_to_right_of  mid);
-        layout!(context, br top_to_bottom_of  mid);
+        layout!(context, br, right_to_right_of  mid);
+        layout!(context, br, top_to_bottom_of  mid);
 
-        layout!(context, tr right_to_right_of  mid);
-        layout!(context, tr bottom_to_top_of mid);
+        layout!(context, tr, right_to_right_of  mid);
+        layout!(context, tr, bottom_to_top_of mid);
 
-        layout!(context, grow fw fill_width);
+        layout!(context, grow fw, fill_width);
 
-        layout!(context, grow fh fill_height);
+        layout!(context, grow fh, fill_height);
 
-        layout!(context, sh left_to_left_of left);
-        layout!(context, grow sh right_to_right_of  right);
-        layout!(context, sh top_to_bottom_of bl);
+        layout!(context, sh, left_to_left_of left);
+        layout!(context, grow sh, right_to_right_of  right);
+        layout!(context, sh, top_to_bottom_of bl);
 
-        layout!(context, sv top_to_top_of  above);
-        layout!(context, grow sv bottom_to_bottom_of below);
-        layout!(context, sv right_to_left_of  bl);
+        layout!(context, sv, top_to_top_of  above);
+        layout!(context, grow sv, bottom_to_bottom_of below);
+        layout!(context, sv, right_to_left_of  bl);
 
-        layout!(context, pt align_top);
-        layout!(context, pt align_left, parent!(0.3));
+        layout!(context, pt, align_top);
+        layout!(context, pt, align_left, parent!(0.3));
 
-        layout!(context, pb align_bottom);
-        layout!(context, pb align_left, parent!(0.3));
+        layout!(context, pb, align_bottom);
+        layout!(context, pb, align_left, parent!(0.3));
 
-        layout!(context, pl align_left);
-        layout!(context, pl align_top, parent!(0.3));
+        layout!(context, pl, align_left);
+        layout!(context, pl, align_top, parent!(0.3));
 
-        layout!(context, pr align_right);
-        layout!(context, pr align_top, parent!(0.3));
+        layout!(context, pr, align_right);
+        layout!(context, pr, align_top, parent!(0.3));
 
-        layout!(context, gl right_to_left_of right);
-        layout!(context, gl top_to_bottom_of below);
-        layout!(context, grow gl align_left);
+        layout!(context, gl, right_to_left_of right);
+        layout!(context, gl, top_to_bottom_of below);
+        layout!(context, grow gl, align_left);
 
-        layout!(context, gr left_to_right_of  right);
-        layout!(context, gr top_to_bottom_of below);
-        layout!(context, grow gr align_right );
+        layout!(context, gr, left_to_right_of  right);
+        layout!(context, gr, top_to_bottom_of below);
+        layout!(context, grow gr, align_right );
 
-        layout!(context, gb left_to_left_of  right);
-        layout!(context, gb top_to_bottom_of gl);
-        layout!(context, grow gb align_bottom  );
+        layout!(context, gb, left_to_left_of  right);
+        layout!(context, gb, top_to_bottom_of gl);
+        layout!(context, grow gb, align_bottom  );
 
-        layout!(context, gt left_to_left_of  right);
-        layout!(context, grow gt right_to_right_of   right);
-        layout!(context, gt bottom_to_top_of  right, px!(8));
-        layout!(context, grow gt align_top   );
+        layout!(context, gt, left_to_left_of  right);
+        layout!(context, grow gt, right_to_right_of   right);
+        layout!(context, gt, bottom_to_top_of  right, px!(8));
+        layout!(context, grow gt, align_top   );
 
         Box::new(LayoutTest {
             mid,
@@ -203,14 +196,13 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         );
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &[KeyCode]) {}
+    fn on_key_up(&mut self, _: KeyCode, _: &MouseData, _: &[KeyCode]) {}
 
-    fn on_mouse_click(&mut self, down_at: Coord, mouse: &MouseData, _: MouseButton, _: &[KeyCode]) {
-    }
+    fn on_mouse_click(&mut self, _: Coord, _: &MouseData, _: MouseButton, _: &[KeyCode]) {}
 
     fn update(
         &mut self,
-        timing: &Timing,
+        _: &Timing,
         _: &MouseData,
         _: &[KeyCode],
     ) -> SceneUpdateResult<SceneResult, SceneName> {

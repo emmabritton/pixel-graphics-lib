@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::ui::layout::LayoutView;
 use crate::ui::*;
 
 #[derive(Debug)]
@@ -66,7 +65,7 @@ impl UiElement for Label {
 
     fn update(&mut self, _: &Timing) {}
 
-    fn set_state(&mut self, new_state: ElementState) {
+    fn set_state(&mut self, _: ElementState) {
         unimplemented!("Label doesn't support state");
     }
 

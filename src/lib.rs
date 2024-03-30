@@ -254,7 +254,6 @@ impl Options {
         hide_cursor: bool,
         confine_cursor: bool,
         style: UiStyle,
-        resizable: bool,
     ) -> Self {
         Self {
             ups,

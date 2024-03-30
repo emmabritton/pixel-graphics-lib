@@ -1,4 +1,4 @@
-use crate::prelude::{Coord, Rect};
+use crate::prelude::Rect;
 use crate::ui::UiElement;
 use std::fmt::Debug;
 

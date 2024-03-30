@@ -31,7 +31,7 @@ winit_input_helper = { version = "0.16.0" }
 thiserror = "1.0.58"
 serde = { version = "1.0.197", features = ["derive"], optional = true }
 directories = { version = "5.0.1", optional = true }
-buffer-graphics-lib = { version = "0.16.0", default-features = false }
+buffer-graphics-lib = { version = "0.16.1", default-features = false }
 rustc-hash = "1.1.0"
 simple-game-utils = { version = "0.4.2", default-features = false }
 

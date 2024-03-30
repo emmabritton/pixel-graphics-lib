@@ -66,7 +66,7 @@ where
         let current_dir = TextField::new(
             style.bounds.top_left() + (6, 6),
             37,
-            TextSize::Small,
+            PixelFont::Standard4x5,
             (Some(dir_panel.bounds().width()), None),
             &path,
             &[All],

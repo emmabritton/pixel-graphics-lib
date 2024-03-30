@@ -80,7 +80,7 @@ impl LayoutTest {
         let text_field = TextField::new(
             (50, 50),
             10,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (None, None),
             "",
             &[All],
@@ -89,7 +89,7 @@ impl LayoutTest {
         let mut spacing = TextField::new(
             (0, 0),
             4,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (None, None),
             "0",
             &[Numbers],
@@ -98,7 +98,7 @@ impl LayoutTest {
         let mut padding = TextField::new(
             (0, 0),
             4,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (None, None),
             "0",
             &[Numbers],

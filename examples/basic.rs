@@ -1,6 +1,4 @@
 use anyhow::Result;
-use buffer_graphics_lib::color::Color;
-use buffer_graphics_lib::Graphics;
 use pixels_graphics_lib::prelude::*;
 use winit::keyboard::KeyCode;
 

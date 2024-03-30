@@ -78,7 +78,7 @@ impl Menu {
         let field1 = TextField::new(
             (8, 100),
             6,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (None, Some(30)),
             "",
             &[All],
@@ -87,7 +87,7 @@ impl Menu {
         let field2 = TextField::new(
             (8, 120),
             6,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (None, None),
             "",
             &[Sentence],
@@ -96,7 +96,7 @@ impl Menu {
         let field3 = TextField::new(
             (8, 140),
             6,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (Some(100), None),
             "",
             &[Raw(vec!['a', 'B', '%'])],

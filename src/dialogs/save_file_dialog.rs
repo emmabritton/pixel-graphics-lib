@@ -76,7 +76,7 @@ where
         let current_dir = TextField::new(
             style.bounds.top_left() + (6, 6),
             37,
-            TextSize::Small,
+            PixelFont::Standard4x5,
             (Some(dir_panel.bounds().width()), None),
             &path,
             &[All],
@@ -85,7 +85,7 @@ where
         let name_field = TextField::new(
             style.bounds.top_left() + (6, 121),
             26,
-            TextSize::Normal,
+            PixelFont::Standard6x7,
             (Some(dir_panel.bounds().width()), None),
             "",
             &[Filename],
