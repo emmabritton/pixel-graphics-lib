@@ -1,5 +1,16 @@
 # Changelog
 
+### Version 0.18.0
+
+- BREAKING
+    - Rename `UiElement` to `PixelView`
+    - Rename `ElementState` to `ViewState`
+- Add `MenuBar` view and `MenuBarStyle`
+- Update buffer lib
+- Add `id` method to `Scene`
+- Allow the text field cursor to be set using the mouse
+    - Also fix bug where programmatically changing the contents could leave the field in an invalid state
+
 ### Version 0.17.1
 
 - Update buffer lib

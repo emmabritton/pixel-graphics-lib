@@ -5,6 +5,8 @@ pub mod helpers;
 pub mod icon_button;
 pub mod label;
 pub mod layout;
+pub mod menu_bar;
+mod menu_item_view;
 pub mod styles;
 pub mod text_field;
 pub mod toggle_button;
@@ -25,6 +27,7 @@ pub mod prelude {
     pub use crate::ui::layout::column::*;
     pub use crate::ui::layout::row::*;
     pub use crate::ui::layout::*;
+    pub use crate::ui::menu_bar::*;
     pub use crate::ui::styles::*;
     pub use crate::ui::text_field::*;
     pub use crate::ui::toggle_button::*;
@@ -42,7 +45,7 @@ macro_rules! render {
     };
 }
 
-pub trait UiElement {
+pub trait PixelView {
     fn set_position(&mut self, top_left: Coord);
 
     fn bounds(&self) -> &Rect;
@@ -51,25 +54,25 @@ pub trait UiElement {
 
     fn update(&mut self, timing: &Timing);
 
-    fn set_state(&mut self, new_state: ElementState);
+    fn set_state(&mut self, new_state: ViewState);
 
-    fn get_state(&self) -> ElementState;
+    fn get_state(&self) -> ViewState;
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
-pub enum ElementState {
+pub enum ViewState {
     Normal,
     Disabled,
     Error,
 }
 
-impl ElementState {
+impl ViewState {
     /// Return pair of (is_error, is_disabled)
     pub fn get_err_dis(&self) -> (bool, bool) {
         match self {
-            ElementState::Normal => (false, false),
-            ElementState::Disabled => (false, true),
-            ElementState::Error => (true, false),
+            ViewState::Normal => (false, false),
+            ViewState::Disabled => (false, true),
+            ViewState::Error => (true, false),
         }
     }
 }

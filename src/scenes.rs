@@ -81,6 +81,10 @@ pub enum SceneUpdateResult<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq 
 /// and then forget to clear it in [resuming][Scene::resuming] after a child returns then the child
 /// will immediately reopen
 pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
+    fn id(&self) -> u32 {
+        0
+    }
+
     /// Render scene contents using `graphics`
     ///
     /// If this is a fullscreen scene it should draw a color over the whole screen otherwise

@@ -80,6 +80,16 @@ impl FocusColorSet {
         )
     }
 
+    pub fn menu(hover: Color, disabled: Color, others: Color) -> Self {
+        Self::new(
+            Some(others),
+            Some(hover),
+            Some(hover),
+            Some(others),
+            Some(disabled),
+        )
+    }
+
     pub fn get(&self, hovering: bool, focused: bool, error: bool, disabled: bool) -> Option<Color> {
         if disabled {
             self.disabled
@@ -165,5 +175,68 @@ impl ToggleColorSet {
                 (false, false) => self.normal,
             }
         }
+    }
+}
+
+impl IconSet {
+    pub fn get(
+        &self,
+        hovering: bool,
+        focused: bool,
+        error: bool,
+        disabled: bool,
+    ) -> Option<&IndexedImage> {
+        if disabled {
+            self.disabled.as_ref()
+        } else if error {
+            self.error.as_ref()
+        } else if focused {
+            self.focused.as_ref()
+        } else if hovering {
+            self.hover.as_ref()
+        } else {
+            self.normal.as_ref()
+        }
+    }
+}
+
+impl Padding {
+    pub fn new_same(value: usize) -> Padding {
+        Self {
+            left: value,
+            top: value,
+            right: value,
+            bottom: value,
+        }
+    }
+
+    pub fn new_axis(vert: usize, horz: usize) -> Padding {
+        Self {
+            left: horz,
+            top: vert,
+            right: horz,
+            bottom: vert,
+        }
+    }
+
+    pub fn new(left: usize, top: usize, right: usize, bottom: usize) -> Self {
+        Self {
+            left,
+            top,
+            right,
+            bottom,
+        }
+    }
+
+    pub fn vert(&self) -> usize {
+        self.top + self.bottom
+    }
+
+    pub fn horz(&self) -> usize {
+        self.left + self.right
+    }
+
+    pub fn offset(&self) -> Coord {
+        coord!(self.left, self.top)
     }
 }

@@ -83,7 +83,7 @@ impl Tooltip {
     }
 }
 
-impl UiElement for Tooltip {
+impl PixelView for Tooltip {
     fn set_position(&mut self, top_left: Coord) {
         self.background = self.background.with_move(top_left);
         let (border, shadow, _, text) =
@@ -114,11 +114,11 @@ impl UiElement for Tooltip {
 
     fn update(&mut self, _: &Timing) {}
 
-    fn set_state(&mut self, _: ElementState) {
+    fn set_state(&mut self, _: ViewState) {
         unimplemented!("Tooltip doesn't have state")
     }
 
-    fn get_state(&self) -> ElementState {
+    fn get_state(&self) -> ViewState {
         unimplemented!("Tooltip doesn't have state")
     }
 }

@@ -16,7 +16,7 @@ pub struct ToggleButton {
     shadow: Polyline,
     selected: bool,
     style: ToggleButtonStyle,
-    state: ElementState,
+    state: ViewState,
 }
 
 impl ToggleButton {
@@ -43,7 +43,7 @@ impl ToggleButton {
             shadow,
             selected: false,
             style: style.clone(),
-            state: ElementState::Normal,
+            state: ViewState::Normal,
         }
     }
 
@@ -93,7 +93,7 @@ impl ToggleButton {
     #[must_use]
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
         println!("down: {down:?}, up: {up:?}");
-        if self.state != ElementState::Disabled
+        if self.state != ViewState::Disabled
             && self.bounds.contains(down)
             && self.bounds.contains(up)
         {
@@ -105,7 +105,7 @@ impl ToggleButton {
     }
 }
 
-impl UiElement for ToggleButton {
+impl PixelView for ToggleButton {
     fn set_position(&mut self, top_left: Coord) {
         self.bounds = self.bounds.move_to(top_left);
         let (text, border, shadow) = Self::layout(&self.bounds, &self.style, &self.label);
@@ -148,12 +148,12 @@ impl UiElement for ToggleButton {
     fn update(&mut self, _: &Timing) {}
 
     #[inline]
-    fn set_state(&mut self, new_state: ElementState) {
+    fn set_state(&mut self, new_state: ViewState) {
         self.state = new_state;
     }
 
     #[inline]
-    fn get_state(&self) -> ElementState {
+    fn get_state(&self) -> ViewState {
         self.state
     }
 }

@@ -19,6 +19,7 @@ pub struct UiStyle {
     pub tooltip: TooltipStyle,
     pub icon_button: IconButtonStyle,
     pub toggle_icon_button: ToggleIconButtonStyle,
+    pub menu: MenuBarStyle,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -68,6 +69,44 @@ pub struct ButtonStyle {
     pub border: ColorSet,
     pub shadow: ColorSet,
     pub rounding: usize,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct MenuBarStyle {
+    pub background: ColorSet,
+    pub border: ColorSet,
+    pub menu_item: MenuItemStyle,
+    pub dropdown_item: DropdownItemStyle,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct MenuItemStyle {
+    pub background: FocusColorSet,
+    pub text: FocusColorSet,
+    pub font: PixelFont,
+    pub dropdown_background: Option<Color>,
+    pub padding: Padding,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct DropdownItemStyle {
+    pub background: FocusColorSet,
+    pub text: FocusColorSet,
+    pub font: PixelFont,
+    pub arrow: IconSet,
+    pub padding: Padding,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct Padding {
+    left: usize,
+    top: usize,
+    right: usize,
+    bottom: usize,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -136,4 +175,14 @@ pub struct DialogStyle {
     pub border: Option<Color>,
     pub shadow: Option<Color>,
     pub shade: Option<Color>,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct IconSet {
+    pub normal: Option<IndexedImage>,
+    pub focused: Option<IndexedImage>,
+    pub hover: Option<IndexedImage>,
+    pub error: Option<IndexedImage>,
+    pub disabled: Option<IndexedImage>,
 }

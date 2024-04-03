@@ -32,6 +32,7 @@ impl Default for UiStyle {
             tooltip: Default::default(),
             icon_button: Default::default(),
             toggle_icon_button: Default::default(),
+            menu: MenuBarStyle::default(),
         }
     }
 }
@@ -184,6 +185,97 @@ impl Default for ToggleIconButtonStyle {
             ),
             rounding: 6,
             padding: 4,
+        }
+    }
+}
+
+impl Default for MenuBarStyle {
+    fn default() -> Self {
+        Self {
+            background: ColorSet::new_same(BLUE.with_brightness(0.8)),
+            border: ColorSet::new_same(WHITE),
+            menu_item: MenuItemStyle::default(),
+            dropdown_item: DropdownItemStyle::default(),
+        }
+    }
+}
+
+impl Default for MenuItemStyle {
+    fn default() -> Self {
+        Self {
+            background: FocusColorSet::menu(BLUE.with_brightness(0.6), TRANSPARENT, TRANSPARENT),
+            text: FocusColorSet::new_values(OFF_WHITE, WHITE, WHITE, LIGHT_GRAY, MID_GRAY),
+            font: Default::default(),
+            dropdown_background: Some(BLUE.with_brightness(0.6)),
+            padding: Padding::new(2, 2, 2, 1),
+        }
+    }
+}
+
+impl Default for DropdownItemStyle {
+    fn default() -> Self {
+        Self {
+            background: FocusColorSet::menu(BLUE.with_brightness(0.5), TRANSPARENT, TRANSPARENT),
+            text: FocusColorSet::new_values(OFF_WHITE, WHITE, WHITE, LIGHT_GRAY, MID_GRAY),
+            font: PixelFont::default(),
+            arrow: DropdownItemStyle::dropdown_arrow_for_font(
+                PixelFont::default(),
+                FocusColorSet::new_values(OFF_WHITE, LIGHT_GRAY, WHITE, LIGHT_GRAY, MID_GRAY),
+            ),
+            padding: Padding::new(2, 2, 2, 1),
+        }
+    }
+}
+
+impl DropdownItemStyle {
+    fn dropdown_arrow_for_font(font: PixelFont, colors: FocusColorSet) -> IconSet {
+        let mut buffer = Graphics::create_buffer(font.size().0, font.size().1);
+        let mut graphics =
+            Graphics::new(&mut buffer, font.size().0, font.size().1).unwrap_or_else(|err| {
+                panic!(
+                    "Unable to create graphics using {font:?} when generating menu arrow: {err:?}"
+                )
+            });
+
+        graphics.draw_triangle(
+            Triangle::right_angle(
+                (0, 0),
+                font.size().0.min(font.size().1),
+                AnglePosition::Right,
+            )
+            .move_center_to(coord!(font.size().0 / 2, font.size().1 / 2)),
+            fill(WHITE),
+        );
+        let icon = graphics
+            .copy_to_indexed_image(false)
+            .unwrap_or_else(|err| panic!("Unable to create menu arrow icon: {err:?}"));
+
+        let idx = icon.get_palette().iter().position(|c| c == &WHITE).unwrap_or_else(|| panic!("Unable to find color in menubar arrow, please raise an issue on Github emmabritton/pixel-graphics-lib"));
+
+        let recolor = |image: &IndexedImage, color: Color| {
+            let mut img = image.clone();
+            img.set_color_unchecked(idx as u8, color);
+            img
+        };
+
+        IconSet {
+            normal: Some(recolor(&icon, colors.normal.unwrap_or(WHITE))),
+            focused: Some(recolor(
+                &icon,
+                colors.focused.unwrap_or(colors.normal.unwrap_or(WHITE)),
+            )),
+            hover: Some(recolor(
+                &icon,
+                colors.hover.unwrap_or(colors.normal.unwrap_or(WHITE)),
+            )),
+            error: Some(recolor(
+                &icon,
+                colors.error.unwrap_or(colors.disabled.unwrap_or(MID_GRAY)),
+            )),
+            disabled: Some(recolor(
+                &icon,
+                colors.disabled.unwrap_or(colors.error.unwrap_or(MID_GRAY)),
+            )),
         }
     }
 }

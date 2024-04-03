@@ -1,7 +1,7 @@
 use crate::buffer_graphics_lib::shapes::polyline::Polyline;
 use crate::ui::prelude::*;
 use crate::ui::tooltip::Tooltip;
-use crate::ui::{ElementState, UiElement};
+use crate::ui::{PixelView, ViewState};
 use crate::Timing;
 
 #[derive(Debug)]
@@ -13,7 +13,7 @@ pub struct IconButton {
     border: Polyline,
     shadow: Polyline,
     style: IconButtonStyle,
-    state: ElementState,
+    state: ViewState,
     tooltip_text: String,
     tooltip_positioning: Positioning,
 }
@@ -43,7 +43,7 @@ impl IconButton {
             border,
             shadow,
             style: style.clone(),
-            state: ElementState::Normal,
+            state: ViewState::Normal,
             tooltip_text: tooltip_text.to_string(),
             tooltip_positioning,
         }
@@ -92,7 +92,7 @@ impl IconButton {
 impl IconButton {
     #[must_use]
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
-        if self.state != ElementState::Disabled {
+        if self.state != ViewState::Disabled {
             self.bounds.contains(down) && self.bounds.contains(up)
         } else {
             false
@@ -100,7 +100,7 @@ impl IconButton {
     }
 }
 
-impl UiElement for IconButton {
+impl PixelView for IconButton {
     fn set_position(&mut self, top_left: Coord) {
         self.bounds = self.bounds.move_to(top_left);
         let (icon_xy, border, shadow, tooltip) = Self::layout(
@@ -139,13 +139,13 @@ impl UiElement for IconButton {
     fn update(&mut self, _: &Timing) {}
 
     #[inline]
-    fn set_state(&mut self, state: ElementState) {
+    fn set_state(&mut self, state: ViewState) {
         self.state = state;
     }
 
     #[inline]
     #[must_use]
-    fn get_state(&self) -> ElementState {
+    fn get_state(&self) -> ViewState {
         self.state
     }
 }

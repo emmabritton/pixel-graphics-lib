@@ -92,7 +92,7 @@ pub struct DirPanel {
     error: Option<String>,
     highlight: Option<usize>,
     allowed_ext: Option<String>,
-    state: ElementState,
+    state: ViewState,
 }
 
 impl DirPanel {
@@ -108,7 +108,7 @@ impl DirPanel {
             background,
             highlight: None,
             allowed_ext: allowed_ext.map(|s| s.to_string()),
-            state: ElementState::Normal,
+            state: ViewState::Normal,
         };
         panel.set_dir(current_dir);
         panel
@@ -252,7 +252,7 @@ impl DirPanel {
     }
 
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> Option<DirResult> {
-        if self.state == ElementState::Disabled {
+        if self.state == ViewState::Disabled {
             return None;
         }
         if self.bounds.contains(down) && self.bounds.contains(up) {
@@ -269,7 +269,7 @@ impl DirPanel {
     }
 }
 
-impl UiElement for DirPanel {
+impl PixelView for DirPanel {
     fn set_position(&mut self, top_left: Coord) {
         self.bounds = self.bounds.move_to(top_left);
         let (background, entry_visible_count) = Self::layout(&self.bounds);
@@ -323,12 +323,12 @@ impl UiElement for DirPanel {
     fn update(&mut self, _: &Timing) {}
 
     #[inline]
-    fn set_state(&mut self, new_state: ElementState) {
+    fn set_state(&mut self, new_state: ViewState) {
         self.state = new_state;
     }
 
     #[inline]
-    fn get_state(&self) -> ElementState {
+    fn get_state(&self) -> ViewState {
         self.state
     }
 }

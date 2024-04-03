@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::ui::prelude::*;
 use crate::ui::styles::TextFieldStyle;
-use crate::ui::UiElement;
+use crate::ui::PixelView;
 use crate::utilities::key_code_to_char;
 use buffer_graphics_lib::prelude::Positioning::LeftCenter;
 use buffer_graphics_lib::prelude::WrappingStrategy::Cutoff;
@@ -89,7 +89,7 @@ pub struct TextField {
     cursor: Drawable<Rect>,
     filters: Vec<TextFilter>,
     style: TextFieldStyle,
-    state: ElementState,
+    state: ViewState,
     visible_count: usize,
     first_visible: usize,
 }
@@ -147,7 +147,7 @@ impl TextField {
             cursor,
             filters,
             style: style.clone(),
-            state: ElementState::Normal,
+            state: ViewState::Normal,
         }
     }
 
@@ -195,15 +195,18 @@ impl TextField {
     }
 
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
-        if self.state != ElementState::Disabled {
+        if self.state != ViewState::Disabled {
             self.focused = self.bounds.contains(down) && self.bounds.contains(up);
+            self.cursor_pos = (((up.x - self.bounds.left()) / (self.font.char_width() as isize))
+                .max(0) as usize)
+                .min(self.content.len());
             return self.focused;
         }
         false
     }
 
     pub fn on_key_press(&mut self, key: KeyCode, held_keys: &[KeyCode]) {
-        if !self.focused || self.state == ElementState::Disabled {
+        if !self.focused || self.state == ViewState::Disabled {
             return;
         }
         match key {
@@ -278,7 +281,7 @@ impl TextField {
     }
 }
 
-impl UiElement for TextField {
+impl PixelView for TextField {
     fn set_position(&mut self, top_left: Coord) {
         self.bounds = self.bounds.move_to(top_left);
         let (background, border) = Self::layout(&self.bounds);
@@ -358,15 +361,15 @@ impl UiElement for TextField {
     }
 
     #[inline]
-    fn set_state(&mut self, state: ElementState) {
+    fn set_state(&mut self, state: ViewState) {
         self.state = state;
-        if self.state == ElementState::Disabled {
+        if self.state == ViewState::Disabled {
             self.focused = false;
         }
     }
 
     #[inline]
-    fn get_state(&self) -> ElementState {
+    fn get_state(&self) -> ViewState {
         self.state
     }
 }

@@ -59,7 +59,7 @@ impl RowLayout {
 
 impl RowLayout {
     /// Reposition views in a row
-    pub fn layout(&self, views: &mut [&mut dyn UiElement]) {
+    pub fn layout(&self, views: &mut [&mut dyn PixelView]) {
         let mut x = self.padding;
         for view in views {
             let y = match self.gravity {

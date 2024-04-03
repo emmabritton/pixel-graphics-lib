@@ -1,5 +1,5 @@
 use crate::prelude::Rect;
-use crate::ui::UiElement;
+use crate::ui::PixelView;
 use std::fmt::Debug;
 
 pub mod column;
@@ -8,7 +8,7 @@ pub mod row;
 
 pub type ViewId = usize;
 
-pub trait LayoutView: UiElement + Debug {
+pub trait LayoutView: PixelView + Debug {
     fn set_bounds(&mut self, bounds: Rect);
 }
 
@@ -93,7 +93,7 @@ macro_rules! row_layout {
 mod test {
     use crate::ui::button::Button;
     use crate::ui::prelude::*;
-    use crate::ui::UiElement;
+    use crate::ui::PixelView;
 
     #[test]
     fn syntax_check() {

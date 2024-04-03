@@ -2,7 +2,7 @@ use crate::prelude::*;
 use crate::ui::prelude::LayoutView;
 use crate::ui::styles::ToggleIconButtonStyle;
 use crate::ui::tooltip::Tooltip;
-use crate::ui::{ElementState, UiElement};
+use crate::ui::{PixelView, ViewState};
 
 #[derive(Debug)]
 pub struct ToggleIconButton {
@@ -13,7 +13,7 @@ pub struct ToggleIconButton {
     border: Polyline,
     shadow: Polyline,
     style: ToggleIconButtonStyle,
-    state: ElementState,
+    state: ViewState,
     selected: bool,
     tooltip_text: String,
     tooltip_positioning: Positioning,
@@ -44,7 +44,7 @@ impl ToggleIconButton {
             border,
             shadow,
             style: style.clone(),
-            state: ElementState::Normal,
+            state: ViewState::Normal,
             selected: false,
             tooltip_text: tooltip_text.to_string(),
             tooltip_positioning,
@@ -103,7 +103,7 @@ impl ToggleIconButton {
 
     #[must_use]
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
-        if self.state != ElementState::Disabled {
+        if self.state != ViewState::Disabled {
             self.bounds.contains(down) && self.bounds.contains(up)
         } else {
             false
@@ -111,7 +111,7 @@ impl ToggleIconButton {
     }
 }
 
-impl UiElement for ToggleIconButton {
+impl PixelView for ToggleIconButton {
     fn set_position(&mut self, top_left: Coord) {
         self.bounds = self.bounds.move_to(top_left);
         let (icon_xy, border, shadow, tooltip) = Self::layout(
@@ -158,13 +158,13 @@ impl UiElement for ToggleIconButton {
     fn update(&mut self, _: &Timing) {}
 
     #[inline]
-    fn set_state(&mut self, state: ElementState) {
+    fn set_state(&mut self, state: ViewState) {
         self.state = state;
     }
 
     #[inline]
     #[must_use]
-    fn get_state(&self) -> ElementState {
+    fn get_state(&self) -> ViewState {
         self.state
     }
 }

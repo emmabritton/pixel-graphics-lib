@@ -59,7 +59,7 @@ impl ColumnLayout {
 
 impl ColumnLayout {
     /// Reposition views in a column
-    pub fn layout(&self, views: &mut [&mut dyn UiElement]) {
+    pub fn layout(&self, views: &mut [&mut dyn PixelView]) {
         let mut y = self.padding;
         for view in views {
             let x = match self.gravity {

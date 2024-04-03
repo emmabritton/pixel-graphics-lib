@@ -40,6 +40,10 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleButtonGroup<Key> {
         tmp
     }
 
+    pub fn get(&self, key: Key) -> &ToggleButton {
+        &self.buttons[&key]
+    }
+
     pub fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {
         for button in self.buttons.values() {
             button.render(graphics, mouse);
@@ -93,6 +97,10 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleIconButtonGroup<Key> {
             }
         }
         tmp
+    }
+
+    pub fn get(&self, key: Key) -> &ToggleIconButton {
+        &self.buttons[&key]
     }
 
     pub fn render(&self, graphics: &mut Graphics, mouse: &MouseData) {

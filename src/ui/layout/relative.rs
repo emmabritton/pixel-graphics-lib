@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::prelude::{coord, Rect, Shape};
 use crate::ui::layout::LayoutView;
-use crate::ui::UiElement;
+use crate::ui::PixelView;
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -106,8 +106,8 @@ impl UpdateRect for Rect {
 
 pub fn move_by_view(
     parent: &Rect,
-    view: &mut dyn UiElement,
-    pivot: &dyn UiElement,
+    view: &mut dyn PixelView,
+    pivot: &dyn PixelView,
     rule: ViewLayoutRule,
     offset: LayoutOffset,
 ) {
@@ -152,7 +152,7 @@ pub fn move_by_view(
 pub fn grow_by_view(
     parent: &Rect,
     view: &mut dyn LayoutView,
-    pivot: &dyn UiElement,
+    pivot: &dyn PixelView,
     rule: ViewLayoutRule,
     offset: LayoutOffset,
 ) {
@@ -194,7 +194,7 @@ pub fn grow_by_view(
 
 pub fn move_by_parent(
     parent: &Rect,
-    view: &mut dyn UiElement,
+    view: &mut dyn PixelView,
     rule: ParentLayoutRule,
     offset: LayoutOffset,
 ) {
@@ -259,7 +259,7 @@ pub fn grow_by_parent(
 ///
 /// layout!(context, [command] view, alignment [pivot_view][, offset]);
 ///
-/// Views must impl [UiElement] and to use `grow` they must also impl [LayoutView]
+/// Views must impl [PixelView] and to use `grow` they must also impl [LayoutView]
 ///
 /// `offset` replaces the default offset from context
 ///
@@ -396,13 +396,13 @@ macro_rules! layout {
 #[macro_export]
 macro_rules! px {
     ($number:expr) => {
-        LayoutOffset::Pixels($number)
+        $crate::ui::layout::relative::LayoutOffset::Pixels($number)
     };
 }
 
 #[macro_export]
 macro_rules! parent {
     ($number:expr) => {
-        LayoutOffset::Percent($number)
+        $crate::ui::layout::relative::LayoutOffset::Percent($number)
     };
 }
