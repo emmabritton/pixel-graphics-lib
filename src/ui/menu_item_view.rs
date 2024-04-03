@@ -31,7 +31,7 @@ pub(super) enum ChildrenAnchor {
 }
 
 impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuItemView<Key> {
-    pub(super) fn new(item: &MenuBarItem<Key>, style: &MenuBarStyle, is_root: bool) -> Self {
+    pub(super) fn new(item: &MenuBarItem<Key>, is_root: bool) -> Self {
         let anchor = if is_root {
             ChildrenAnchor::Bottom
         } else {
@@ -40,10 +40,8 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuItemView<Key> {
         let content = if let Some(default) = item.checkable {
             ItemContent::Checkable(default)
         } else if let Some(items) = &item.children {
-            let children: Vec<MenuItemView<Key>> = items
-                .iter()
-                .map(|c| MenuItemView::new(c, style, false))
-                .collect();
+            let children: Vec<MenuItemView<Key>> =
+                items.iter().map(|c| MenuItemView::new(c, false)).collect();
             ItemContent::Parent(children, anchor, Rect::new((0, 0), (0, 0)))
         } else {
             ItemContent::Button
@@ -188,7 +186,7 @@ fn draw<Key: Hash + Copy + PartialEq + Eq + Debug>(
 }
 
 pub(super) fn collapse_menu<Key: Hash + Copy + PartialEq + Eq + Debug>(
-    children: &mut Vec<MenuItemView<Key>>,
+    children: &mut [MenuItemView<Key>],
 ) {
     children.iter_mut().for_each(|c| {
         if let ItemContent::Parent(items, _, _) = &mut c.content {
@@ -201,7 +199,6 @@ pub(super) fn collapse_menu<Key: Hash + Copy + PartialEq + Eq + Debug>(
 /// returns the path to the view clicked on (if it exists)
 /// will return path to options element
 pub(super) fn on_click_path<Key: Hash + Copy + PartialEq + Eq + Debug>(
-    style: &MenuBarStyle,
     items: &[MenuItemView<Key>],
     down_at: Coord,
     up_at: Coord,
@@ -211,7 +208,7 @@ pub(super) fn on_click_path<Key: Hash + Copy + PartialEq + Eq + Debug>(
             if item.item_bounds.contains(down_at) && item.item_bounds.contains(up_at) {
                 return Some(item.id);
             } else if let ItemContent::Parent(children, _, _) = &item.content {
-                let result = on_click_path(style, children, down_at, up_at);
+                let result = on_click_path(children, down_at, up_at);
                 if result.is_some() {
                     return result;
                 }
@@ -270,13 +267,14 @@ pub(super) fn layout_titles<Key: Hash + Copy + PartialEq + Eq + Debug>(
         bounds = union(&bounds, &item.item_bounds);
         match &mut item.content {
             ItemContent::Checkable(_) | ItemContent::Button => {}
-            ItemContent::Parent(_, _, _) => layout_children(item, &style, screen_size),
+            ItemContent::Parent(_, _, _) => layout_children(item, style, screen_size),
         }
     }
 
     bounds
 }
 
+#[allow(clippy::only_used_in_recursion)] //screen_size for future use
 fn layout_children<Key: Hash + Copy + PartialEq + Eq + Debug>(
     item: &mut MenuItemView<Key>,
     style: &MenuBarStyle,
@@ -306,10 +304,10 @@ fn layout_children<Key: Hash + Copy + PartialEq + Eq + Debug>(
                 .map(|v| {
                     let mut w = style.dropdown_item.font.measure(&v.name).0;
                     if any_checks {
-                        w = w + style.dropdown_item.font.char_width();
+                        w += style.dropdown_item.font.char_width();
                     }
                     if any_submenus {
-                        w = w + style.dropdown_item.font.char_width();
+                        w += style.dropdown_item.font.char_width();
                     }
                     w
                 })

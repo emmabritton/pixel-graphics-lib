@@ -98,7 +98,7 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuBar<Key> {
     ) -> MenuBar<Key> {
         let views: Vec<MenuItemView<Key>> = items
             .iter()
-            .map(|item| MenuItemView::new(item, style, true))
+            .map(|item| MenuItemView::new(item, true))
             .collect();
         let bounds = Rect::new(pos, (0, 0));
         let mut menu_bar = MenuBar {
@@ -152,7 +152,7 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuBar<Key> {
             self.collapse();
             return None;
         }
-        let path = on_click_path(&self.style, &self.items, down_at, up_at);
+        let path = on_click_path(&self.items, down_at, up_at);
         self.collapse();
         path
     }
@@ -171,9 +171,9 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuBar<Key> {
     /// they have their own state
     pub fn set_state(&mut self, id: Key, new_state: ViewState) {
         if let Some(v) = self.get_view_mut(id) {
-            (*v).state = new_state;
+            v.state = new_state;
             if new_state == ViewState::Disabled {
-                (*v).focused = false;
+                v.focused = false;
             }
         }
         self.calc_bounds();
@@ -215,12 +215,10 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuBar<Key> {
         for item in list {
             if item.id == id {
                 return Some(item);
-            } else {
-                if let ItemContent::Parent(children, _, _) = &item.content {
-                    let result = Self::get_view_from_list(children, id);
-                    if result.is_some() {
-                        return result;
-                    }
+            } else if let ItemContent::Parent(children, _, _) = &item.content {
+                let result = Self::get_view_from_list(children, id);
+                if result.is_some() {
+                    return result;
                 }
             }
         }
@@ -238,12 +236,10 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuBar<Key> {
         for item in list {
             if item.id == id {
                 return Some(item);
-            } else {
-                if let ItemContent::Parent(children, _, _) = &mut item.content {
-                    let result = Self::get_view_mut_from_list(children, id);
-                    if result.is_some() {
-                        return result;
-                    }
+            } else if let ItemContent::Parent(children, _, _) = &mut item.content {
+                let result = Self::get_view_mut_from_list(children, id);
+                if result.is_some() {
+                    return result;
                 }
             }
         }
