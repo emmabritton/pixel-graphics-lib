@@ -15,6 +15,12 @@ pub trait FileDialogResults<SR: Clone + Debug + PartialEq> {
 }
 
 /// Creates a shade and outline for dialogs
+///
+/// Dialog size should be set in `style`
+///
+/// # Parameters
+/// * `width` - Screen width
+/// * `height` - Screen height
 pub fn dialog_background(width: usize, height: usize, style: &DialogStyle) -> ShapeCollection {
     let mut background = ShapeCollection::default();
     if let Some(color) = style.shade {

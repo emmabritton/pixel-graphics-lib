@@ -57,6 +57,16 @@ pub enum ViewLayoutRule {
     BottomToBottom,
     TopToBottom,
     BottomToTop,
+    CenterHToLeft,
+    CenterHToRight,
+    CenterHToCenterH,
+    LeftToCenterH,
+    RightToCenterH,
+    CenterVToTop,
+    CenterVToBottom,
+    TopToCenterV,
+    BottomToCenterV,
+    CenterVToCenterV,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -65,6 +75,8 @@ pub enum ParentLayoutRule {
     FromRight,
     FromTop,
     FromBottom,
+    FromCenterH,
+    FromCenterV,
     FillVert,
     FillHorz,
 }
@@ -146,6 +158,93 @@ pub fn move_by_view(
             view.bounds().left(),
             pivot.bounds().top() - offset.calc(parent.height()) - (view.bounds().height() as isize)
         )),
+        ViewLayoutRule::CenterHToLeft => view.set_position(coord!(
+            pivot.bounds().left() + offset.calc(parent.width())
+                - (view.bounds().width() as isize / 2),
+            view.bounds().top()
+        )),
+        ViewLayoutRule::CenterHToRight => view.set_position(coord!(
+            pivot.bounds().left()
+                + offset.calc(parent.width())
+                + (view.bounds().width() as isize / 2),
+            view.bounds().top()
+        )),
+        ViewLayoutRule::LeftToCenterH => view.set_position(coord!(
+            pivot.bounds().center().x + offset.calc(parent.width()),
+            view.bounds().top()
+        )),
+        ViewLayoutRule::RightToCenterH => view.set_position(coord!(
+            pivot.bounds().center().x
+                - offset.calc(parent.width())
+                - (view.bounds().width() as isize),
+            view.bounds().top()
+        )),
+        ViewLayoutRule::CenterVToTop => view.set_position(coord!(
+            view.bounds().left(),
+            pivot.bounds().top() + offset.calc(parent.height())
+                - (view.bounds().height() as isize / 2)
+        )),
+        ViewLayoutRule::CenterVToBottom => view.set_position(coord!(
+            view.bounds().left(),
+            pivot.bounds().top()
+                + offset.calc(parent.height())
+                + (view.bounds().height() as isize / 2)
+        )),
+        ViewLayoutRule::TopToCenterV => view.set_position(coord!(
+            view.bounds().left(),
+            pivot.bounds().center().y + offset.calc(parent.height()),
+        )),
+        ViewLayoutRule::BottomToCenterV => view.set_position(coord!(
+            view.bounds().left(),
+            pivot.bounds().center().y + offset.calc(parent.height())
+                - (view.bounds().height() as isize),
+        )),
+        ViewLayoutRule::CenterHToCenterH => view.set_position(coord!(
+            pivot.bounds().center().x + offset.calc(parent.width())
+                - (view.bounds().width() as isize / 2),
+            view.bounds().top()
+        )),
+        ViewLayoutRule::CenterVToCenterV => view.set_position(coord!(
+            view.bounds().left(),
+            pivot.bounds().center().y
+                - offset.calc(parent.height())
+                - (view.bounds().height() as isize / 2),
+        )),
+    }
+}
+
+pub fn center_between(
+    parent: &Rect,
+    view: &mut dyn LayoutView,
+    first: &dyn PixelView,
+    second: &dyn PixelView,
+    horz: bool,
+    offset: LayoutOffset,
+) {
+    if horz {
+        let half_width = (view.bounds().width() / 2) as isize;
+        view.set_position(coord!(
+            first
+                .bounds()
+                .center()
+                .mid_point(second.bounds().center())
+                .x
+                - half_width
+                + offset.calc(parent.width()),
+            view.bounds().top()
+        ));
+    } else {
+        let half_height = (view.bounds().height() / 2) as isize;
+        view.set_position(coord!(
+            view.bounds().left(),
+            first
+                .bounds()
+                .center()
+                .mid_point(second.bounds().center())
+                .y
+                - half_height
+                + offset.calc(parent.height())
+        ));
     }
 }
 
@@ -189,6 +288,23 @@ pub fn grow_by_view(
             view.bounds()
                 .u_bottom(pivot.bounds().top() - offset.calc(parent.height())),
         ),
+        ViewLayoutRule::LeftToCenterH => view.set_bounds(
+            view.bounds()
+                .u_left(pivot.bounds().center().x + offset.calc(parent.width())),
+        ),
+        ViewLayoutRule::RightToCenterH => view.set_bounds(
+            view.bounds()
+                .u_right(pivot.bounds().center().x + offset.calc(parent.width())),
+        ),
+        ViewLayoutRule::TopToCenterV => view.set_bounds(
+            view.bounds()
+                .u_top(pivot.bounds().center().y + offset.calc(parent.width())),
+        ),
+        ViewLayoutRule::BottomToCenterV => view.set_bounds(
+            view.bounds()
+                .u_bottom(pivot.bounds().center().y + offset.calc(parent.width())),
+        ),
+        _ => {}
     }
 }
 
@@ -214,6 +330,15 @@ pub fn move_by_parent(
         ParentLayoutRule::FromBottom => view.set_position(coord!(
             view.bounds().left(),
             parent.bottom() - (view.bounds().height() as isize) - offset.calc(parent.height()),
+        )),
+        ParentLayoutRule::FromCenterH => view.set_position(coord!(
+            parent.center().x + offset.calc(parent.width()) - (view.bounds().width() as isize / 2),
+            view.bounds().top(),
+        )),
+        ParentLayoutRule::FromCenterV => view.set_position(coord!(
+            view.bounds().left(),
+            parent.center().y + offset.calc(parent.height())
+                - (view.bounds().height() as isize / 2),
         )),
         _ => {}
     }
@@ -250,6 +375,32 @@ pub fn grow_by_parent(
             parent.left() + offset.calc(parent.width()),
             parent.right() - offset.calc(parent.width()),
         )),
+        ParentLayoutRule::FromCenterH => {
+            if view.bounds().center().x < parent.center().x {
+                view.set_bounds(
+                    view.bounds()
+                        .u_right(parent.center().x + offset.calc(parent.width())),
+                )
+            } else {
+                view.set_bounds(
+                    view.bounds()
+                        .u_left(parent.center().x - offset.calc(parent.width())),
+                )
+            }
+        }
+        ParentLayoutRule::FromCenterV => {
+            if view.bounds().center().y < parent.center().y {
+                view.set_bounds(
+                    view.bounds()
+                        .u_bottom(parent.center().y + offset.calc(parent.height())),
+                )
+            } else {
+                view.set_bounds(
+                    view.bounds()
+                        .u_top(parent.center().y - offset.calc(parent.height())),
+                )
+            }
+        }
     }
 }
 
@@ -257,7 +408,7 @@ pub fn grow_by_parent(
 ///
 /// # Format
 ///
-/// layout!(context, [command] view, alignment [pivot_view][, offset]);
+/// layout!(context, [command] view, alignment [pivot_view],[second_pivot_view][, offset]);
 ///
 /// Views must impl [PixelView] and to use `grow` they must also impl [LayoutView]
 ///
@@ -297,20 +448,34 @@ pub fn grow_by_parent(
 /// *View*
 /// * `left_to_left_of` - Makes view.x = pivot_view.x
 /// * `top_to_top_of` - Makes view.y = pivot_view.y
-/// * `right_to_right_of` - Makes view.x = pivot_view.x + pivot_view.width - view.width
-/// * `bottom_to_bottom_of` - Makes view.y = pivot_view.y + pivot_view.height - view.height
+/// * `right_to_right_of` - Makes view.x = pivot_view.right - view.width
+/// * `bottom_to_bottom_of` - Makes view.y = pivot_view.bottom - view.height
 /// * `left_to_right_of` - Makes view.x = pivot_view.x + pivot_view.width
 /// * `right_to_left_of` - Makes view.x = pivot_view.x - view.width
-/// * `top_to_bottom_of` - Makes view.y = pivot_view.y + pivot_view.height
+/// * `top_to_bottom_of` - Makes view.y = pivot_view.bottom
 /// * `bottom_to_top_of` - Makes view.y = pivot_view.y - view.height
+/// * `centerh_to_centerh_of` - Makes view.center.x = pivot_view.center.x (`grow` not supported)
+/// * `centerv_to_centerv_of` - Makes view.center.y = pivot_view.center.y (`grow` not supported)
+/// * `centerv_to_top_of` - Makes view.center.y = pivot_view.y (`grow` not supported)
+/// * `centerv_to_bottom_of` - Makes view.center.y = pivot_view.bottom (`grow` not supported)
+/// * `centerh_to_left_of` - Makes view.center.x = pivot_view.left (`grow` not supported)
+/// * `centerh_to_right_of` - Makes view.center.x = pivot_view.right (`grow` not supported)
+/// * `left_to_centerh_of` - Makes view.x = pivot_view.center.x
+/// * `right_to_centerh_of` - Makes view.x = pivot_view.center.x - view.width
+/// * `top_to_centerv_of` - Makes view.y = pivot_view.center.y
+/// * `bottom_to_centerv_of` - Makes view.y = pivot_view.center.y - view.height
+/// * `center_between_horz` - Make view.center.x = pivot_view.right midpoint second_pivot_view.left
+/// * `center_between_vert` - Make view.center.y = pivot_view.bottom midpoint second_pivot_view.top
 ///
 /// *Parent*
-/// * `fill_width` - Set x to context.bounds.left, width to context.bounds.width (`grow` only)
-/// * `fill_height` - Set y to context.bounds.top, height to context.bounds.height (`grow` only)
-/// * `align_left` - Set x to context.bounds.left
-/// * `align_right` - Set x to (context.bounds.right - view.width)
-/// * `align_top` - Set y to context.bounds.top
-/// * `align_bottom` - Set y to (context.bounds.bottom - view.height)
+/// * `fill_width` - Set x to context.left, width to context.width (`grow` only)
+/// * `fill_height` - Set y to context.top, height to context.height (`grow` only)
+/// * `align_left` - Set x to context.left
+/// * `align_right` - Set x to (context.right - view.width)
+/// * `align_top` - Set y to context.top
+/// * `align_bottom` - Set y to (context.bottom - view.height)
+/// * `align_centerh` - Set x to context.center.x (when using `grow` moves view.left or view.right instead)
+/// * `align_centerv` - Set y to context.center.y (when using `grow` moves view.top or view.bottom instead)
 #[macro_export]
 macro_rules! layout {
     ($context:expr, $view:expr, left_to_left_of $pivot:expr $(, $offset:expr)?) => {
@@ -358,6 +523,48 @@ macro_rules! layout {
     ($context:expr, grow $view:expr, top_to_top_of $pivot:expr $(, $offset:expr)?) => {
         $crate::ui::layout::relative::grow_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::TopToTop, $crate::or_else!($($offset)?, $context.default_offset));
     };
+    ($context:expr, $view:expr, centerh_to_centerh_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::CenterHToCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, centerh_to_left_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::CenterHToLeft, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, centerh_to_right_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::CenterHToRight, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, centerv_to_centerv_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::CenterVToCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, centerv_to_top_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::CenterVToTop, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, centerv_to_bottom_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::CenterVToBottom, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, left_to_centerh_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::LeftToCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, right_to_centerh_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::RightToCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, grow $view:expr, left_to_centerh_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::grow_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::LeftToCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, grow $view:expr, right_to_centerh_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::grow_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::RightToCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, top_to_centerv_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::TopToCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, bottom_to_centerv_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::BottomToCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, grow $view:expr, top_to_centerv_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::grow_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::TopToCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, grow $view:expr, bottom_to_centerv_of $pivot:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::grow_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::BottomToCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
     ($context:expr, grow $view:expr, top_to_bottom_of $pivot:expr $(, $offset:expr)?) => {
         $crate::ui::layout::relative::grow_by_view(&$context.bounds, &mut $view, &$pivot, $crate::ui::layout::relative::ViewLayoutRule::TopToBottom, $crate::or_else!($($offset)?, $context.default_offset));
     };
@@ -390,6 +597,24 @@ macro_rules! layout {
     };
     ($context:expr, $view:expr, align_bottom $(, $offset:expr)?) => {
         $crate::ui::layout::relative::move_by_parent(&$context.bounds, &mut $view, $crate::ui::layout::relative::ParentLayoutRule::FromBottom, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, align_centerh $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_parent(&$context.bounds, &mut $view, $crate::ui::layout::relative::ParentLayoutRule::FromCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, $view:expr, align_centerv $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::move_by_parent(&$context.bounds, &mut $view, $crate::ui::layout::relative::ParentLayoutRule::FromCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, grow $view:expr, align_centerh $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::grow_by_parent(&$context.bounds, &mut $view, $crate::ui::layout::relative::ParentLayoutRule::FromCenterH, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, grow $view:expr, align_centerv $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::grow_by_parent(&$context.bounds, &mut $view, $crate::ui::layout::relative::ParentLayoutRule::FromCenterV, $crate::or_else!($($offset)?, $context.default_offset));
+    };
+    ($context:expr, centerh $view:expr, between $first:expr, $second:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::center_between(&$context.bounds, &mut $view, &$first, &$second, true, $context.default_offset);
+    };
+    ($context:expr, centerv $view:expr, between $first:expr, $second:expr $(, $offset:expr)?) => {
+        $crate::ui::layout::relative::center_between(&$context.bounds, &mut $view, &$first, &$second, false, $context.default_offset);
     };
 }
 

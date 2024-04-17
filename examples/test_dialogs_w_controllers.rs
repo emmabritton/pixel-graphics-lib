@@ -5,7 +5,7 @@ use pixels_graphics_lib::ui::styles::UiStyle;
 // This example is used a test to make the dialogs with controllers have been correctly written
 
 fn main() {
-    let _ = SaveFileDialog::<SR, SN>::new(None, None, 10, 10, &UiStyle::default().dialog);
+    let _ = SaveFileDialog::<SR, SN>::new(None, None, 10, 10, &UiStyle::default());
 }
 
 #[derive(Clone, Debug, PartialEq)]

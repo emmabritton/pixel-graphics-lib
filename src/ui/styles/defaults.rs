@@ -6,6 +6,7 @@ use buffer_graphics_lib::prelude::*;
 impl Default for UiStyle {
     fn default() -> Self {
         Self {
+            checkbox: Default::default(),
             button: Default::default(),
             text_field: Default::default(),
             toggle_button: Default::default(),
@@ -110,9 +111,6 @@ impl DialogStyle {
                 a: 255,
             }),
             WHITE,
-            ButtonStyle::default(),
-            TextFieldStyle::default(),
-            ToggleButtonStyle::default(),
             Some(LIGHT_GRAY),
             Some(DARK_GRAY),
             Some(Color {
@@ -129,9 +127,6 @@ impl DialogStyle {
         bounds: Rect,
         background: Option<Color>,
         text: Color,
-        button: ButtonStyle,
-        text_field: TextFieldStyle,
-        toggle_button: ToggleButtonStyle,
         border: Option<Color>,
         shadow: Option<Color>,
         shade: Option<Color>,
@@ -140,9 +135,6 @@ impl DialogStyle {
             bounds,
             background,
             text,
-            button,
-            text_field,
-            toggle_button,
             border,
             shadow,
             shade,
@@ -192,7 +184,7 @@ impl Default for ToggleIconButtonStyle {
 impl Default for MenuBarStyle {
     fn default() -> Self {
         Self {
-            background: ColorSet::new_same(BLUE.with_brightness(0.8)),
+            background: ColorSet::new_same(BLUE.with_saturate(0.8)),
             border: ColorSet::new_same(WHITE),
             menu_item: MenuItemStyle::default(),
             dropdown_item: DropdownItemStyle::default(),
@@ -203,10 +195,10 @@ impl Default for MenuBarStyle {
 impl Default for MenuItemStyle {
     fn default() -> Self {
         Self {
-            background: FocusColorSet::menu(BLUE.with_brightness(0.6), TRANSPARENT, TRANSPARENT),
+            background: FocusColorSet::menu(BLUE.with_saturate(0.8), TRANSPARENT, TRANSPARENT),
             text: FocusColorSet::new_values(OFF_WHITE, WHITE, WHITE, LIGHT_GRAY, MID_GRAY),
             font: Default::default(),
-            dropdown_background: Some(BLUE.with_brightness(0.6)),
+            dropdown_background: Some(BLUE.with_saturate(0.8)),
             padding: Padding::new(2, 2, 2, 1),
         }
     }
@@ -215,7 +207,7 @@ impl Default for MenuItemStyle {
 impl Default for DropdownItemStyle {
     fn default() -> Self {
         Self {
-            background: FocusColorSet::menu(BLUE.with_brightness(0.5), TRANSPARENT, TRANSPARENT),
+            background: FocusColorSet::menu(BLUE.with_saturate(0.8), TRANSPARENT, TRANSPARENT),
             text: FocusColorSet::new_values(OFF_WHITE, WHITE, WHITE, LIGHT_GRAY, MID_GRAY),
             font: PixelFont::default(),
             arrow: DropdownItemStyle::dropdown_arrow_for_font(
@@ -277,5 +269,41 @@ impl DropdownItemStyle {
                 colors.disabled.unwrap_or(colors.error.unwrap_or(MID_GRAY)),
             )),
         }
+    }
+}
+
+impl Default for CheckboxStyle {
+    fn default() -> Self {
+        let [checked_icon, check_box] = CheckboxStyle::icons();
+
+        CheckboxStyle {
+            checked_icon,
+            check_box,
+            text: ColorSet::new_values(WHITE, WHITE, WHITE, LIGHT_GRAY),
+            icon: ColorSet::new_values(WHITE, WHITE, WHITE, LIGHT_GRAY),
+            font: PixelFont::Standard6x7,
+            spacing: 4,
+        }
+    }
+}
+
+impl CheckboxStyle {
+    fn icons() -> [IndexedImage; 2] {
+        let size = 9;
+        let mut box_buffer = Graphics::create_buffer(size, size);
+        let mut check_buffer = Graphics::create_buffer(size, size);
+        let mut box_graphics = Graphics::new(&mut box_buffer, size, size).unwrap();
+        let mut check_graphics = Graphics::new(&mut check_buffer, size, size).unwrap();
+        box_graphics.draw_rect(Rect::new((0, 0), (size - 1, size - 1)), stroke(WHITE));
+        check_graphics.draw_line((1, 4), (3, 5), WHITE);
+        check_graphics.draw_line((1, 4), (3, 6), WHITE);
+        check_graphics.draw_line((1, 5), (3, 7), WHITE);
+        check_graphics.draw_line((3, 5), (7, 1), WHITE);
+        check_graphics.draw_line((3, 6), (8, 1), WHITE);
+        check_graphics.draw_line((3, 7), (8, 2), WHITE);
+        [
+            check_graphics.copy_to_indexed_image(false).unwrap(),
+            box_graphics.copy_to_indexed_image(false).unwrap(),
+        ]
     }
 }

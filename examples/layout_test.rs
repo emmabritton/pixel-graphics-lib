@@ -143,7 +143,7 @@ impl LayoutTest {
 }
 
 impl Scene<SceneResult, SceneName> for LayoutTest {
-    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.clear(BLUE);
         self.button.render(graphics, mouse);
         self.toggle_button.render(graphics, mouse);
@@ -159,13 +159,19 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         self.rightbottom.render(graphics, mouse);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &FxHashSet<KeyCode>) {
         self.text_field.on_key_press(key, held);
         self.padding.on_key_press(key, held);
         self.spacing.on_key_press(key, held);
     }
 
-    fn on_mouse_click(&mut self, down_at: Coord, mouse: &MouseData, _: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_click(
+        &mut self,
+        down_at: Coord,
+        mouse: &MouseData,
+        _: MouseButton,
+        _: &FxHashSet<KeyCode>,
+    ) {
         self.text_field.on_mouse_click(down_at, mouse.xy);
         self.spacing.on_mouse_click(down_at, mouse.xy);
         self.padding.on_mouse_click(down_at, mouse.xy);
@@ -211,7 +217,7 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         &mut self,
         timing: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.text_field.update(timing);
         self.spacing.update(timing);

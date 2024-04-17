@@ -32,6 +32,9 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleButtonGroup<Key> {
                 tmp = Some(idx.clone());
             }
         }
+        if let Some(key) = &tmp {
+            self.selected = key.clone();
+        }
         if let Some(id) = &tmp {
             for (idx, button) in &mut self.buttons {
                 button.set_selected(idx == id);
@@ -90,6 +93,9 @@ impl<Key: Hash + Clone + PartialEq + Eq> ToggleIconButtonGroup<Key> {
             if button.on_mouse_click(down, up) {
                 tmp = Some(idx.clone());
             }
+        }
+        if let Some(key) = &tmp {
+            self.selected = key.clone();
         }
         if let Some(id) = &tmp {
             for (idx, button) in &mut self.buttons {

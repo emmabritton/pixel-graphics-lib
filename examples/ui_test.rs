@@ -146,7 +146,7 @@ impl Menu {
 }
 
 impl Scene<SceneResult, SceneName> for Menu {
-    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.clear(self.background);
         self.title.render(graphics);
         self.tooltip_rect.render(graphics);
@@ -165,7 +165,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         self.dir_panel.render(graphics, mouse);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held: &FxHashSet<KeyCode>) {
         self.field1.on_key_press(key, held);
         self.field2.on_key_press(key, held);
         self.field3.on_key_press(key, held);
@@ -176,7 +176,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         down_at: Coord,
         mouse: &MouseData,
         button: MouseButton,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) {
         if button != MouseButton::Left {
             return;
@@ -200,7 +200,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         }
     }
 
-    fn on_scroll(&mut self, mouse: &MouseData, _: isize, y_diff: isize, _: &[KeyCode]) {
+    fn on_scroll(&mut self, mouse: &MouseData, _: isize, y_diff: isize, _: &FxHashSet<KeyCode>) {
         self.dir_panel.on_scroll(mouse.xy, y_diff);
     }
 
@@ -208,7 +208,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         &mut self,
         timing: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.field1.update(timing);
         self.field2.update(timing);

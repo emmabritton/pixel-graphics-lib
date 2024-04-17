@@ -27,6 +27,10 @@ pub struct Alert {
 }
 
 impl Alert {
+    ///
+    /// # Parameters
+    /// * `width` - Screen width
+    /// * `height` - Screen height
     pub fn new_question(
         message: &[&str],
         negative_text: &str,
@@ -69,6 +73,10 @@ impl Alert {
         }
     }
 
+    ///
+    /// # Parameters
+    /// * `width` - Screen width
+    /// * `height` - Screen height
     pub fn new_warning(message: &[&str], width: usize, height: usize, style: &AlertStyle) -> Self {
         let pos = Coord::from((width / 2, height / 2)) - Coord::from(ALERT_SIZE) / 2;
         let (bounds, background) = Self::background(style, pos);

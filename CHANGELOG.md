@@ -1,5 +1,19 @@
 # Changelog
 
+### Version 0.19.0
+
+- BREAKING
+    - Change scenes param from `&[KeyCode]` to `&FxHashSet<KeyCode>`
+    - Remove view styles from dialog style
+    - Clicking a toggle button in a group will now automatically select it and unselect the others
+- Add `Checkbox` view
+- Add new options to `layout!`
+    - `[left|right|centerh]_to_[left|right|centerh]_of`
+    - `[top|bottom|centerv]_to_[top|bottom|centerv]_of`
+    - `align_centerv`, `align_centerh`
+- Add `MenuBar::uncheck_all_children`
+- Add feature `copypaste` which adds copying and pasting to `TextField`s
+
 ### Version 0.18.0
 
 - BREAKING

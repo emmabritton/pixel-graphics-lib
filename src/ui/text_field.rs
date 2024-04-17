@@ -6,6 +6,7 @@ use crate::utilities::key_code_to_char;
 use buffer_graphics_lib::prelude::Positioning::LeftCenter;
 use buffer_graphics_lib::prelude::WrappingStrategy::Cutoff;
 use buffer_graphics_lib::prelude::*;
+use std::ops::RangeInclusive;
 
 const CURSOR_BLINK_RATE: f64 = 0.5;
 
@@ -92,6 +93,7 @@ pub struct TextField {
     state: ViewState,
     visible_count: usize,
     first_visible: usize,
+    selection: Option<RangeInclusive<usize>>,
 }
 
 impl TextField {
@@ -148,6 +150,7 @@ impl TextField {
             filters,
             style: style.clone(),
             state: ViewState::Normal,
+            selection: None,
         }
     }
 
@@ -194,42 +197,100 @@ impl TextField {
         self.content.len() == self.max_char_count
     }
 
+    fn cursor_pos_for_x(&self, x: isize) -> usize {
+        (((x - self.bounds.left()) / (self.font.char_width() as isize)).max(0) as usize)
+            .min(self.content.len())
+    }
+
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
         if self.state != ViewState::Disabled {
             self.focused = self.bounds.contains(down) && self.bounds.contains(up);
-            self.cursor_pos = (((up.x - self.bounds.left()) / (self.font.char_width() as isize))
-                .max(0) as usize)
-                .min(self.content.len());
+            self.cursor_pos = self.cursor_pos_for_x(up.x);
             return self.focused;
         }
         false
     }
 
-    pub fn on_key_press(&mut self, key: KeyCode, held_keys: &[KeyCode]) {
+    pub fn on_mouse_drag(&mut self, down: Coord, up: Coord) {
+        if self.state != ViewState::Disabled
+            && self.bounds.contains(down)
+            && self.bounds.contains(up)
+        {
+            self.focused = true;
+            let start = self.cursor_pos_for_x(down.x);
+            let end = self.cursor_pos_for_x(up.x);
+            let tmp = start.min(end);
+            let end = start.max(end);
+            let start = tmp;
+            if start != end {
+                self.selection = Some(start..=end);
+            } else {
+                self.cursor_pos = start;
+                self.selection = None;
+            }
+        }
+    }
+
+    fn delete_selection(&mut self) {
+        if let Some(selection) = self.selection.clone() {
+            self.cursor_pos = *selection.start();
+            self.content.replace_range(selection, "");
+            self.selection = None;
+        }
+    }
+
+    fn collapse_selection(&mut self) {
+        if let Some(selection) = self.selection.clone() {
+            self.selection = None;
+            self.cursor_pos = *selection.start();
+        }
+    }
+
+    fn grow_selection_left(&mut self) {}
+
+    fn grow_selection_right(&mut self) {}
+
+    pub fn on_key_press(&mut self, key: KeyCode, held_keys: &FxHashSet<KeyCode>) {
         if !self.focused || self.state == ViewState::Disabled {
             return;
         }
         match key {
             KeyCode::ArrowLeft => {
-                if self.cursor_pos > 0 {
-                    if self.cursor_pos > self.first_visible {
-                        self.cursor_pos -= 1;
-                    } else {
-                        self.cursor_pos -= 1;
-                        self.first_visible -= 1;
+                if held_keys.contains(&KeyCode::ShiftRight)
+                    || held_keys.contains(&KeyCode::ShiftLeft)
+                {
+                    self.grow_selection_left();
+                } else {
+                    self.collapse_selection();
+                    if self.cursor_pos > 0 {
+                        if self.cursor_pos > self.first_visible {
+                            self.cursor_pos -= 1;
+                        } else {
+                            self.cursor_pos -= 1;
+                            self.first_visible -= 1;
+                        }
                     }
                 }
             }
             KeyCode::ArrowRight => {
-                if self.cursor_pos < self.content.chars().count() {
-                    self.cursor_pos += 1;
-                    if self.cursor_pos > self.first_visible + self.visible_count {
-                        self.first_visible += 1;
+                if held_keys.contains(&KeyCode::ShiftRight)
+                    || held_keys.contains(&KeyCode::ShiftLeft)
+                {
+                    self.grow_selection_right();
+                } else {
+                    self.collapse_selection();
+                    if self.cursor_pos < self.content.chars().count() {
+                        self.cursor_pos += 1;
+                        if self.cursor_pos > self.first_visible + self.visible_count {
+                            self.first_visible += 1;
+                        }
                     }
                 }
             }
             KeyCode::Backspace => {
-                if !self.content.is_empty() && self.cursor_pos > 0 {
+                if self.selection.is_some() {
+                    self.delete_selection();
+                } else if !self.content.is_empty() && self.cursor_pos > 0 {
                     self.cursor_pos -= 1;
                     self.content.remove(self.cursor_pos);
                     let len = self.content.chars().count();
@@ -243,21 +304,26 @@ impl TextField {
                 }
             }
             KeyCode::Delete => {
-                let len = self.content.chars().count();
-                if !self.content.is_empty() && self.cursor_pos < len {
-                    self.content.remove(self.cursor_pos);
+                if self.selection.is_some() {
+                    self.delete_selection();
+                } else {
                     let len = self.content.chars().count();
-                    if self.visible_count >= len {
-                        self.first_visible = 0;
-                    } else {
-                        while len < self.first_visible + self.visible_count {
-                            self.first_visible -= 1;
+                    if !self.content.is_empty() && self.cursor_pos < len {
+                        self.content.remove(self.cursor_pos);
+                        let len = self.content.chars().count();
+                        if self.visible_count >= len {
+                            self.first_visible = 0;
+                        } else {
+                            while len < self.first_visible + self.visible_count {
+                                self.first_visible -= 1;
+                            }
                         }
                     }
                 }
             }
             _ => {
                 if let Some((lower, upper)) = key_code_to_char(key) {
+                    self.delete_selection();
                     let shift_pressed = held_keys.contains(&KeyCode::ShiftLeft)
                         || held_keys.contains(&KeyCode::ShiftRight);
                     for filter in &self.filters {

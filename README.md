@@ -13,7 +13,7 @@ with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
 In your `Cargo.toml` file add
 
 ```toml
-pixels-graphics-lib = "0.18.0"
+pixels-graphics-lib = "0.19.0"
 winit_input_helper = "0.16.0" #only needed if you're not using `run()`
 ```
 
@@ -155,8 +155,12 @@ A few retro games
 
 ### [ICI Image editor](https://github.com/emmabritton/ici-image-editor)
 
-Editor for `IndexedImage`
+Editor for `IndexedImage`, ICI files
 
 ### [USFX Tester](https://github.com/emmabritton/uxfs-test)
 
 Test GUI for [USFX](https://github.com/tversteeg/usfx)
+
+### [Fontpad](https://github.com/emmabritton/fontpad)
+
+Program used to create fonts for [Buffer graphics](https://github.com/emmabritton/buffer-graphics-lib)

@@ -1,5 +1,6 @@
 pub mod alert;
 pub mod button;
+pub mod checkbox;
 pub mod dir_panel;
 pub mod helpers;
 pub mod icon_button;
@@ -20,6 +21,7 @@ use std::fmt::Debug;
 pub mod prelude {
     pub use crate::ui::alert::*;
     pub use crate::ui::button::*;
+    pub use crate::ui::checkbox::*;
     pub use crate::ui::dir_panel::*;
     pub use crate::ui::helpers::*;
     pub use crate::ui::icon_button::*;
@@ -45,7 +47,7 @@ macro_rules! render {
     };
 }
 
-pub trait PixelView {
+pub trait PixelView: Debug {
     fn set_position(&mut self, top_left: Coord);
 
     fn bounds(&self) -> &Rect;

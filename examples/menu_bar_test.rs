@@ -87,7 +87,7 @@ impl MenuTest {
 }
 
 impl Scene<SceneResult, SceneName> for MenuTest {
-    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.clear(BLUE);
         render!(graphics, mouse, self.menubar);
 
@@ -102,9 +102,15 @@ impl Scene<SceneResult, SceneName> for MenuTest {
         );
     }
 
-    fn on_key_up(&mut self, _: KeyCode, _: &MouseData, _: &[KeyCode]) {}
+    fn on_key_up(&mut self, _: KeyCode, _: &MouseData, _: &FxHashSet<KeyCode>) {}
 
-    fn on_mouse_click(&mut self, xy: Coord, mouse: &MouseData, button: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_click(
+        &mut self,
+        xy: Coord,
+        mouse: &MouseData,
+        button: MouseButton,
+        _: &FxHashSet<KeyCode>,
+    ) {
         if button == MouseButton::Left {
             if let Some(path) = self.menubar.on_mouse_click(xy, mouse.xy) {
                 println!("Clicked on {path:?} {:?}", self.menubar.label_for(path));
@@ -116,7 +122,7 @@ impl Scene<SceneResult, SceneName> for MenuTest {
         &mut self,
         _: &Timing,
         mouse: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.menubar.on_mouse_move(mouse.xy);
         Nothing

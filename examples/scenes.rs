@@ -56,13 +56,13 @@ enum SceneResult {
 }
 
 impl Scene<SceneResult, SceneName> for Scene1 {
-    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.clear(BLUE);
         graphics.set_pixel(0, 0, RED);
         graphics.set_pixel(1, 1, RED);
     }
 
-    fn on_mouse_up(&mut self, _: &MouseData, button: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_up(&mut self, _: &MouseData, button: MouseButton, _: &FxHashSet<KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -73,7 +73,7 @@ impl Scene<SceneResult, SceneName> for Scene1 {
         &mut self,
         _: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -90,15 +90,15 @@ impl Scene<SceneResult, SceneName> for Scene1 {
 }
 
 impl Scene<SceneResult, SceneName> for Scene2 {
-    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.clear(RED);
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, _: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, _: &FxHashSet<KeyCode>) {
         self.result = Pop(Some(FromKey(key)))
     }
 
-    fn on_mouse_up(&mut self, mouse: &MouseData, button: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_up(&mut self, mouse: &MouseData, button: MouseButton, _: &FxHashSet<KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -113,7 +113,7 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         &mut self,
         _: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -124,11 +124,11 @@ impl Scene<SceneResult, SceneName> for Scene2 {
 }
 
 impl Scene<SceneResult, SceneName> for Scene3 {
-    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.draw_rect(Rect::new((90, 90), (190, 150)), fill(self.back));
     }
 
-    fn on_mouse_up(&mut self, _: &MouseData, button: MouseButton, _: &[KeyCode]) {
+    fn on_mouse_up(&mut self, _: &MouseData, button: MouseButton, _: &FxHashSet<KeyCode>) {
         if button != MouseButton::Left {
             return;
         }
@@ -139,7 +139,7 @@ impl Scene<SceneResult, SceneName> for Scene3 {
         &mut self,
         _: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }

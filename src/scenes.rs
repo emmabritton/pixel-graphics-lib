@@ -97,7 +97,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &self,
         graphics: &mut Graphics,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         controller: &GameController,
     );
     /// Render scene contents using `graphics`
@@ -108,7 +108,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// mouse will be empty if this screen is in the background and a non full screen scene is active
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
     #[allow(unused_variables)]
-    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, held_keys: &[KeyCode]) {}
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, held_keys: &FxHashSet<KeyCode>) {}
     /// Called when a keyboard key is being pressed down
     ///
     /// # Arguments
@@ -116,7 +116,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `mouse` - position, held state of mouse
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_down(&mut self, key: KeyCode, mouse: &MouseData, held_keys: &[KeyCode]) {}
+    fn on_key_down(&mut self, key: KeyCode, mouse: &MouseData, held_keys: &FxHashSet<KeyCode>) {}
     /// Called when a keyboard key has been released
     ///
     /// # Arguments
@@ -124,7 +124,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `mouse` - position, held state of mouse
     /// * `held_keys` - Any other keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_key_up(&mut self, key: KeyCode, mouse: &MouseData, held_keys: &[KeyCode]) {}
+    fn on_key_up(&mut self, key: KeyCode, mouse: &MouseData, held_keys: &FxHashSet<KeyCode>) {}
     /// Called when a mouse button has been pressed down
     ///
     /// # Arguments
@@ -136,7 +136,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &mut self,
         mouse: &MouseData,
         mouse_button: MouseButton,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
     ) {
     }
     /// Called when a mouse button has been released
@@ -148,7 +148,12 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `mouse_button` = which button was released
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_up(&mut self, mouse: &MouseData, mouse_button: MouseButton, held_keys: &[KeyCode]) {
+    fn on_mouse_up(
+        &mut self,
+        mouse: &MouseData,
+        mouse_button: MouseButton,
+        held_keys: &FxHashSet<KeyCode>,
+    ) {
     }
     /// Called when a mouse button has been pressed and released
     ///
@@ -165,7 +170,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         down_at: Coord,
         mouse: &MouseData,
         mouse_button: MouseButton,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
     ) {
     }
     /// Called when the mouse moved while any button is held down
@@ -174,7 +179,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     /// * `mouse` - position, held state of mouse
     /// * `held_keys` - Any keyboards keys that are being pressed down
     #[allow(unused_variables)]
-    fn on_mouse_drag(&mut self, mouse: &MouseData, held_keys: &[KeyCode]) {}
+    fn on_mouse_drag(&mut self, mouse: &MouseData, held_keys: &FxHashSet<KeyCode>) {}
     /// Called when the mouse scroll function has been used
     ///
     /// # Arguments
@@ -188,7 +193,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         mouse: &MouseData,
         x_diff: isize,
         y_diff: isize,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
     ) {
     }
     /// During this method the scene should update animations and anything else that relies on time
@@ -210,7 +215,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &mut self,
         timing: &Timing,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         controller: &GameController,
     ) -> SceneUpdateResult<SR, SN>;
     /// During this method the scene should update animations and anything else that relies on time
@@ -232,7 +237,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         &mut self,
         timing: &Timing,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SR, SN>;
     /// Called when a child scene is closing
     ///
@@ -253,7 +258,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         graphics: &mut Graphics,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
     );
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
@@ -261,7 +266,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         graphics: &mut Graphics,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
     );
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
@@ -269,7 +274,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         graphics: &mut Graphics,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
         controller: &GameController,
     );
@@ -278,7 +283,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         graphics: &mut Graphics,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
         controller: &GameController,
     );
@@ -287,7 +292,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         timing: &Timing,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
     );
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
@@ -295,7 +300,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         timing: &Timing,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
     );
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
@@ -303,7 +308,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         timing: &Timing,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
         controller: &GameController,
     );
@@ -312,7 +317,7 @@ pub trait PrePost<SR, SN> {
         &mut self,
         timing: &Timing,
         mouse: &MouseData,
-        held_keys: &[KeyCode],
+        held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
         controller: &GameController,
     );
@@ -325,7 +330,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &mut Graphics,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
             _: &GameController,
         ) {
@@ -335,7 +340,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &mut Graphics,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
             _: &GameController,
         ) {
@@ -345,7 +350,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &Timing,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
             _: &GameController,
         ) {
@@ -355,7 +360,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &Timing,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
             _: &GameController,
         ) {
@@ -371,7 +376,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &mut Graphics,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
         ) {
         }
@@ -380,7 +385,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &mut Graphics,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
         ) {
         }
@@ -389,7 +394,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &Timing,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
         ) {
         }
@@ -398,7 +403,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             &mut self,
             _: &Timing,
             _: &MouseData,
-            _: &[KeyCode],
+            _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
         ) {
         }
@@ -455,11 +460,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.pre_update(
             timing,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
             &self.controller,
         );
@@ -467,37 +468,16 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.pre_update(
             timing,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
         );
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.controller.update();
         if let Some(scene) = self.scenes.last_mut() {
             #[cfg(any(feature = "controller", feature = "controller_xinput"))]
-            let result = scene.update(
-                timing,
-                &self.mouse,
-                self.held_keys
-                    .iter()
-                    .cloned()
-                    .collect::<Vec<_>>()
-                    .as_slice(),
-                &self.controller,
-            );
+            let result = scene.update(timing, &self.mouse, &self.held_keys, &self.controller);
             #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-            let result = scene.update(
-                timing,
-                &self.mouse,
-                self.held_keys
-                    .iter()
-                    .cloned()
-                    .collect::<Vec<_>>()
-                    .as_slice(),
-            );
+            let result = scene.update(timing, &self.mouse, &self.held_keys);
             match result {
                 SceneUpdateResult::Nothing => {}
                 SceneUpdateResult::Push(pop_current, name) => {
@@ -518,11 +498,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.post_update(
             timing,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
             &self.controller,
         );
@@ -530,11 +506,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.post_update(
             timing,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
         );
         if self.scenes.is_empty() {
@@ -547,11 +519,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.pre_render(
             graphics,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
             &self.controller,
         );
@@ -559,11 +527,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.pre_render(
             graphics,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
         );
         if let Some(active) = self.scenes.last() {
@@ -575,79 +539,29 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         self.scenes[i].render(
                             graphics,
                             &MouseData::default(),
-                            self.held_keys
-                                .iter()
-                                .cloned()
-                                .collect::<Vec<_>>()
-                                .as_slice(),
+                            &self.held_keys,
                             &self.controller,
                         );
                         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-                        self.scenes[i].render(
-                            graphics,
-                            &MouseData::default(),
-                            self.held_keys
-                                .iter()
-                                .cloned()
-                                .collect::<Vec<_>>()
-                                .as_slice(),
-                        );
+                        self.scenes[i].render(graphics, &MouseData::default(), &self.held_keys);
                     }
                 }
                 #[cfg(any(feature = "controller", feature = "controller_xinput"))]
-                active.render(
-                    graphics,
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                    &self.controller,
-                );
+                active.render(graphics, &self.mouse, &self.held_keys, &self.controller);
                 #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-                active.render(
-                    graphics,
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                );
+                active.render(graphics, &self.mouse, &self.held_keys);
             } else {
                 #[cfg(any(feature = "controller", feature = "controller_xinput"))]
-                active.render(
-                    graphics,
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                    &self.controller,
-                );
+                active.render(graphics, &self.mouse, &self.held_keys, &self.controller);
                 #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-                active.render(
-                    graphics,
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                );
+                active.render(graphics, &self.mouse, &self.held_keys);
             }
         }
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.pre_post.post_render(
             graphics,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
             &self.controller,
         );
@@ -655,11 +569,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.pre_post.post_render(
             graphics,
             &MouseData::default(),
-            self.held_keys
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .as_slice(),
+            &self.held_keys,
             &mut self.scenes,
         );
     }
@@ -668,14 +578,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.mouse = mouse_data.clone();
         if self.mouse.any_held() {
             if let Some(active) = self.scenes.last_mut() {
-                active.on_mouse_drag(
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                )
+                active.on_mouse_drag(&self.mouse, &self.held_keys)
             }
         }
     }
@@ -684,41 +587,16 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.mouse = mouse.clone();
         self.mouse_down_at.insert(button, self.mouse.xy);
         if let Some(active) = self.scenes.last_mut() {
-            active.on_mouse_down(
-                &self.mouse,
-                button,
-                self.held_keys
-                    .iter()
-                    .cloned()
-                    .collect::<Vec<_>>()
-                    .as_slice(),
-            );
+            active.on_mouse_down(&self.mouse, button, &self.held_keys);
         }
     }
 
     fn on_mouse_up(&mut self, mouse: &MouseData, button: MouseButton) {
         self.mouse = mouse.clone();
         if let Some(active) = self.scenes.last_mut() {
-            active.on_mouse_up(
-                &self.mouse,
-                button,
-                self.held_keys
-                    .iter()
-                    .cloned()
-                    .collect::<Vec<_>>()
-                    .as_slice(),
-            );
+            active.on_mouse_up(&self.mouse, button, &self.held_keys);
             if let Some(down) = self.mouse_down_at.get(&button) {
-                active.on_mouse_click(
-                    *down,
-                    &self.mouse,
-                    button,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                );
+                active.on_mouse_click(*down, &self.mouse, button, &self.held_keys);
             }
             self.mouse_down_at.remove(&button);
         }
@@ -727,16 +605,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     fn on_scroll(&mut self, mouse: &MouseData, x_diff: isize, y_diff: isize) {
         self.mouse = mouse.clone();
         if let Some(active) = self.scenes.last_mut() {
-            active.on_scroll(
-                &self.mouse,
-                x_diff,
-                y_diff,
-                self.held_keys
-                    .iter()
-                    .cloned()
-                    .collect::<Vec<_>>()
-                    .as_slice(),
-            );
+            active.on_scroll(&self.mouse, x_diff, y_diff, &self.held_keys);
         }
     }
 
@@ -744,15 +613,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         for key in keys {
             self.held_keys.insert(key);
             if let Some(active) = self.scenes.last_mut() {
-                active.on_key_down(
-                    key,
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                );
+                active.on_key_down(key, &self.mouse, &self.held_keys);
             }
         }
     }
@@ -761,15 +622,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         for key in keys {
             self.held_keys.remove(&key);
             if let Some(active) = self.scenes.last_mut() {
-                active.on_key_up(
-                    key,
-                    &self.mouse,
-                    self.held_keys
-                        .iter()
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .as_slice(),
-                );
+                active.on_key_up(key, &self.mouse, &self.held_keys);
             }
         }
     }

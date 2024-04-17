@@ -36,9 +36,9 @@ where
         expected_ext: Option<&str>,
         width: usize,
         height: usize,
-        style: &DialogStyle,
+        style: &UiStyle,
     ) -> Box<Self> {
-        let background = dialog_background(width, height, style);
+        let background = dialog_background(width, height, &style.dialog);
         let path = match filepath {
             None => UserDirs::new()
                 .unwrap()
@@ -56,25 +56,25 @@ where
         let dir_panel = DirPanel::new(
             &path,
             Rect::new(
-                style.bounds.top_left() + (6, 40),
-                style.bounds.top_left() + (style.bounds.width() - 4, 120),
+                style.dialog.bounds.top_left() + (6, 40),
+                style.dialog.bounds.top_left() + (style.dialog.bounds.width() - 4, 120),
             ),
             expected_ext,
         );
         let save = Button::new(
-            style.bounds.top_left() + (140, 146),
+            style.dialog.bounds.top_left() + (140, 146),
             "Save",
             Some(50),
             &style.button,
         );
         let cancel = Button::new(
-            style.bounds.top_left() + (6, 146),
+            style.dialog.bounds.top_left() + (6, 146),
             "Cancel",
             None,
             &style.button,
         );
         let current_dir = TextField::new(
-            style.bounds.top_left() + (6, 6),
+            style.dialog.bounds.top_left() + (6, 6),
             37,
             PixelFont::Standard4x5,
             (Some(dir_panel.bounds().width()), None),
@@ -83,7 +83,7 @@ where
             &style.text_field,
         );
         let name_field = TextField::new(
-            style.bounds.top_left() + (6, 121),
+            style.dialog.bounds.top_left() + (6, 121),
             26,
             PixelFont::Standard6x7,
             (Some(dir_panel.bounds().width()), None),
@@ -92,25 +92,25 @@ where
             &style.text_field,
         );
         let docs = Button::new(
-            style.bounds.top_left() + (6, 18),
+            style.dialog.bounds.top_left() + (6, 18),
             "Docs",
             None,
             &style.button,
         );
         let downloads = Button::new(
-            style.bounds.top_left() + (43, 18),
+            style.dialog.bounds.top_left() + (43, 18),
             "Downloads",
             None,
             &style.button,
         );
         let home = Button::new(
-            style.bounds.top_left() + (122, 18),
+            style.dialog.bounds.top_left() + (122, 18),
             "Home",
             None,
             &style.button,
         );
         let load = Button::new(
-            style.bounds.top_left() + (158, 18),
+            style.dialog.bounds.top_left() + (158, 18),
             "Load",
             None,
             &style.button,
@@ -167,18 +167,18 @@ where
         &self,
         graphics: &mut Graphics,
         mouse: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
         _: &GameController,
     ) {
         self.render(graphics, mouse)
     }
 
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &FxHashSet<KeyCode>) {
         self.render(graphics, mouse)
     }
 
-    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held_keys: &[KeyCode]) {
+    fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held_keys: &FxHashSet<KeyCode>) {
         self.name_field.on_key_press(key, held_keys);
         self.current_dir_field.on_key_press(key, held_keys);
     }
@@ -188,7 +188,7 @@ where
         down_at: Coord,
         mouse: &MouseData,
         button: MouseButton,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) {
         if button != MouseButton::Left {
             return;
@@ -250,7 +250,7 @@ where
         }
     }
 
-    fn on_scroll(&mut self, mouse: &MouseData, _: isize, y_diff: isize, _: &[KeyCode]) {
+    fn on_scroll(&mut self, mouse: &MouseData, _: isize, y_diff: isize, _: &FxHashSet<KeyCode>) {
         self.dir_panel.on_scroll(mouse.xy, y_diff);
     }
 
@@ -259,7 +259,7 @@ where
         &mut self,
         timing: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
         _: &GameController,
     ) -> SceneUpdateResult<SR, SN> {
         self.update(timing)
@@ -270,7 +270,7 @@ where
         &mut self,
         timing: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SR, SN> {
         self.update(timing)
     }

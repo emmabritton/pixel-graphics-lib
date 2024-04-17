@@ -187,7 +187,7 @@ impl LayoutTest {
 }
 
 impl Scene<SceneResult, SceneName> for LayoutTest {
-    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, mouse: &MouseData, _: &FxHashSet<KeyCode>) {
         graphics.clear(BLUE);
         render!(
             graphics, mouse, self.mid, self.above, self.below, self.left, self.right, self.br,
@@ -196,15 +196,15 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         );
     }
 
-    fn on_key_up(&mut self, _: KeyCode, _: &MouseData, _: &[KeyCode]) {}
+    fn on_key_up(&mut self, _: KeyCode, _: &MouseData, _: &FxHashSet<KeyCode>) {}
 
-    fn on_mouse_click(&mut self, _: Coord, _: &MouseData, _: MouseButton, _: &[KeyCode]) {}
+    fn on_mouse_click(&mut self, _: Coord, _: &MouseData, _: MouseButton, _: &FxHashSet<KeyCode>) {}
 
     fn update(
         &mut self,
         _: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         Nothing
     }

@@ -4,7 +4,7 @@ use std::rc::Rc;
 use winit::keyboard::KeyCode;
 
 /// This example shows how to load, display and alter an image
-/// It also shows an example of how to do delta
+/// It also shows an example of how to use delta
 
 fn main() -> Result<()> {
     let width = 300;

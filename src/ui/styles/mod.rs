@@ -18,6 +18,7 @@ pub struct UiStyle {
     pub body_text: TextFormat,
     pub tooltip: TooltipStyle,
     pub icon_button: IconButtonStyle,
+    pub checkbox: CheckboxStyle,
     pub toggle_icon_button: ToggleIconButtonStyle,
     pub menu: MenuBarStyle,
 }
@@ -121,6 +122,17 @@ pub struct IconButtonStyle {
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
+pub struct CheckboxStyle {
+    pub checked_icon: IndexedImage,
+    pub check_box: IndexedImage,
+    pub text: ColorSet,
+    pub icon: ColorSet,
+    pub font: PixelFont,
+    pub spacing: usize,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TooltipStyle {
     pub text: ColorSet,
     pub background: ColorSet,
@@ -169,9 +181,6 @@ pub struct DialogStyle {
     pub bounds: Rect,
     pub background: Option<Color>,
     pub text: Color,
-    pub button: ButtonStyle,
-    pub text_field: TextFieldStyle,
-    pub toggle_button: ToggleButtonStyle,
     pub border: Option<Color>,
     pub shadow: Option<Color>,
     pub shade: Option<Color>,

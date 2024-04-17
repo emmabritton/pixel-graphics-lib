@@ -207,6 +207,19 @@ impl<Key: Hash + Copy + PartialEq + Eq + Debug> MenuBar<Key> {
         }
     }
 
+    /// Unchecks all checkable direct children
+    pub fn uncheck_all_children(&mut self, id: Key) {
+        if let Some(view) = self.get_view_mut(id) {
+            if let ItemContent::Parent(children, _, _) = &mut view.content {
+                for child in children {
+                    if matches!(child.content, ItemContent::Checkable(_)) {
+                        child.content = ItemContent::Checkable(false);
+                    }
+                }
+            }
+        }
+    }
+
     fn get_view(&self, id: Key) -> Option<&MenuItemView<Key>> {
         Self::get_view_from_list(&self.items, id)
     }

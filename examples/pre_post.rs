@@ -25,11 +25,16 @@ impl WhiteTextScene {
 }
 
 impl Scene<SR, SN> for WhiteTextScene {
-    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &[KeyCode]) {
+    fn render(&self, graphics: &mut Graphics, _: &MouseData, _: &FxHashSet<KeyCode>) {
         self.text.render(graphics);
     }
 
-    fn update(&mut self, _: &Timing, _: &MouseData, _: &[KeyCode]) -> SceneUpdateResult<SR, SN> {
+    fn update(
+        &mut self,
+        _: &Timing,
+        _: &MouseData,
+        _: &FxHashSet<KeyCode>,
+    ) -> SceneUpdateResult<SR, SN> {
         Nothing
     }
 }
@@ -54,7 +59,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         &mut self,
         graphics: &mut Graphics,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
     ) {
         graphics.clear(GB_0);
@@ -65,7 +70,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         &mut self,
         graphics: &mut Graphics,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
     ) {
         graphics.draw_rect(Rect::new((10, 10), (90, 90)), stroke(GB_2));
@@ -77,7 +82,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         &mut self,
         _: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
     ) {
     }
@@ -86,7 +91,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         &mut self,
         timing: &Timing,
         _: &MouseData,
-        _: &[KeyCode],
+        _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
     ) {
         if self.timer.update(timing) {

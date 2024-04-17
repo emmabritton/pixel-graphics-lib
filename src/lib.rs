@@ -74,6 +74,7 @@ pub mod prelude {
     pub use crate::System;
     pub use crate::WindowScaling;
     pub use buffer_graphics_lib::prelude::*;
+    pub use rustc_hash::FxHashSet;
     pub use simple_game_utils::prelude::*;
     pub use winit::event::MouseButton;
     pub use winit::keyboard::KeyCode;
