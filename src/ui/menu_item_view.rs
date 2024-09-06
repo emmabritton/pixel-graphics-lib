@@ -288,11 +288,6 @@ fn layout_children<Key: Hash + Copy + PartialEq + Eq + Debug>(
             } else {
                 0
             };
-            let mut start = if anchor == &ChildrenAnchor::Bottom {
-                item.item_bounds.bottom_left() + (0, 1)
-            } else {
-                item.item_bounds.top_right()
-            };
             let any_checks = items
                 .iter()
                 .any(|v| matches!(v.content, ItemContent::Checkable(_)));
@@ -313,6 +308,15 @@ fn layout_children<Key: Hash + Copy + PartialEq + Eq + Debug>(
                 })
                 .max()
                 .unwrap_or_default();
+            let mut start = if anchor == &ChildrenAnchor::Bottom {
+                item.item_bounds.bottom_left() + (0, 1)
+            } else if item.item_bounds.top_right().x + w as isize > screen_size.0 as isize
+                && item.item_bounds.top_left().x - w as isize >= 0
+            {
+                item.item_bounds.top_left() - (w, 0) - (style.dropdown_item.padding.horz(), 0)
+            } else {
+                item.item_bounds.top_right()
+            };
             let mut container_bounds = Rect::new_with_size(start, w, 0);
             for child in items {
                 let (_, h) = style.dropdown_item.font.measure(&child.name);

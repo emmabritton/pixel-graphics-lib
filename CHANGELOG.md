@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 0.19.1
+
+- Draw submenus on the left if there's not enough room on the right
+- Update deps
+
 ### Version 0.19.0
 
 - BREAKING
