@@ -44,7 +44,9 @@ macro_rules! bounds {
 ///  - Left - then only the `top_left` of `bounds` is used
 ///  - Center - then only the `center` of `bounds` is used
 ///  - Right - then only the `bottom_right` of `bounds` is used
+///
 /// `padding` is used to offset views from the relevant position
+///
 /// `spacing` is space between views
 ///
 /// **Usage**
@@ -69,7 +71,9 @@ macro_rules! column_layout {
 ///  - Top - then only the `top_left` of `bounds` is used
 ///  - Center - then only the `center` of `bounds` is used
 ///  - Bottom - then only the `bottom_right` of `bounds` is used
+///
 /// `padding` is used to offset views from the relevant position
+///
 /// `spacing` is space between views
 ///
 /// **Usage**

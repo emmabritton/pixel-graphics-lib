@@ -78,8 +78,8 @@ pub enum SceneUpdateResult<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq 
 /// # Common mistakes
 ///
 /// * If you use a field to store the [SceneUpdateResult] and return in [update()][Scene::update]
-/// and then forget to clear it in [resuming][Scene::resuming] after a child returns then the child
-/// will immediately reopen
+///   and then forget to clear it in [resuming][Scene::resuming] after a child returns then the child
+///   will immediately reopen
 pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     fn id(&self) -> u32 {
         0
