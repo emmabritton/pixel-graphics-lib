@@ -159,7 +159,7 @@ where
     fn on_key_up(&mut self, key: KeyCode, _: &MouseData, held_keys: &FxHashSet<KeyCode>) {
         if self.current_dir_field.is_focused() {
             if key == KeyCode::KeyV {
-                if held_keys.contains(&&KeyCode::ControlRight) {}
+                if held_keys.contains(&KeyCode::ControlRight) {}
             } else if key == KeyCode::Enter {
             } else {
                 self.current_dir_field.on_key_press(key, held_keys);

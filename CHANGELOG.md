@@ -1,5 +1,9 @@
 # Changelog
 
+### Verion 0.20.1
+
+- Update deps (fix controller bug)
+
 ### Verion 0.20.0
 
 ### Breaking
