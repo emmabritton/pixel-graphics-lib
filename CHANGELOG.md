@@ -10,6 +10,7 @@
 - Remove exact dep versions
 - Add `set_mouse_cursor()` for TextField
 - Add `&Window` as last param on `update()` methods
+- Update deps
 
 ### Version 0.19.1
 

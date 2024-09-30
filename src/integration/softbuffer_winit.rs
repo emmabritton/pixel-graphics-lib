@@ -33,7 +33,7 @@ pub fn run(
     let title = title.to_string();
     let app = WinitAppBuilder::new(system, options, move |elwt, system, options| {
         elwt.set_control_flow(options.control_flow);
-        let (scale, window) = make_window(elwt, system, &options, width, height, title.clone())
+        let (scale, window) = make_window(elwt, system, options, width, height, title.clone())
             .expect("Window created");
 
         let context = softbuffer::Context::new(window.clone()).unwrap();
@@ -54,15 +54,13 @@ pub fn run(
         timing.update();
         timing.accumulated_time += timing.delta;
         while timing.accumulated_time >= timing.fixed_time_step {
-            system.update(&timing, window.deref());
+            system.update(timing, window.deref());
             timing.accumulated_time -= timing.fixed_time_step;
             timing.updates += 1;
         }
 
-        if options.control_flow == ControlFlow::Poll {
-            if event == Event::AboutToWait {
-                window.request_redraw();
-            }
+        if options.control_flow == ControlFlow::Poll && event == Event::AboutToWait {
+            window.request_redraw();
         }
 
         if let Event::WindowEvent { window_id, event } = event {
@@ -100,25 +98,24 @@ pub fn run(
                         device_id: _device_id,
                         event,
                         is_synthetic: _is_synthetic,
-                    } => match event {
-                        KeyEvent {
+                    } => {
+                        let KeyEvent {
                             physical_key,
                             state,
                             repeat,
                             ..
-                        } => {
-                            if let PhysicalKey::Code(keycode) = physical_key {
-                                match state {
-                                    ElementState::Pressed => {
-                                        if !repeat {
-                                            system.on_key_down(vec![keycode])
-                                        }
+                        } = event;
+                        if let PhysicalKey::Code(keycode) = physical_key {
+                            match state {
+                                ElementState::Pressed => {
+                                    if !repeat {
+                                        system.on_key_down(vec![keycode])
                                     }
-                                    ElementState::Released => system.on_key_up(vec![keycode]),
                                 }
+                                ElementState::Released => system.on_key_up(vec![keycode]),
                             }
                         }
-                    },
+                    }
                     WindowEvent::RedrawRequested => {
                         let mut buffer = surface.buffer_mut().expect("Accessing softbuffer buffer");
                         let mut drawing_buffer = Graphics::create_buffer_u32(width, height);
@@ -155,7 +152,7 @@ pub fn run(
                                 MouseScrollDelta::LineDelta(_, _) => {}
                                 MouseScrollDelta::PixelDelta(pos) => {
                                     system.on_scroll(
-                                        &mouse,
+                                        mouse,
                                         pos.x.round() as isize,
                                         pos.y.round() as isize,
                                     );
@@ -170,11 +167,11 @@ pub fn run(
                     } => match state {
                         ElementState::Pressed => {
                             mouse.add_down(mouse.xy, button);
-                            system.on_mouse_down(&mouse, button);
+                            system.on_mouse_down(mouse, button);
                         }
                         ElementState::Released => {
                             mouse.add_up(button);
-                            system.on_mouse_up(&mouse, button);
+                            system.on_mouse_up(mouse, button);
                         }
                     },
                     WindowEvent::CursorMoved {
@@ -182,7 +179,7 @@ pub fn run(
                         position,
                     } => {
                         mouse.xy = coord!(position.x, position.y) / *scale;
-                        system.on_mouse_move(&mouse);
+                        system.on_mouse_move(mouse);
                     }
                     _ => {}
                 }

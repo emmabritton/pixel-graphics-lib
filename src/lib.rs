@@ -91,7 +91,7 @@ pub mod prelude {
 pub enum GraphicsError {
     #[error("Creating a window: {0}")]
     WindowInit(String),
-    #[cfg(any(feature = "pixels"))]
+    #[cfg(feature = "pixels")]
     #[error("Initialising Pixels: {0}")]
     PixelsInit(#[source] pixels::Error),
     #[error("Saving window pref: {0}")]

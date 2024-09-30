@@ -74,7 +74,7 @@ fn setup(
 ) -> Result<(Window, Pixels), GraphicsError> {
     let win = create_window(canvas_size, title, options.scaling, event_loop)?;
     let surface = SurfaceTexture::new(win.inner_size().width, win.inner_size().height, &win);
-    let pixels = PixelsBuilder::new(canvas_size.0 as u32, canvas_size.1 as u32, surface)
+    let pixels = PixelsBuilder::new(canvas_size.0, canvas_size.1, surface)
         .enable_vsync(options.vsync)
         .build()
         .map_err(GraphicsError::PixelsInit)?;
@@ -167,7 +167,7 @@ pub fn run(
 
             timing.accumulated_time += timing.delta;
             while timing.accumulated_time >= timing.fixed_time_step {
-                system.update(&timing, &mut window);
+                system.update(&timing, &window);
                 timing.accumulated_time -= timing.fixed_time_step;
                 timing.updates += 1;
             }
