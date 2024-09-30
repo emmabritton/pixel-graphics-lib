@@ -62,3 +62,6 @@ required-features = ["images"]
 [[example]]
 name = "pre_post_w_controller"
 required-features = ["controller"]
+
+[package.metadata.docs.rs]
+features = ["pixels"]
