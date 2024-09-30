@@ -1,10 +1,10 @@
 [![Crates.io](https://img.shields.io/crates/v/pixels-graphics-lib)](https://crates.io/crates/pixels-graphics-lib "Crates.io version")
 [![Documentation](https://img.shields.io/docsrs/pixels-graphics-lib)](https://docs.rs/pixels-graphics-lib "Documentation")
 
-# Graphics Lib
+# Pixels Graphics Lib
 
-This is a simple wrapper around [Pixels](https://github.com/parasyte/pixels), designed to be used
-with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
+Pixel buffer graphics and GUI library. It helps simplify window setup and creation, and event looping.
+It uses [buffer graphics lib](https://github.com/emmabritton/buffer-graphics-lib) for drawing to the buffer.
 
 ## Usage
 
@@ -13,9 +13,22 @@ with [Buffer Graphics Lib](https://github.com/emmabritton/buffer-graphics-lib)
 In your `Cargo.toml` file add
 
 ```toml
-pixels-graphics-lib = "0.19.1"
-winit_input_helper = "0.16.0" #only needed if you're not using `run()`
+pixels-graphics-lib = { version = "0.20", features = [] }
 ```
+
+Inside `features` you **MUST** put one of these:
+
+| Feature      | Renderer                                                   | Window creation                                        |
+|--------------|------------------------------------------------------------|--------------------------------------------------------|
+| `pixels`     | [Pixels](https://github.com/parasyte/pixels)               | [Winit](https://github.com/rust-windowing/winit) v0.29 |
+| `softbuffer` | [Softbuffer](https://github.com/rust-windowing/softbuffer) | [Winit](https://github.com/rust-windowing/winit) v0.30 |
+
+Both of these use `rwh06`
+
+This will control how the window is created and managed and how the buffer is rendered to the screen. The main
+differences are when the window is scaled to a non integer value (1.2 opposed than 2.0) then pixels will draw your
+content in the middle of the window, whereas softbuffer will draw in the top left. Additionally, pixels uses hardware
+scaling and softbuffer uses software scaling.
 
 ### Code
 
@@ -145,7 +158,32 @@ Built in file selection dialogs, not recommended, use `rfd`
 
 ### `mint`
 
-Enables `graphic-shapes/mint`
+Enables `buffer-graphics-lib/mint`,
+see [Buffer graphics readme](https://github.com/emmabritton/buffer-graphics-lib?tab=readme-ov-file#features)
+
+### `notosan`
+
+Enables `buffer-graphics-lib/notosans`,
+see [Buffer graphics readme](https://github.com/emmabritton/buffer-graphics-lib?tab=readme-ov-file#features)
+
+### `embedded`
+
+Enables `buffer-graphics-lib/embedded`,
+see [Buffer graphics readme](https://github.com/emmabritton/buffer-graphics-lib?tab=readme-ov-file#features)
+
+### `pixels_serde` and `softbuffer_serde`
+
+Enables `serde` for the `winit` crate being used by `pixels` or `softbuffer`
+
+## Examples
+
+Each example must be run with a renderer (pixels or softbuffer), like this:
+
+`cargo run --example basic --features "pixels"`
+
+or
+
+`cargo run --example relative_test --features "softbuffer"`
 
 ## Projects
 
@@ -153,13 +191,17 @@ Enables `graphic-shapes/mint`
 
 A few retro games
 
+### [Wordle](https://github.com/emmabritton/wordle)
+
+A wordle clone
+
 ### [ICI Image editor](https://github.com/emmabritton/ici-image-editor)
 
 Editor for `IndexedImage`, ICI files
 
 ### [USFX Tester](https://github.com/emmabritton/uxfs-test)
 
-Test GUI for [USFX](https://github.com/tversteeg/usfx)
+GUI for [USFX](https://github.com/tversteeg/usfx)
 
 ### [Fontpad](https://github.com/emmabritton/fontpad)
 

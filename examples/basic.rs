@@ -1,6 +1,7 @@
 use anyhow::Result;
 use pixels_graphics_lib::prelude::*;
 use winit::keyboard::KeyCode;
+use winit::window::Window;
 
 /// This example shows the minimum code needed to use the library
 
@@ -25,7 +26,7 @@ impl Basic {
 }
 
 impl System for Basic {
-    fn update(&mut self, _delta: &Timing) {
+    fn update(&mut self, _delta: &Timing, _: &Window) {
         if self.greyscale < 255 {
             self.greyscale += 1;
         } else {

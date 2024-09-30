@@ -1,7 +1,8 @@
+use crate::prelude::winit;
 use winit::keyboard::KeyCode;
 
 pub mod virtual_key_codes {
-    use winit::keyboard::KeyCode;
+    use super::*;
 
     pub const ALL_KEYS: [KeyCode; 96] = [
         KeyCode::KeyA,

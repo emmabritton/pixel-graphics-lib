@@ -118,6 +118,7 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         _: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         Nothing
     }

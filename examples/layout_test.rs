@@ -218,6 +218,7 @@ impl Scene<SceneResult, SceneName> for LayoutTest {
         timing: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.text_field.update(timing);
         self.spacing.update(timing);

@@ -221,9 +221,9 @@ impl Default for DropdownItemStyle {
 
 impl DropdownItemStyle {
     fn dropdown_arrow_for_font(font: PixelFont, colors: FocusColorSet) -> IconSet {
-        let mut buffer = Graphics::create_buffer(font.size().0, font.size().1);
-        let mut graphics =
-            Graphics::new(&mut buffer, font.size().0, font.size().1).unwrap_or_else(|err| {
+        let mut buffer = Graphics::create_buffer_u8(font.size().0, font.size().1);
+        let mut graphics = Graphics::new_u8_rgba(&mut buffer, font.size().0, font.size().1)
+            .unwrap_or_else(|err| {
                 panic!(
                     "Unable to create graphics using {font:?} when generating menu arrow: {err:?}"
                 )
@@ -290,10 +290,10 @@ impl Default for CheckboxStyle {
 impl CheckboxStyle {
     fn icons() -> [IndexedImage; 2] {
         let size = 9;
-        let mut box_buffer = Graphics::create_buffer(size, size);
-        let mut check_buffer = Graphics::create_buffer(size, size);
-        let mut box_graphics = Graphics::new(&mut box_buffer, size, size).unwrap();
-        let mut check_graphics = Graphics::new(&mut check_buffer, size, size).unwrap();
+        let mut box_buffer = Graphics::create_buffer_u8(size, size);
+        let mut check_buffer = Graphics::create_buffer_u8(size, size);
+        let mut box_graphics = Graphics::new_u8_rgba(&mut box_buffer, size, size).unwrap();
+        let mut check_graphics = Graphics::new_u8_rgba(&mut check_buffer, size, size).unwrap();
         box_graphics.draw_rect(Rect::new((0, 0), (size - 1, size - 1)), stroke(WHITE));
         check_graphics.draw_line((1, 4), (3, 5), WHITE);
         check_graphics.draw_line((1, 4), (3, 6), WHITE);

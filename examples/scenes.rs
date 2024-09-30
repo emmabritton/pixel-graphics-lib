@@ -74,6 +74,7 @@ impl Scene<SceneResult, SceneName> for Scene1 {
         _: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -114,6 +115,7 @@ impl Scene<SceneResult, SceneName> for Scene2 {
         _: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }
@@ -140,6 +142,7 @@ impl Scene<SceneResult, SceneName> for Scene3 {
         _: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.result.clone()
     }

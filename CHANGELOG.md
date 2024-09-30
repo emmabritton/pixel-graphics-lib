@@ -1,5 +1,16 @@
 # Changelog
 
+### Verion 0.20.0
+
+### Breaking
+
+- You **MUST** pick either the `pixels` or `softbuffer` feature now
+    - Previously this was using pixels only, so set to `pixels` and everything should work the exact same
+- Add support for `softbuffer`
+- Remove exact dep versions
+- Add `set_mouse_cursor()` for TextField
+- Add `&Window` as last param on `update()` methods
+
 ### Version 0.19.1
 
 - Draw submenus on the left if there's not enough room on the right

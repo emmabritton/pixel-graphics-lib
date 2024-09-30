@@ -412,7 +412,7 @@ pub fn grow_by_parent(
 ///
 /// Views must impl [PixelView] and to use `grow` they must also impl [LayoutView]
 ///
-/// `offset` replaces the default offset from context
+/// `offset` replaces the default offset from context (if it was set)
 ///
 /// # Usage
 ///

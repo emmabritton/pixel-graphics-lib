@@ -52,7 +52,7 @@ impl System for WindowPrefsScene {
         )
     }
 
-    fn update(&mut self, _delta: &Timing) {
+    fn update(&mut self, _delta: &Timing, _: &Window) {
         if self.idx < self.colors.len() - 1 {
             self.idx += 1;
         } else {

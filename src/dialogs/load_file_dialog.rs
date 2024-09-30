@@ -7,6 +7,7 @@ use crate::*;
 use buffer_graphics_lib::prelude::*;
 use directories::UserDirs;
 use std::fmt::Debug;
+use winit::window::Window;
 
 /// You should use something like `rfd` instead of this
 #[derive(Debug)]
@@ -234,6 +235,7 @@ where
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
         _: &GameController,
+        _: &Window,
     ) -> SceneUpdateResult<SR, SN> {
         self.update(timing)
     }
@@ -244,6 +246,7 @@ where
         timing: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SR, SN> {
         self.update(timing)
     }

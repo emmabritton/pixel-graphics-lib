@@ -20,7 +20,7 @@ fn main() -> Result<()> {
         WIDTH,
         HEIGHT,
         "UI Tester",
-        Some(WindowPreferences::new("app", "emmabritton", "pixels_ui_tester", 1).unwrap()),
+        Some(WindowPreferences::new("app", "emmabritton", "pixels_ui_tester", 5).unwrap()),
         switcher,
         menu,
         options,
@@ -209,6 +209,7 @@ impl Scene<SceneResult, SceneName> for Menu {
         timing: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.field1.update(timing);
         self.field2.update(timing);

@@ -41,6 +41,7 @@ impl Scene<SR, SN> for WhiteTextScene {
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
         _: &GameController,
+        _: &Window,
     ) -> SceneUpdateResult<SR, SN> {
         Nothing
     }
@@ -94,6 +95,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
         _: &GameController,
+        _: &Window,
     ) {
     }
 
@@ -104,6 +106,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
         _: &GameController,
+        _: &Window,
     ) {
         if self.timer.update(timing) {
             self.pixel.x += 1;
@@ -115,7 +118,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
 }
 
 fn main() {
-    let switcher = |style: &UiStyle, scenes: &mut Vec<Box<dyn Scene<SR, SN>>>, new_scene: SN| {};
+    let switcher = |_: &UiStyle, _: &mut Vec<Box<dyn Scene<SR, SN>>>, _: SN| {};
     run_scenes(
         100,
         100,

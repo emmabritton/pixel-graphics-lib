@@ -1,6 +1,8 @@
 use pixels_graphics_lib::prelude::*;
 use pixels_graphics_lib::scenes::SceneUpdateResult::Nothing;
 use pixels_graphics_lib::ui::prelude::*;
+use winit::keyboard::KeyCode;
+use winit::window::Window;
 
 #[derive(Debug, Clone, PartialEq)]
 enum SR {}
@@ -34,6 +36,7 @@ impl Scene<SR, SN> for WhiteTextScene {
         _: &Timing,
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SR, SN> {
         Nothing
     }
@@ -84,6 +87,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
+        _: &Window,
     ) {
     }
 
@@ -93,6 +97,7 @@ impl PrePost<SR, SN> for ExtrasImpl {
         _: &MouseData,
         _: &FxHashSet<KeyCode>,
         _: &mut [Box<dyn Scene<SR, SN>>],
+        _: &Window,
     ) {
         if self.timer.update(timing) {
             self.pixel.x += 1;

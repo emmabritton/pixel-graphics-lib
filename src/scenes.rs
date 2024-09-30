@@ -1,10 +1,10 @@
 use crate::prelude::*;
 use crate::ui::styles::UiStyle;
-use crate::GraphicsError;
-use buffer_graphics_lib::prelude::*;
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::fmt::Debug;
 use winit::event::MouseButton;
+use winit::keyboard::KeyCode;
+use winit::window::Window;
 
 /// Convenience method for programs built using [Scene]s
 ///
@@ -217,6 +217,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         mouse: &MouseData,
         held_keys: &FxHashSet<KeyCode>,
         controller: &GameController,
+        window: &Window,
     ) -> SceneUpdateResult<SR, SN>;
     /// During this method the scene should update animations and anything else that relies on time
     /// or on held keys
@@ -238,6 +239,7 @@ pub trait Scene<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
         timing: &Timing,
         mouse: &MouseData,
         held_keys: &FxHashSet<KeyCode>,
+        window: &Window,
     ) -> SceneUpdateResult<SR, SN>;
     /// Called when a child scene is closing
     ///
@@ -294,6 +296,7 @@ pub trait PrePost<SR, SN> {
         mouse: &MouseData,
         held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
+        window: &Window,
     );
     #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
     fn post_update(
@@ -302,6 +305,7 @@ pub trait PrePost<SR, SN> {
         mouse: &MouseData,
         held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
+        window: &Window,
     );
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     fn pre_update(
@@ -311,6 +315,7 @@ pub trait PrePost<SR, SN> {
         held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
         controller: &GameController,
+        window: &Window,
     );
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     fn post_update(
@@ -320,6 +325,7 @@ pub trait PrePost<SR, SN> {
         held_keys: &FxHashSet<KeyCode>,
         scenes: &mut [Box<dyn Scene<SR, SN>>],
         controller: &GameController,
+        window: &Window,
     );
 }
 #[cfg(any(feature = "controller", feature = "controller_xinput"))]
@@ -353,6 +359,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
             _: &GameController,
+            _: &Window,
         ) {
         }
 
@@ -363,6 +370,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
             _: &GameController,
+            _: &Window,
         ) {
         }
     }
@@ -396,6 +404,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             _: &MouseData,
             _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
+            _: &Window,
         ) {
         }
 
@@ -405,6 +414,7 @@ pub fn empty_pre_post<SR, SN>() -> Box<dyn PrePost<SR, SN>> {
             _: &MouseData,
             _: &FxHashSet<KeyCode>,
             _: &mut [Box<dyn Scene<SR, SN>>],
+            _: &Window,
         ) {
         }
     }
@@ -455,7 +465,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.window_prefs.clone()
     }
 
-    fn update(&mut self, timing: &Timing) {
+    fn update(&mut self, timing: &Timing, window: &Window) {
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.pre_post.pre_update(
             timing,
@@ -463,6 +473,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             &self.held_keys,
             &mut self.scenes,
             &self.controller,
+            window,
         );
         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
         self.pre_post.pre_update(
@@ -470,14 +481,21 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             &MouseData::default(),
             &self.held_keys,
             &mut self.scenes,
+            window,
         );
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.controller.update();
         if let Some(scene) = self.scenes.last_mut() {
             #[cfg(any(feature = "controller", feature = "controller_xinput"))]
-            let result = scene.update(timing, &self.mouse, &self.held_keys, &self.controller);
+            let result = scene.update(
+                timing,
+                &self.mouse,
+                &self.held_keys,
+                &self.controller,
+                window,
+            );
             #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-            let result = scene.update(timing, &self.mouse, &self.held_keys);
+            let result = scene.update(timing, &self.mouse, &self.held_keys, window);
             match result {
                 SceneUpdateResult::Nothing => {}
                 SceneUpdateResult::Push(pop_current, name) => {
@@ -501,6 +519,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             &self.held_keys,
             &mut self.scenes,
             &self.controller,
+            window,
         );
         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
         self.pre_post.post_update(
@@ -508,6 +527,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             &MouseData::default(),
             &self.held_keys,
             &mut self.scenes,
+            window,
         );
         if self.scenes.is_empty() {
             self.should_exit = true;

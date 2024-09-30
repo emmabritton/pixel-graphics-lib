@@ -80,7 +80,7 @@ impl ImageScene {
 }
 
 impl System for ImageScene {
-    fn update(&mut self, timing: &Timing) {
+    fn update(&mut self, timing: &Timing, _: &Window) {
         let sw = self.width;
         let sh = self.height;
 

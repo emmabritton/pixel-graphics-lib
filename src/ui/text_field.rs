@@ -1,3 +1,4 @@
+use crate::prelude::winit;
 use crate::prelude::*;
 use crate::ui::prelude::*;
 use crate::ui::styles::TextFieldStyle;
@@ -7,9 +8,30 @@ use buffer_graphics_lib::prelude::Positioning::LeftCenter;
 use buffer_graphics_lib::prelude::WrappingStrategy::Cutoff;
 use buffer_graphics_lib::prelude::*;
 use std::ops::RangeInclusive;
+use winit::keyboard::KeyCode;
+#[cfg(feature = "softbuffer")]
+use winit::window::Cursor;
+use winit::window::{CursorIcon, Window};
 
 const CURSOR_BLINK_RATE: f64 = 0.5;
 
+/// Set focus on the first view passed, clear focus on all others
+///
+/// # Usage
+/// ```rust
+///# use buffer_graphics_lib::prelude::PixelFont::Standard6x7;
+///# use pixels_graphics_lib::prelude::*;
+///# use pixels_graphics_lib::swap_focus;
+///# use pixels_graphics_lib::ui::prelude::*;
+///# let style=  UiStyle::default();
+/// let mut field1 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+/// let mut field2 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+/// let mut field3 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+///
+/// swap_focus!(field1, field2, field3);
+///
+/// assert!(field1.is_focused());
+/// ```
 #[macro_export]
 macro_rules! swap_focus {
     ($focus:expr, $( $unfocus:expr ),* $(,)? ) => {{
@@ -18,9 +40,118 @@ macro_rules! swap_focus {
     }};
 }
 
+/// Clear focus on all views
+///
+/// # Usage
+/// ```rust
+///# use buffer_graphics_lib::prelude::PixelFont::Standard6x7;
+///# use pixels_graphics_lib::prelude::*;
+///# use pixels_graphics_lib::unfocus;
+///# use pixels_graphics_lib::ui::prelude::*;
+///# let style=  UiStyle::default();
+/// let mut field1 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+/// let mut field2 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+/// let mut field3 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+///
+/// field1.focus();
+///
+/// unfocus!(field1, field2, field3);
+///
+/// assert!(!field1.is_focused());
+/// ```
 #[macro_export]
 macro_rules! unfocus {
     ( $( $unfocus:expr ),* $(,)? ) => {$($unfocus.unfocus();)*};
+}
+
+/// Set the mouse cursor to an I if it's over a [TextField]
+///
+/// # Params
+/// * `window` - A [Window]
+/// * `mouse_coord` - [Coord] from [MouseData] or equivalent
+/// * `view` - vararg [TextField]s
+/// * `custom_hover_cursor` - Defaults to CursorIcon::Text
+/// * `custom_default_cursor` - Defaults to CursorIcon::Default
+///
+/// # Usage
+///
+/// ```rust
+///# use buffer_graphics_lib::prelude::*;
+///# use buffer_graphics_lib::text::PixelFont::Standard6x7;
+///# use winit::window::Window;
+///# use pixels_graphics_lib::prelude::*;
+///# use pixels_graphics_lib::ui::prelude::{set_mouse_cursor, TextField, UiStyle};
+///# fn method(window: &Window) {
+///# let style = UiStyle::default();
+/// let field1 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+/// let field2 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+///
+/// let mouse_coord = Coord::new(10,10);
+///
+/// set_mouse_cursor(window, mouse_coord, None, None, &[&field1, &field2]);
+///# }
+/// ```
+#[cfg(feature = "pixels")]
+pub fn set_mouse_cursor<C: Into<Coord>>(
+    window: &Window,
+    mouse_coord: C,
+    custom_hover_cursor: Option<CursorIcon>,
+    custom_default_cursor: Option<CursorIcon>,
+    views: &[&TextField],
+) {
+    let coord = mouse_coord.into();
+    for view in views {
+        if view.bounds.contains(coord) {
+            window.set_cursor_icon(custom_hover_cursor.unwrap_or(CursorIcon::Text));
+            return;
+        }
+    }
+    window.set_cursor_icon(custom_default_cursor.unwrap_or(CursorIcon::Default));
+}
+
+/// Set the mouse cursor to an I if it's over a [TextField]
+///
+/// # Params
+/// * `window` - A [Window]
+/// * `mouse_coord` - [Coord] from [MouseData] or equivalent
+/// * `view` - vararg [TextField]s
+/// * `custom_hover_cursor` - Defaults to CursorIcon::Text
+/// * `custom_default_cursor` - Defaults to CursorIcon::Default
+///
+/// # Usage
+///
+/// ```rust
+///# use buffer_graphics_lib::prelude::*;
+///# use buffer_graphics_lib::text::PixelFont::Standard6x7;
+///# use winit::window::Window;
+///# use pixels_graphics_lib::prelude::*;
+///# use pixels_graphics_lib::ui::prelude::{set_mouse_cursor, TextField, UiStyle};
+///# fn method(window: &Window) {
+///# let style = UiStyle::default();
+/// let field1 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+/// let field2 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
+///
+/// let mouse_coord = Coord::new(10,10);
+///
+/// set_mouse_cursor(window, mouse_coord, None, None, &[&field1, &field2]);
+///# }
+/// ```
+#[cfg(feature = "softbuffer")]
+pub fn set_mouse_cursor<C: Into<Coord>>(
+    window: &Window,
+    mouse_coord: C,
+    custom_hover_cursor: Option<Cursor>,
+    custom_default_cursor: Option<Cursor>,
+    views: &[&TextField],
+) {
+    let coord = mouse_coord.into();
+    for view in views {
+        if view.bounds.contains(coord) {
+            window.set_cursor(custom_hover_cursor.unwrap_or(Cursor::Icon(CursorIcon::Text)));
+            return;
+        }
+    }
+    window.set_cursor(custom_default_cursor.unwrap_or(Cursor::Icon(CursorIcon::Default)));
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

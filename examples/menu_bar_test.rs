@@ -123,6 +123,7 @@ impl Scene<SceneResult, SceneName> for MenuTest {
         _: &Timing,
         mouse: &MouseData,
         _: &FxHashSet<KeyCode>,
+        _: &Window,
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         self.menubar.on_mouse_move(mouse.xy);
         Nothing
