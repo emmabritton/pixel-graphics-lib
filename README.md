@@ -26,9 +26,10 @@ Inside `features` you **MUST** put one of these:
 Both of these use `rwh06`
 
 This will control how the window is created and managed and how the buffer is rendered to the screen. The main
-differences are when the window is scaled to a non integer value (1.2 opposed than 2.0) then pixels will draw your
-content in the middle of the window, whereas softbuffer will draw in the top left. Additionally, pixels uses hardware
-scaling and softbuffer uses software scaling.
+differences are when the window is scaled to a non integer value (1.2 opposed than 2.0) then `pixels` will draw your
+content in the middle of the window, whereas `softbuffer` will draw in the top left. Additionally, `pixels` uses
+hardware
+scaling and `softbuffer` uses software scaling.
 
 ### Code
 
@@ -91,6 +92,7 @@ impl Scene<SceneResult, SceneName> for ExampleScene {
         timing: &Timing,
         mouse_xy: Coord,
         held_keys: &[KeyCode],
+        window: &Window
     ) -> SceneUpdateResult<SceneResult, SceneName> {
         todo!()
     }
@@ -110,7 +112,7 @@ fn main() -> Result<()> {
 
 //Check `src/scenes.rs` for examples of implementing held keys, etc
 impl System for Example {
-    fn update(&mut self, timing: &Timing) {}
+    fn update(&mut self, timing: &Timing, window: &Window) {}
     fn render(&mut self, graphics: &mut Graphics) {}
 }
 ```
