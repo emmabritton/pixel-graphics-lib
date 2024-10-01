@@ -1,5 +1,9 @@
 # Changelog
 
+### Verion 0.20.2
+
+- Update deps (fix tilemap bug)
+
 ### Verion 0.20.1
 
 - Update deps (fix controller bug)
