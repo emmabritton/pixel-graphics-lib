@@ -8,7 +8,6 @@ use winit::keyboard::KeyCode;
 ///
 /// This example shows how to use `WindowPreferences` to save and restore the window size and position
 /// It also has a small text demo
-
 fn main() -> Result<()> {
     let width = 240;
     let height = 160;

@@ -1,4 +1,5 @@
 use crate::prelude::winit;
+#[cfg(feature = "window_prefs")]
 use crate::GraphicsError::LoadingWindowPref;
 use crate::{GraphicsError, MouseData, Options, System, WindowScaling};
 use log::error;
@@ -29,8 +30,8 @@ pub(crate) fn make_window(
         .expect("Window created after resuming");
     let mut factor = match options.scaling {
         WindowScaling::Native => window.scale_factor(),
-        WindowScaling::Double => window.scale_factor() + 2.0,
-        WindowScaling::Quad => window.scale_factor() + 4.0,
+        WindowScaling::Double => window.scale_factor() + 1.0,
+        WindowScaling::Quad => window.scale_factor() + 3.0,
     };
     let px_size: PhysicalSize<u32> =
         LogicalSize::new(width as u32, height as u32).to_physical(factor);
@@ -67,7 +68,6 @@ pub(crate) fn make_window(
 ///
 /// Taken from https://raw.githubusercontent.com/rust-windowing/softbuffer/refs/heads/master/examples/utils/winit_app.rs
 ///
-
 #[allow(unused_mut)]
 pub(crate) fn run_app(
     event_loop: EventLoop<()>,

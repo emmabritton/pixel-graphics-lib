@@ -64,7 +64,7 @@ impl IconButton {
             style.rounding,
             WHITE,
         )
-        .unwrap();
+        .expect("Border could not be constructed, please raise an issue on Github emmabritton/pixel-graphics-lib");
         let shadow = Polyline::rounded_rect(
             bounds.left() + 1,
             bounds.top() + 1,
@@ -73,7 +73,7 @@ impl IconButton {
             style.rounding,
             WHITE,
         )
-        .unwrap();
+        .expect("Shadow could not be constructed, please raise an issue on Github emmabritton/pixel-graphics-lib");
         let tooltip = Tooltip::new(
             bounds.top_left() + (w, h),
             tooltip_text,
@@ -90,7 +90,6 @@ impl IconButton {
 }
 
 impl IconButton {
-    #[must_use]
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
         if self.state != ViewState::Disabled {
             self.bounds.contains(down) && self.bounds.contains(up)
@@ -116,7 +115,6 @@ impl PixelView for IconButton {
         self.tooltip = tooltip;
     }
 
-    #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }
@@ -144,7 +142,6 @@ impl PixelView for IconButton {
     }
 
     #[inline]
-    #[must_use]
     fn get_state(&self) -> ViewState {
         self.state
     }

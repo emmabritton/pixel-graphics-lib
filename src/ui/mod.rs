@@ -38,6 +38,11 @@ pub mod prelude {
     pub use crate::ui::*;
 }
 
+/// Can be used to render multiple views easily
+/// # Usage
+/// ```rust
+/// render!(graphics, mouse, view1, view2);
+/// ```
 #[macro_export]
 macro_rules! render {
     ($graphics:tt, $mouse:tt, $($view:expr$(,)?)*) => {

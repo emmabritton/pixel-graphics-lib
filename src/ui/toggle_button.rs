@@ -114,7 +114,6 @@ impl PixelView for ToggleButton {
         self.text = text;
     }
 
-    #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }

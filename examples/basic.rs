@@ -4,7 +4,6 @@ use winit::keyboard::KeyCode;
 use winit::window::Window;
 
 /// This example shows the minimum code needed to use the library
-
 fn main() -> Result<()> {
     let system = Box::new(Basic::new());
     run(240, 160, "Basic Example", system, Options::default())?;

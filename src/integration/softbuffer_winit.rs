@@ -17,7 +17,7 @@ use winit::keyboard::PhysicalKey;
 /// * `height` - Height of the whole window canvas in pixels
 /// * `title` - Window title
 /// * `system` - Your program
-/// * `options` - [Options] controls how fast the program can update, [UiElement] styling, etc
+/// * `options` - [Options] controls how fast the program can update, [PixelView] styling, etc
 ///
 /// # Returns
 ///
@@ -29,15 +29,16 @@ pub fn run(
     system: Box<dyn System>,
     options: Options,
 ) -> Result<(), GraphicsError> {
-    let event_loop = EventLoop::new().unwrap();
+    let event_loop = EventLoop::new().expect("Failed to create event loop");
     let title = title.to_string();
     let app = WinitAppBuilder::new(system, options, move |elwt, system, options| {
         elwt.set_control_flow(options.control_flow);
         let (scale, window) = make_window(elwt, system, options, width, height, title.clone())
             .expect("Window created");
 
-        let context = softbuffer::Context::new(window.clone()).unwrap();
-        let mut surface = softbuffer::Surface::new(&context, window.clone()).unwrap();
+        let context = softbuffer::Context::new(window.clone()).expect("Failed to create context");
+        let mut surface =
+            softbuffer::Surface::new(&context, window.clone()).expect("Failed to create surface");
         let size = window.inner_size();
         if let (Some(win_width), Some(win_height)) =
             (NonZeroU32::new(size.width), NonZeroU32::new(size.height))
@@ -149,7 +150,9 @@ pub fn run(
                     } => {
                         if phase == TouchPhase::Moved {
                             match delta {
-                                MouseScrollDelta::LineDelta(_, _) => {}
+                                MouseScrollDelta::LineDelta(x, y) => {
+                                    system.on_scroll(mouse, x.round() as isize, y.round() as isize);
+                                }
                                 MouseScrollDelta::PixelDelta(pos) => {
                                     system.on_scroll(
                                         mouse,

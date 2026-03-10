@@ -13,23 +13,8 @@ It uses [buffer graphics lib](https://github.com/emmabritton/buffer-graphics-lib
 In your `Cargo.toml` file add
 
 ```toml
-pixels-graphics-lib = { version = "0.20.2", features = [] }
+pixels-graphics-lib = "0.22.0"
 ```
-
-Inside `features` you **MUST** put one of these:
-
-| Feature      | Renderer                                                   | Window creation                                        |
-|--------------|------------------------------------------------------------|--------------------------------------------------------|
-| `pixels`     | [Pixels](https://github.com/parasyte/pixels)               | [Winit](https://github.com/rust-windowing/winit) v0.29 |
-| `softbuffer` | [Softbuffer](https://github.com/rust-windowing/softbuffer) | [Winit](https://github.com/rust-windowing/winit) v0.30 |
-
-Both of these use `rwh06`
-
-This will control how the window is created and managed and how the buffer is rendered to the screen. The main
-differences are when the window is scaled to a non integer value (1.2 opposed than 2.0) then `pixels` will draw your
-content in the middle of the window, whereas `softbuffer` will draw in the top left. Additionally, `pixels` uses
-hardware
-scaling and `softbuffer` uses software scaling.
 
 ### Code
 
@@ -82,7 +67,7 @@ impl Scene<SceneResult, SceneName> for ExampleScene {
     fn render(
         &mut self,
         graphics: &mut Graphics,
-        mouse_xy: Coord,
+        mouse: &MouseData,
         held_keys: &[KeyCode]) {
         todo!()
     }
@@ -90,7 +75,7 @@ impl Scene<SceneResult, SceneName> for ExampleScene {
     fn update(
         &mut self,
         timing: &Timing,
-        mouse_xy: Coord,
+        mouse: &MouseData,
         held_keys: &[KeyCode],
         window: &Window
     ) -> SceneUpdateResult<SceneResult, SceneName> {
@@ -172,20 +157,6 @@ see [Buffer graphics readme](https://github.com/emmabritton/buffer-graphics-lib?
 
 Enables `buffer-graphics-lib/embedded`,
 see [Buffer graphics readme](https://github.com/emmabritton/buffer-graphics-lib?tab=readme-ov-file#features)
-
-### `pixels_serde` and `softbuffer_serde`
-
-Enables `serde` for the `winit` crate being used by `pixels` or `softbuffer`
-
-## Examples
-
-Each example must be run with a renderer (pixels or softbuffer), like this:
-
-`cargo run --example basic --features "pixels"`
-
-or
-
-`cargo run --example relative_test --features "softbuffer"`
 
 ## Projects
 

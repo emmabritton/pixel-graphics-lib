@@ -9,9 +9,7 @@ use buffer_graphics_lib::prelude::WrappingStrategy::Cutoff;
 use buffer_graphics_lib::prelude::*;
 use std::ops::RangeInclusive;
 use winit::keyboard::KeyCode;
-#[cfg(feature = "softbuffer")]
-use winit::window::Cursor;
-use winit::window::{CursorIcon, Window};
+use winit::window::{Cursor, CursorIcon};
 
 const CURSOR_BLINK_RATE: f64 = 0.5;
 
@@ -91,52 +89,6 @@ macro_rules! unfocus {
 /// set_mouse_cursor(window, mouse_coord, None, None, &[&field1, &field2]);
 ///# }
 /// ```
-#[cfg(feature = "pixels")]
-pub fn set_mouse_cursor<C: Into<Coord>>(
-    window: &Window,
-    mouse_coord: C,
-    custom_hover_cursor: Option<CursorIcon>,
-    custom_default_cursor: Option<CursorIcon>,
-    views: &[&TextField],
-) {
-    let coord = mouse_coord.into();
-    for view in views {
-        if view.bounds.contains(coord) {
-            window.set_cursor_icon(custom_hover_cursor.unwrap_or(CursorIcon::Text));
-            return;
-        }
-    }
-    window.set_cursor_icon(custom_default_cursor.unwrap_or(CursorIcon::Default));
-}
-
-/// Set the mouse cursor to an I if it's over a [TextField]
-///
-/// # Params
-/// * `window` - A [Window]
-/// * `mouse_coord` - [Coord] from [MouseData] or equivalent
-/// * `view` - vararg [TextField]s
-/// * `custom_hover_cursor` - Defaults to CursorIcon::Text
-/// * `custom_default_cursor` - Defaults to CursorIcon::Default
-///
-/// # Usage
-///
-/// ```rust
-///# use buffer_graphics_lib::prelude::*;
-///# use buffer_graphics_lib::text::PixelFont::Standard6x7;
-///# use winit::window::Window;
-///# use pixels_graphics_lib::prelude::*;
-///# use pixels_graphics_lib::ui::prelude::{set_mouse_cursor, TextField, UiStyle};
-///# fn method(window: &Window) {
-///# let style = UiStyle::default();
-/// let field1 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
-/// let field2 = TextField::new(Coord::default(), 10, Standard6x7, (None, None), "", &[], &style.text_field);
-///
-/// let mouse_coord = Coord::new(10,10);
-///
-/// set_mouse_cursor(window, mouse_coord, None, None, &[&field1, &field2]);
-///# }
-/// ```
-#[cfg(feature = "softbuffer")]
 pub fn set_mouse_cursor<C: Into<Coord>>(
     window: &Window,
     mouse_coord: C,
@@ -486,7 +438,6 @@ impl PixelView for TextField {
         self.border = border;
     }
 
-    #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }

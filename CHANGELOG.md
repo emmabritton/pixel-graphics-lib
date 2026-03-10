@@ -1,14 +1,32 @@
 # Changelog
 
-### Verion 0.20.2
+### Version 0.22.0
+
+- Fix bug in pre/post
+- Update docs
+- Fix scrolling on windows/linux
+- Remove some unwraps
+
+### Breaking
+
+It appears pixels is abandoned so removing support for it. The library always, and only, uses softbuffer now.
+
+### Version 0.21.0
+
+### Breaking
+
+- `pixels` is now a default feature
+- `softbuffer` is still optional, but to use it you'll need to disable default feature
+
+### Version 0.20.2
 
 - Update deps (fix tilemap bug)
 
-### Verion 0.20.1
+### Version 0.20.1
 
 - Update deps (fix controller bug)
 
-### Verion 0.20.0
+### Version 0.20.0
 
 ### Breaking
 
