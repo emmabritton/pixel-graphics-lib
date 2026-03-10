@@ -5,6 +5,7 @@
 - Fix bug in pre/post
 - Update docs
 - Fix scrolling on windows/linux
+- Remove some unwraps
 
 ### Breaking
 

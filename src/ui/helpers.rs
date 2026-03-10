@@ -11,7 +11,7 @@ pub struct ToggleButtonGroup<Key: Hash + Clone + PartialEq + Eq> {
 impl<Key: Hash + Clone + PartialEq + Eq> ToggleButtonGroup<Key> {
     pub fn new(id_button_map: Vec<(Key, ToggleButton)>) -> Self {
         let mut buttons = FxHashMap::default();
-        let first = id_button_map.first().unwrap().0.clone();
+        let first = id_button_map.first().expect("map is empty").0.clone();
         for (id, button) in id_button_map.into_iter() {
             buttons.insert(id.clone(), button);
         }
