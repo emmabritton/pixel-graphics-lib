@@ -149,7 +149,10 @@ where
             event,
             system,
             timing: Timing::new(options.ups),
-            mouse: MouseData::default(),
+            mouse: MouseData {
+                xy: Default::default(),
+                buttons: Default::default(),
+            },
             options,
             state: None,
         }

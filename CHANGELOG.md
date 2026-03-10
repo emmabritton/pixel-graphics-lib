@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.22.1
+
+- Fix bug with mouse buttons/clicking
+
 ### Version 0.22.0
 
 - Fix bug in pre/post

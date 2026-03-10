@@ -196,7 +196,7 @@ impl Default for Options {
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, Eq, PartialEq, Default)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct MouseData {
     pub xy: Coord,
     buttons: FxHashMap<MouseButton, Coord>,

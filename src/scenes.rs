@@ -451,7 +451,10 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
             window_prefs,
             scene_switcher,
             style,
-            mouse: MouseData::default(),
+            mouse: MouseData {
+                xy: Default::default(),
+                buttons: Default::default(),
+            },
             #[cfg(any(feature = "controller", feature = "controller_xinput"))]
             controller: GameController::new()
                 .map_err(|e| GraphicsError::ControllerInit(e.to_string()))?,
@@ -585,8 +588,8 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
             .post_render(graphics, &self.mouse, &self.held_keys, &mut self.scenes);
     }
 
-    fn on_mouse_move(&mut self, mouse_data: &MouseData) {
-        self.mouse = mouse_data.clone();
+    fn on_mouse_move(&mut self, mouse: &MouseData) {
+        self.mouse.xy = mouse.xy;
         if self.mouse.any_held() {
             if let Some(active) = self.scenes.last_mut() {
                 active.on_mouse_drag(&self.mouse, &self.held_keys)
@@ -595,7 +598,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn on_mouse_down(&mut self, mouse: &MouseData, button: MouseButton) {
-        self.mouse = mouse.clone();
+        self.mouse.xy = mouse.xy;
         self.mouse.add_down(self.mouse.xy, button);
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_down(&self.mouse, button, &self.held_keys);
@@ -603,7 +606,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn on_mouse_up(&mut self, mouse: &MouseData, button: MouseButton) {
-        self.mouse = mouse.clone();
+        self.mouse.xy = mouse.xy;
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_up(&self.mouse, button, &self.held_keys);
             if let Some(down) = self.mouse.is_down(button) {
@@ -614,7 +617,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
     }
 
     fn on_scroll(&mut self, mouse: &MouseData, x_diff: isize, y_diff: isize) {
-        self.mouse = mouse.clone();
+        self.mouse.xy = mouse.xy;
         if let Some(active) = self.scenes.last_mut() {
             active.on_scroll(&self.mouse, x_diff, y_diff, &self.held_keys);
         }

@@ -13,7 +13,7 @@ It uses [buffer graphics lib](https://github.com/emmabritton/buffer-graphics-lib
 In your `Cargo.toml` file add
 
 ```toml
-pixels-graphics-lib = "0.22.0"
+pixels-graphics-lib = "0.22.1"
 ```
 
 ### Code
