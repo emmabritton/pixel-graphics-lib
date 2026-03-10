@@ -30,9 +30,6 @@
 //! }
 //!```
 
-#[cfg(all(not(feature = "pixels"), not(feature = "softbuffer"),))]
-compile_error!("You must pick one windowing feature either pixels or softbuffer");
-
 pub mod dialogs;
 mod integration;
 #[cfg(feature = "scenes")]
@@ -54,16 +51,12 @@ use serde::{Deserialize, Serialize};
 use simple_game_utils::prelude::*;
 use thiserror::Error;
 use winit::event::MouseButton;
-#[cfg(feature = "softbuffer")]
 pub use winit::event_loop::ControlFlow;
 use winit::keyboard::KeyCode;
 use winit::window::Window;
 
 pub mod prelude {
     pub use crate::dialogs::*;
-    #[cfg(feature = "pixels")]
-    pub use crate::integration::pixels_winit::run;
-    #[cfg(feature = "softbuffer")]
     pub use crate::integration::softbuffer_winit::run;
     #[cfg(feature = "scenes")]
     pub use crate::scenes::*;
@@ -78,22 +71,16 @@ pub mod prelude {
     pub use buffer_graphics_lib::prelude::*;
     pub use rustc_hash::FxHashSet;
     pub use simple_game_utils::prelude::*;
+    pub use winit;
     pub use winit::event::MouseButton;
     pub use winit::keyboard::KeyCode;
     pub use winit::window::Window;
-    #[cfg(feature = "pixels")]
-    pub use winit_29 as winit;
-    #[cfg(feature = "softbuffer")]
-    pub use winit_30 as winit;
 }
 
 #[derive(Error, Debug)]
 pub enum GraphicsError {
     #[error("Creating a window: {0}")]
     WindowInit(String),
-    #[cfg(feature = "pixels")]
-    #[error("Initialising Pixels: {0}")]
-    PixelsInit(#[source] pixels::Error),
     #[error("Saving window pref: {0}")]
     SavingWindowPref(String),
     #[cfg(feature = "window_prefs")]
@@ -106,7 +93,6 @@ pub enum GraphicsError {
     #[cfg(feature = "controller")]
     #[error("Unable to init controller: {0}")]
     ControllerInit(String),
-    #[cfg(any(feature = "pixels", feature = "softbuffer"))]
     #[error("Initialing Winit: {0}")]
     WinitInit(#[source] winit::error::EventLoopError),
 }
@@ -149,8 +135,6 @@ pub trait System {
 }
 
 /// Options for program windows
-#[cfg_attr(feature = "pixels_serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "softbuffer_serde", derive(Serialize, Deserialize))]
 #[derive(Debug, PartialEq)]
 pub struct Options {
     /// Target and max number of times [Scene::update] can be called per second
@@ -172,7 +156,6 @@ pub struct Options {
     /// Style data for [UiElement]
     pub style: UiStyle,
     /// Control how the program loops, see [Winit ControlFlow](https://docs.rs/winit/latest/winit/event_loop/enum.ControlFlow.html)
-    #[cfg(feature = "softbuffer")]
     pub control_flow: ControlFlow,
 }
 
@@ -184,7 +167,7 @@ impl Options {
         hide_cursor: bool,
         confine_cursor: bool,
         style: UiStyle,
-        #[cfg(feature = "softbuffer")] control_flow: ControlFlow,
+        control_flow: ControlFlow,
     ) -> Self {
         Self {
             ups,
@@ -193,7 +176,6 @@ impl Options {
             hide_cursor,
             confine_cursor,
             style,
-            #[cfg(feature = "softbuffer")]
             control_flow,
         }
     }
@@ -208,14 +190,12 @@ impl Default for Options {
             hide_cursor: false,
             confine_cursor: false,
             style: UiStyle::default(),
-            #[cfg(feature = "softbuffer")]
             control_flow: ControlFlow::Poll,
         }
     }
 }
 
-#[cfg_attr(feature = "pixels_serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "softbuffer_serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Default)]
 pub struct MouseData {
     pub xy: Coord,

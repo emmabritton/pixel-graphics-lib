@@ -2,11 +2,11 @@
 //!
 //! There's three main approaches for positioning UI
 //! 1) Absolute:
-//!     Each view is positioned manually at specific coords
+//!    Each view is positioned manually at specific coords
 //! 2) Assisted
-//!     Using the [RowLayout] and [ColumnLayout] macros views are positioned in rows and columns (with spacing and padding)
+//!    Using the [RowLayout] and [ColumnLayout] macros views are positioned in rows and columns (with spacing and padding)
 //! 3) Relative
-//!     Using [LayoutContext] and [layout!](crate::ui::layout::relative::layout) to position and size views relative to the context and each other
+//!    Using [LayoutContext] and [layout!](crate::ui::layout::relative::layout) to position and size views relative to the context and each other
 //!
 //! # Examples
 //!

@@ -127,7 +127,6 @@ impl PixelView for ToggleIconButton {
         self.tooltip = tooltip;
     }
 
-    #[must_use]
     fn bounds(&self) -> &Rect {
         &self.bounds
     }
@@ -163,7 +162,6 @@ impl PixelView for ToggleIconButton {
     }
 
     #[inline]
-    #[must_use]
     fn get_state(&self) -> ViewState {
         self.state
     }

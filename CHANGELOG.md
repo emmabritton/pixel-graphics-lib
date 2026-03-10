@@ -1,5 +1,11 @@
 # Changelog
 
+### Verion 0.22.0
+
+### Breaking
+
+It appears pixels is abandoned so removing support for it.
+
 ### Verion 0.21.0
 
 ### Breaking

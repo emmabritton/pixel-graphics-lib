@@ -67,7 +67,6 @@ pub(crate) fn make_window(
 ///
 /// Taken from https://raw.githubusercontent.com/rust-windowing/softbuffer/refs/heads/master/examples/utils/winit_app.rs
 ///
-
 #[allow(unused_mut)]
 pub(crate) fn run_app(
     event_loop: EventLoop<()>,
