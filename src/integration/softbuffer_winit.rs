@@ -150,7 +150,9 @@ pub fn run(
                     } => {
                         if phase == TouchPhase::Moved {
                             match delta {
-                                MouseScrollDelta::LineDelta(_, _) => {}
+                                MouseScrollDelta::LineDelta(x, y) => {
+                                    system.on_scroll(mouse, x.round() as isize, y.round() as isize);
+                                }
                                 MouseScrollDelta::PixelDelta(pos) => {
                                     system.on_scroll(
                                         mouse,
