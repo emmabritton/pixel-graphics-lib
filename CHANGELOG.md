@@ -2,9 +2,12 @@
 
 ### Verion 0.22.0
 
+- Fixed bug in pre/post
+- Update docs
+
 ### Breaking
 
-It appears pixels is abandoned so removing support for it.
+It appears pixels is abandoned so removing support for it. The library always, and only, uses softbuffer now.
 
 ### Verion 0.21.0
 

@@ -1,7 +1,7 @@
 use crate::integration::softbuffer_winit::run;
 use crate::prelude::*;
 use crate::ui::styles::UiStyle;
-use rustc_hash::{FxHashMap, FxHashSet};
+use rustc_hash::FxHashSet;
 use std::fmt::Debug;
 use winit::event::MouseButton;
 use winit::keyboard::KeyCode;
@@ -432,7 +432,6 @@ struct SceneHost<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> {
     #[cfg(any(feature = "controller", feature = "controller_xinput"))]
     controller: GameController,
     mouse: MouseData,
-    mouse_down_at: FxHashMap<MouseButton, Coord>,
     pre_post: Box<dyn PrePost<SR, SN>>,
 }
 
@@ -453,7 +452,6 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> SceneHost<SR,
             scene_switcher,
             style,
             mouse: MouseData::default(),
-            mouse_down_at: FxHashMap::default(),
             #[cfg(any(feature = "controller", feature = "controller_xinput"))]
             controller: GameController::new()
                 .map_err(|e| GraphicsError::ControllerInit(e.to_string()))?,
@@ -470,7 +468,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.pre_post.pre_update(
             timing,
-            &MouseData::default(),
+            &self.mouse,
             &self.held_keys,
             &mut self.scenes,
             &self.controller,
@@ -479,7 +477,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
         self.pre_post.pre_update(
             timing,
-            &MouseData::default(),
+            &self.mouse,
             &self.held_keys,
             &mut self.scenes,
             window,
@@ -501,12 +499,12 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                 SceneUpdateResult::Nothing => {}
                 SceneUpdateResult::Push(pop_current, name) => {
                     if pop_current {
-                        self.scenes.remove(self.scenes.len() - 1);
+                        self.scenes.pop();
                     }
                     (self.scene_switcher)(&self.style, &mut self.scenes, name);
                 }
                 SceneUpdateResult::Pop(result) => {
-                    self.scenes.remove(self.scenes.len() - 1);
+                    self.scenes.pop();
                     if let Some(previous) = self.scenes.last_mut() {
                         previous.resuming(result);
                     }
@@ -516,7 +514,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.pre_post.post_update(
             timing,
-            &MouseData::default(),
+            &self.mouse,
             &self.held_keys,
             &mut self.scenes,
             &self.controller,
@@ -525,7 +523,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
         self.pre_post.post_update(
             timing,
-            &MouseData::default(),
+            &self.mouse,
             &self.held_keys,
             &mut self.scenes,
             window,
@@ -539,18 +537,14 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.pre_post.pre_render(
             graphics,
-            &MouseData::default(),
+            &self.mouse,
             &self.held_keys,
             &mut self.scenes,
             &self.controller,
         );
         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-        self.pre_post.pre_render(
-            graphics,
-            &MouseData::default(),
-            &self.held_keys,
-            &mut self.scenes,
-        );
+        self.pre_post
+            .pre_render(graphics, &self.mouse, &self.held_keys, &mut self.scenes);
         if let Some(active) = self.scenes.last() {
             if active.is_dialog() {
                 match self.scenes.iter().rposition(|scn| !scn.is_dialog()) {
@@ -559,12 +553,12 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
                         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
                         self.scenes[i].render(
                             graphics,
-                            &MouseData::default(),
+                            &self.mouse,
                             &self.held_keys,
                             &self.controller,
                         );
                         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-                        self.scenes[i].render(graphics, &MouseData::default(), &self.held_keys);
+                        self.scenes[i].render(graphics, &self.mouse, &self.held_keys);
                     }
                 }
                 #[cfg(any(feature = "controller", feature = "controller_xinput"))]
@@ -581,18 +575,14 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         #[cfg(any(feature = "controller", feature = "controller_xinput"))]
         self.pre_post.post_render(
             graphics,
-            &MouseData::default(),
+            &self.mouse,
             &self.held_keys,
             &mut self.scenes,
             &self.controller,
         );
         #[cfg(not(any(feature = "controller", feature = "controller_xinput")))]
-        self.pre_post.post_render(
-            graphics,
-            &MouseData::default(),
-            &self.held_keys,
-            &mut self.scenes,
-        );
+        self.pre_post
+            .post_render(graphics, &self.mouse, &self.held_keys, &mut self.scenes);
     }
 
     fn on_mouse_move(&mut self, mouse_data: &MouseData) {
@@ -606,7 +596,7 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
 
     fn on_mouse_down(&mut self, mouse: &MouseData, button: MouseButton) {
         self.mouse = mouse.clone();
-        self.mouse_down_at.insert(button, self.mouse.xy);
+        self.mouse.add_down(self.mouse.xy, button);
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_down(&self.mouse, button, &self.held_keys);
         }
@@ -616,10 +606,10 @@ impl<SR: Clone + PartialEq + Debug, SN: Clone + PartialEq + Debug> System for Sc
         self.mouse = mouse.clone();
         if let Some(active) = self.scenes.last_mut() {
             active.on_mouse_up(&self.mouse, button, &self.held_keys);
-            if let Some(down) = self.mouse_down_at.get(&button) {
-                active.on_mouse_click(*down, &self.mouse, button, &self.held_keys);
+            if let Some(down) = self.mouse.is_down(button) {
+                active.on_mouse_click(down, &self.mouse, button, &self.held_keys);
             }
-            self.mouse_down_at.remove(&button);
+            self.mouse.add_up(button);
         }
     }
 

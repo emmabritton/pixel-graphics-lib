@@ -102,9 +102,9 @@ pub enum GraphicsError {
 pub enum WindowScaling {
     /// Use system DPI
     Native,
-    /// Use system DPI + 2
+    /// Use system DPI + 1
     Double,
-    /// Use system DPI + 4
+    /// Use system DPI + 3
     Quad,
 }
 
@@ -141,7 +141,7 @@ pub struct Options {
     /// Default is 240
     pub ups: usize,
     /// How the window should be scaled
-    /// Default is [Auto][WindowScaling::Auto]
+    /// Default is [Double][WindowScaling::Double]
     pub scaling: WindowScaling,
     /// If vsync should be enabled
     /// Default is true

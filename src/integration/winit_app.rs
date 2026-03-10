@@ -1,4 +1,5 @@
 use crate::prelude::winit;
+#[cfg(feature = "window_prefs")]
 use crate::GraphicsError::LoadingWindowPref;
 use crate::{GraphicsError, MouseData, Options, System, WindowScaling};
 use log::error;
