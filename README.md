@@ -3,8 +3,8 @@
 
 # Pixels Graphics Lib
 
-Pixel buffer graphics and GUI library. It helps simplify window setup and creation, and event looping.
-It uses [buffer graphics lib](https://github.com/emmabritton/buffer-graphics-lib) for drawing to the buffer.
+Pixel buffer graphics and GUI library. It helps simplify window setup and creation, and event looping. It
+uses [buffer graphics lib](https://github.com/emmabritton/buffer-graphics-lib) for drawing to the buffer.
 
 ## Usage
 
@@ -13,7 +13,7 @@ It uses [buffer graphics lib](https://github.com/emmabritton/buffer-graphics-lib
 In your `Cargo.toml` file add
 
 ```toml
-pixels-graphics-lib = "0.22.1"
+pixels-graphics-lib = "0.22.2"
 ```
 
 ### Code

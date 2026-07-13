@@ -92,7 +92,6 @@ impl ToggleButton {
 
     #[must_use]
     pub fn on_mouse_click(&mut self, down: Coord, up: Coord) -> bool {
-        println!("down: {down:?}, up: {up:?}");
         if self.state != ViewState::Disabled
             && self.bounds.contains(down)
             && self.bounds.contains(up)
