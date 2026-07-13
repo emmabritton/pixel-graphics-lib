@@ -153,7 +153,7 @@ fn draw<Key: Hash + Copy + PartialEq + Eq + Debug>(
                             (_, _) => "",
                         };
                         graphics.draw_text(
-                            &format!("{str}{}", &child.name),
+                            &format!("{str}{}", child.name),
                             TextPos::px(
                                 child.item_bounds.top_left() + style.dropdown_item.padding.offset(),
                             ),
